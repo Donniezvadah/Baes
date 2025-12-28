@@ -69,6 +69,35 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <link rel="stylesheet" href="../styles.css">
 </head>
@@ -304,7 +333,7 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#hamiltonian-monte-carlo-hmc" id="toc-hamiltonian-monte-carlo-hmc" class="nav-link" data-scroll-target="#hamiltonian-monte-carlo-hmc">1. Hamiltonian Monte Carlo (HMC)</a>
   <ul class="collapse">
   <li><a href="#extended-state-space-and-hamiltonian-dynamics" id="toc-extended-state-space-and-hamiltonian-dynamics" class="nav-link" data-scroll-target="#extended-state-space-and-hamiltonian-dynamics">1.1 Extended State Space and Hamiltonian Dynamics</a></li>
-  <li><a href="#proposition-8.1-volume-preservation-and-energy-conservation" id="toc-proposition-8.1-volume-preservation-and-energy-conservation" class="nav-link" data-scroll-target="#proposition-8.1-volume-preservation-and-energy-conservation">Proposition 8.1 (Volume Preservation and Energy Conservation)</a></li>
+  <li><a href="#prop-hmc-volume-energy" id="toc-prop-hmc-volume-energy" class="nav-link" data-scroll-target="#prop-hmc-volume-energy">Proposition 8.1 (Volume Preservation and Energy Conservation)</a></li>
   <li><a href="#hmc-transition-kernel" id="toc-hmc-transition-kernel" class="nav-link" data-scroll-target="#hmc-transition-kernel">1.2 HMC Transition Kernel</a></li>
   </ul></li>
   <li><a href="#langevin-dynamics-and-mala" id="toc-langevin-dynamics-and-mala" class="nav-link" data-scroll-target="#langevin-dynamics-and-mala">2. Langevin Dynamics and MALA</a>
@@ -323,7 +352,7 @@ ul.task-list li input[type="checkbox"] {
   <ul class="collapse">
   <li><a href="#time-inhomogeneous-chains" id="toc-time-inhomogeneous-chains" class="nav-link" data-scroll-target="#time-inhomogeneous-chains">5.1 Time-Inhomogeneous Chains</a></li>
   <li><a href="#diminishing-adaptation-and-containment" id="toc-diminishing-adaptation-and-containment" class="nav-link" data-scroll-target="#diminishing-adaptation-and-containment">5.2 Diminishing Adaptation and Containment</a></li>
-  <li><a href="#theorem-8.2-convergence-of-adaptive-mcmc-informal" id="toc-theorem-8.2-convergence-of-adaptive-mcmc-informal" class="nav-link" data-scroll-target="#theorem-8.2-convergence-of-adaptive-mcmc-informal">Theorem 8.2 (Convergence of Adaptive MCMC, Informal)</a></li>
+  <li><a href="#thm-adaptive-mcmc" id="toc-thm-adaptive-mcmc" class="nav-link" data-scroll-target="#thm-adaptive-mcmc">Theorem 8.2 (Convergence of Adaptive MCMC, Informal)</a></li>
   </ul></li>
   <li><a href="#problem-set-8-representative-problems" id="toc-problem-set-8-representative-problems" class="nav-link" data-scroll-target="#problem-set-8-representative-problems">6. Problem Set 8 (Representative Problems)</a></li>
   </ul></li>
@@ -360,13 +389,26 @@ ul.task-list li input[type="checkbox"] {
 <section id="extended-state-space-and-hamiltonian-dynamics" class="level3">
 <h3 class="anchored" data-anchor-id="extended-state-space-and-hamiltonian-dynamics">1.1 Extended State Space and Hamiltonian Dynamics</h3>
 <p>Let (^d) denote parameters of interest with target density (()). Introduce auxiliary momentum variables (p ^d) with density (N(0, M)), where (M) is a positive-definite mass matrix.</p>
-<p>Define the Hamiltonian [ H(, p) = U() + K(p) = -() + p<sup>M</sup>{-1} p + . ]</p>
-<p>Hamilton’s equations are [ = <em>p H(,p) = M^{-1} p, = -</em>H(,p) = -U(). ]</p>
+<p>Define the Hamiltonian <span class="math display">\[
+H(\theta, p) = U(\theta) + K(p) = -\log \pi(\theta) + \tfrac12 p^\top M^{-1} p + \text{const}.
+\]</span></p>
+<p>Hamilton’s equations are <span class="math display">\[
+\frac{d\theta}{dt} = \nabla_p H(\theta,p) = M^{-1} p,
+\quad
+\frac{dp}{dt} = -\nabla_\theta H(\theta,p) = -\nabla U(\theta).
+\]</span></p>
 </section>
-<section id="proposition-8.1-volume-preservation-and-energy-conservation" class="level3">
-<h3 class="anchored" data-anchor-id="proposition-8.1-volume-preservation-and-energy-conservation">Proposition 8.1 (Volume Preservation and Energy Conservation)</h3>
+<section id="prop-hmc-volume-energy" class="level3">
+<h3 class="anchored" data-anchor-id="prop-hmc-volume-energy">Proposition 8.1 (Volume Preservation and Energy Conservation)</h3>
 <p>The exact Hamiltonian flow (_t: (,p) (_t, p_t)) is volume-preserving (Jacobian determinant 1) and conserves (H(,p)).</p>
-<p><em>Idea of proof:</em> Use Liouville’s theorem (divergence-free Hamiltonian vector field) and differentiability of (H).</p>
+<p><em>Proof sketch:</em> Hamilton’s equations define a smooth vector field <span class="math display">\[
+F(\theta,p) = \begin{pmatrix} M^{-1} p \\ -\nabla U(\theta) \end{pmatrix}
+\]</span> on (^{2d}). The associated flow (_t) solves the ODE (_t = F(z_t)) with (z_t = (_t, p_t)). The Jacobian matrix of (F) has zero trace because the position derivatives of the momentum update and the momentum derivatives of the position update cancel; equivalently, the Hamiltonian vector field is divergence-free. Liouville’s theorem then implies that the flow (_t) preserves Lebesgue measure, i.e., it is volume-preserving with determinant 1. Moreover, <span class="math display">\[
+\frac{d}{dt} H(\theta_t, p_t)
+  = \nabla_\theta H(\theta_t,p_t)^\top \dot{\theta}_t
+    + \nabla_p H(\theta_t,p_t)^\top \dot{p}_t
+  = \nabla_\theta H^\top M^{-1} p_t - \nabla_p H^\top \nabla U(\theta_t) = 0,
+\]</span> by Hamilton’s equations, so (H(_t,p_t)) is conserved along the flow. ()</p>
 </section>
 <section id="hmc-transition-kernel" class="level3">
 <h3 class="anchored" data-anchor-id="hmc-transition-kernel">1.2 HMC Transition Kernel</h3>
@@ -374,7 +416,9 @@ ul.task-list li input[type="checkbox"] {
 <ol type="1">
 <li>Sample (p N(0, M)) independently of current ().</li>
 <li>Approximate Hamiltonian flow for a time (L ) using a symplectic integrator (e.g., leapfrog) to obtain proposal ((‘, p’)).</li>
-<li>Accept or reject ((‘, p’)) using an MH step with acceptance probability [ = {1, (-H(‘,p’) + H(,p))}. ]</li>
+<li>Accept or reject ((‘, p’)) using an MH step with acceptance probability <span class="math display">\[
+\alpha = \min\{1, \exp(-H(\theta',p') + H(\theta,p))\}.
+\]</span></li>
 <li>Return (’) if accepted, otherwise retain ().</li>
 </ol>
 <p>The exact flow would preserve the joint density (e^{-H(,p)}); the Metropolis correction accounts for numerical integration error.</p>
@@ -384,17 +428,23 @@ ul.task-list li input[type="checkbox"] {
 <h2 class="anchored" data-anchor-id="langevin-dynamics-and-mala">2. Langevin Dynamics and MALA</h2>
 <section id="overdamped-langevin-diffusion" class="level3">
 <h3 class="anchored" data-anchor-id="overdamped-langevin-diffusion">2.1 Overdamped Langevin Diffusion</h3>
-<p>Consider the SDE [ d_t = (_t) , dt + dB_t, ] where (B_t) is a standard Brownian motion. Under suitable conditions, () is the invariant distribution of this diffusion.</p>
+<p>Consider the SDE <span class="math display">\[
+d\Theta_t = \frac12 \nabla \log \pi(\Theta_t) \, dt + dB_t,
+\]</span> where (B_t) is a standard Brownian motion. Under suitable conditions, () is the invariant distribution of this diffusion.</p>
 </section>
 <section id="unadjusted-langevin-algorithm-ula" class="level3">
 <h3 class="anchored" data-anchor-id="unadjusted-langevin-algorithm-ula">2.2 Unadjusted Langevin Algorithm (ULA)</h3>
-<p>Discretize the SDE with step size (&gt; 0): [ _{k+1} = _k + (_k) + Z_k, ] where (Z_k N(0, I_d)) i.i.d. ULA does not exactly preserve (), but can approximate it under small ().</p>
+<p>Discretize the SDE with step size (&gt; 0): <span class="math display">\[
+\Theta_{k+1} = \Theta_k + \frac{\epsilon}{2} \nabla \log \pi(\Theta_k) + \sqrt{\epsilon} Z_k,
+\]</span> where (Z_k N(0, I_d)) i.i.d. ULA does not exactly preserve (), but can approximate it under small ().</p>
 </section>
 <section id="metropolis-adjusted-langevin-algorithm-mala" class="level3">
 <h3 class="anchored" data-anchor-id="metropolis-adjusted-langevin-algorithm-mala">2.3 Metropolis-Adjusted Langevin Algorithm (MALA)</h3>
 <p>Use the ULA proposal within MH:</p>
 <ul>
-<li>Proposal density: [ q(, ’) = N( + (),; I_d ). ]</li>
+<li>Proposal density: <span class="math display">\[
+q(\theta, \theta') = N\left( \theta + \frac{\epsilon}{2} \nabla \log \pi(\theta),\; \epsilon I_d \right).
+\]</span></li>
 <li>Acceptance probability as in MH to correct discretization bias.</li>
 </ul>
 <p>Under regularity conditions, MALA is reversible with invariant distribution ().</p>
@@ -413,7 +463,9 @@ ul.task-list li input[type="checkbox"] {
 <h2 class="anchored" data-anchor-id="slice-sampling">4. Slice Sampling</h2>
 <section id="basic-idea" class="level3">
 <h3 class="anchored" data-anchor-id="basic-idea">4.1 Basic Idea</h3>
-<p>Given target density (()), introduce an auxiliary variable (u (0, ())). The joint density is [ f(,u) {0 &lt; u &lt; ()}. ]</p>
+<p>Given target density (()), introduce an auxiliary variable (u (0, ())). The joint density is <span class="math display">\[
+f(\theta,u) \propto \mathbf{1}\{0 &lt; u &lt; \pi(\theta)\}.
+\]</span></p>
 <p>Gibbs sampling in ((,u)) space:</p>
 <ol type="1">
 <li>Sample (u (0, ())).</li>
@@ -436,24 +488,26 @@ ul.task-list li input[type="checkbox"] {
 <h3 class="anchored" data-anchor-id="diminishing-adaptation-and-containment">5.2 Diminishing Adaptation and Containment</h3>
 <p>A common set of sufficient conditions for convergence to ():</p>
 <ol type="1">
-<li><strong>Diminishing adaptation:</strong> The difference between successive kernels goes to zero: [ <em>x | K</em>{n+1}(x, ) - K_n(x, ) |_{} . ]</li>
+<li><strong>Diminishing adaptation:</strong> The difference between successive kernels goes to zero: <span class="math display">\[
+\sup_x \| K_{n+1}(x, \cdot) - K_n(x, \cdot) \|_{\text{TV}} \to 0.
+\]</span></li>
 <li><strong>Containment:</strong> A uniform bound on convergence times across the adaptive sequence.</li>
 </ol>
 </section>
-<section id="theorem-8.2-convergence-of-adaptive-mcmc-informal" class="level3">
-<h3 class="anchored" data-anchor-id="theorem-8.2-convergence-of-adaptive-mcmc-informal">Theorem 8.2 (Convergence of Adaptive MCMC, Informal)</h3>
+<section id="thm-adaptive-mcmc" class="level3">
+<h3 class="anchored" data-anchor-id="thm-adaptive-mcmc">Theorem 8.2 (Convergence of Adaptive MCMC, Informal)</h3>
 <p>If the family of kernels ({K_n}) used in the adaptive algorithm all admit () as invariant distribution, and if diminishing adaptation and a suitable containment condition hold, then the adaptive chain converges to () in distribution.</p>
-<p><em>Idea of proof:</em> Use coupling arguments and perturbation bounds on Markov operators to control the effect of adaptation.</p>
+<p><em>Idea of proof:</em> Write the adaptive chain as using, at iteration (n), a kernel (K_n) chosen based on the past. Diminishing adaptation ensures that successive kernels become close in total variation, so the algorithm behaves asymptotically like a time-homogeneous Markov chain. Containment provides uniform control of convergence times across the family ({K_n}): with high probability, the chain does not spend long periods in regions where convergence is arbitrarily slow. One then constructs a coupling between the adaptive chain and a reference Markov chain with kernel close to (K_n) for large (n), and uses perturbation bounds on Markov operators along with regeneration or drift/minorization techniques to show that the adaptive chain inherits convergence to ().</p>
 </section>
 </section>
 <section id="problem-set-8-representative-problems" class="level2">
 <h2 class="anchored" data-anchor-id="problem-set-8-representative-problems">6. Problem Set 8 (Representative Problems)</h2>
 <ol type="1">
-<li><p><strong>HMC Invariance.</strong> Show that the exact Hamiltonian flow preserves the extended density (e^{-H(,p)}). Then argue why the Metropolis correction step yields a Markov chain with invariant distribution (()).</p></li>
-<li><p><strong>MALA Detailed Balance.</strong> Derive the MALA acceptance probability and verify detailed balance with respect to () in the general case.</p></li>
-<li><p><strong>Slice Sampling Correctness.</strong> Prove that the basic slice sampling scheme with exact slice sampling has () as invariant distribution.</p></li>
-<li><p><strong>Adaptive MH Example.</strong> Consider an adaptive random-walk MH algorithm that updates the proposal covariance based on the empirical covariance of past samples. Discuss conditions under which diminishing adaptation holds and potential violations of containment.</p></li>
-<li><p><strong>HMC Step-Size Tuning.</strong> Discuss how step size and number of leapfrog steps in HMC affect acceptance rates, energy error, and effective exploration, relating your discussion to the theory of symplectic integrators and of optimal scaling.</p></li>
+<li><p><strong>HMC Invariance.</strong> Using Proposition <span class="citation" data-cites="prop-hmc-volume-energy">@prop-hmc-volume-energy</span>, show that the exact Hamiltonian flow preserves the extended density (e^{-H(,p)}). Then argue carefully why the Metropolis correction step yields a Markov chain with invariant distribution (()).</p></li>
+<li><p><strong>MALA Detailed Balance.</strong> Derive the MALA acceptance probability and verify detailed balance with respect to () in the general case, making explicit use of the Gaussian proposal density and the MH ratio.</p></li>
+<li><p><strong>Slice Sampling Correctness.</strong> Prove that the basic slice sampling scheme with exact slice sampling has () as invariant distribution by viewing it as a Gibbs sampler on the joint density and marginalizing out the auxiliary variable.</p></li>
+<li><p><strong>Adaptive MH Example.</strong> Consider an adaptive random-walk MH algorithm that updates the proposal covariance based on the empirical covariance of past samples. Discuss conditions under which diminishing adaptation holds and potential violations of containment, and interpret these conditions in the light of Theorem <strong>?@thm-adaptive-mcmc</strong>.</p></li>
+<li><p><strong>HMC Step-Size Tuning.</strong> Discuss how step size and number of leapfrog steps in HMC affect acceptance rates, energy error, and effective exploration, relating your discussion to the theory of symplectic integrators and to the optimal-scaling result Theorem <strong>?@thm-mh-optimal-scaling</strong> from Module 6.</p></li>
 </ol>
 
 

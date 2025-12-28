@@ -80,7 +80,7 @@ $$
 
 We will show that maximizing $\mathcal{L}(q)$ is equivalent to minimizing $\operatorname{KL}\bigl(q \Vert p(\cdot \mid x)\bigr)$.
 
-::: {.theorem}
+::: {.theorem #thm-elbo-kl}
 **Theorem 9.1 (ELBO–KL Decomposition).**
 
 For any density $q$ such that $\operatorname{KL}\bigl(q \Vert p(\cdot \mid x)\bigr) < \infty$, we have
@@ -166,7 +166,7 @@ $$
 
 Exact joint optimization is often difficult, but we can use **coordinate ascent**: repeatedly optimize $\mathcal{L}(q)$ with respect to a single factor $q_j$, holding the others fixed. The optimal $q_j$ has a closed form.
 
-::: {.theorem}
+::: {.theorem #thm-mean-field-cavi}
 **Theorem 9.2 (Optimal Mean-Field Factor Updates).**
 
 Fix $q_{-j}(\theta_{-j}) = \prod_{k \ne j} q_k(\theta_k)$ and consider $q_j$ varying over densities on $\Theta_j$. Then, up to multiplicative normalization,
@@ -337,9 +337,9 @@ These phenomena should be understood and diagnosed when using VI in place of MCM
 
 ## 5. Problem Set 9 (Representative Problems)
 
-1. **ELBO Identity (Measure-Theoretic Proof).** Prove Theorem 9.1 in full generality using probability measures $P$ and $Q$ and Radon–Nikodym derivatives, explicitly checking conditions under which termwise integration and changes of measure are justified.
+1. **ELBO Identity (Measure-Theoretic Proof).** Prove Theorem @thm-elbo-kl in full generality using probability measures $P$ and $Q$ and Radon–Nikodym derivatives, explicitly checking conditions under which termwise integration and changes of measure are justified.
 
-2. **CAVI Derivation with Functional Analysis.** Re-derive Theorem 9.2 using functional-analytic language (e.g., viewing the space of densities as a convex subset of $L^1$), and show that the ELBO is strictly concave in each factor $q_j$ when $p(\theta,x)$ is strictly positive.
+2. **CAVI Derivation with Functional Analysis.** Re-derive Theorem @thm-mean-field-cavi using functional-analytic language (e.g., viewing the space of densities as a convex subset of $L^1$), and show that the ELBO is strictly concave in each factor $q_j$ when $p(\theta,x)$ is strictly positive.
 
 3. **VI in a Conjugate Model.** For the Normal–Normal model with known variance, work out a variational approximation in which $q$ is restricted to a Normal family. Verify that the variational optimum coincides with the exact posterior, and compute the ELBO at the optimum.
 

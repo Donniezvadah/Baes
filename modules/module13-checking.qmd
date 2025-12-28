@@ -9,21 +9,21 @@ This module focuses on tools for assessing the adequacy of Bayesian models: post
 
 ## 1. Posterior Predictive Checks
 
-### 1.1 Posterior Predictive Distribution
+### 1.1 Posterior Predictive Distribution {#def-posterior-predictive}
 
 Given data \(x\), prior \(\Pi\), and likelihood \(p(x \mid \theta)\), the **posterior predictive distribution** for replicated data \(X_{\text{rep}}\) is
-5959
+$$
  p(x_{\text{rep}} \mid x) = \int p(x_{\text{rep}} \mid \theta) \, \Pi(d\theta \mid x).
-5959
+$$
 
-### 1.2 Test Statistics and Discrepancy Measures
+### 1.2 Test Statistics and Discrepancy Measures {#def-ppc}
 
 Choose a test statistic or discrepancy function \(T(x, \theta)\) capturing aspects of the data or model of interest (e.g., tail behavior, dispersion).
 
 The posterior predictive p-value is
-5959
+$$
  p_{\text{ppc}} = \mathbb{P}( T(X_{\text{rep}}, \theta) \ge T(x, \theta) \mid x ),
-5959
+$$
 where the probability is with respect to the joint posterior predictive distribution of \((X_{\text{rep}}, \theta)\).
 
 ### 1.3 Interpretation
@@ -32,21 +32,30 @@ Posterior predictive p-values close to 0 or 1 indicate potential model misfit al
 
 ## 2. Sensitivity to Priors and Bayesian Robustness
 
-### 2.1 Local Sensitivity
+### 2.1 Local Sensitivity {#def-local-sensitivity}
 
 Consider posterior expectations \(\mathbb{E}_\Pi[g(\theta) \mid x]\) as functions of prior hyperparameters \(\eta\). Local sensitivity analysis studies derivatives
-5959
+$$
  \frac{\partial}{\partial \eta} \mathbb{E}[g(\theta) \mid x; \eta].
-5959
+$$
 
-These derivatives can be expressed in terms of posterior covariances between \(g(\theta)\) and score functions of the prior.
+Writing the posterior under prior density \(\pi(\theta \mid \eta)\) as
+$$
+ \Pi(d\theta \mid x; \eta) = \frac{p(x \mid \theta) \pi(\theta \mid \eta)}{m(x; \eta)} \, d\theta,
+$$
+one can differentiate under the integral sign (under suitable regularity conditions) to obtain the identity
+$$
+ \frac{\partial}{\partial \eta} \mathbb{E}[g(\theta) \mid x; \eta]
+  = \operatorname{Cov}_\Pi\bigl(g(\theta), \partial_\eta \log \pi(\theta \mid \eta) \mid x; \eta\bigr),
+$$
+which expresses local sensitivity in terms of a posterior covariance between \(g(\theta)\) and the prior score function.
 
-### 2.2 Global Sensitivity and Robust Priors
+### 2.2 Global Sensitivity and Robust Priors {#def-eps-contamination}
 
 - **\(\varepsilon\)-contamination priors:**
-  5959
+  $$
    \Pi_\varepsilon = (1-\varepsilon) \Pi_0 + \varepsilon Q,
-  5959
+  $$
   where \(Q\) represents a contaminating distribution.
 - Study the range of posterior summaries as \(\varepsilon\) varies, assessing robustness to prior perturbations.
 
@@ -82,11 +91,11 @@ Consider \(X_i \mid \lambda \sim \operatorname{Poisson}(\lambda)\) with Gamma pr
 
 ## 5. Problem Set 13 (Representative Problems)
 
-1. **Posterior Predictive Check for Poisson.** For a Poisson–Gamma model, derive the posterior predictive distribution and construct a test statistic sensitive to overdispersion. Analyze how the posterior predictive p-value behaves when data are generated from an overdispersed process.
+1. **Posterior Predictive Check for Poisson.** For a Poisson–Gamma model, derive the posterior predictive distribution (Definition @def-posterior-predictive) and construct a test statistic sensitive to overdispersion. Analyze how the posterior predictive p-value (Definition @def-ppc) behaves when data are generated from an overdispersed process.
 
-2. **Local Sensitivity Derivative.** Let the prior density be \(\pi(\theta \mid \eta)\). Derive an expression for \(\partial/\partial \eta\, \mathbb{E}[g(\theta) \mid x; \eta]\) in terms of posterior expectations and derivatives of \(\log \pi(\theta \mid \eta)\).
+2. **Local Sensitivity Derivative.** Let the prior density be \(\pi(\theta \mid \eta)\). Derive an expression for \(\partial/\partial \eta\, \mathbb{E}[g(\theta) \mid x; \eta]\) in terms of posterior expectations and derivatives of \(\log \pi(\theta \mid \eta)\), making precise the covariance identity in Definition @def-local-sensitivity.
 
-3. **\(\varepsilon\)-Contamination Analysis.** Implement an \(\varepsilon\)-contamination analysis in a simple Normal model with unknown mean and known variance. Study how posterior means and credible intervals change as \(\varepsilon\) varies.
+3. **\(\varepsilon\)-Contamination Analysis.** Implement an \(\varepsilon\)-contamination analysis (Definition @def-eps-contamination) in a simple Normal model with unknown mean and known variance. Study how posterior means and credible intervals change as \(\varepsilon\) varies.
 
 4. **Robust Prior Construction.** Propose a heavy-tailed prior for a location parameter (e.g., Cauchy) and analyze its robustness properties compared to a Normal prior, particularly in the presence of outliers.
 

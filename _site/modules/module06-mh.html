@@ -69,6 +69,35 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <link rel="stylesheet" href="../styles.css">
 </head>
@@ -309,17 +338,17 @@ ul.task-list li input[type="checkbox"] {
   </ul></li>
   <li><a href="#detailed-balance-and-stationarity" id="toc-detailed-balance-and-stationarity" class="nav-link" data-scroll-target="#detailed-balance-and-stationarity">2. Detailed Balance and Stationarity</a>
   <ul class="collapse">
-  <li><a href="#theorem-6.1-detailed-balance-for-mh" id="toc-theorem-6.1-detailed-balance-for-mh" class="nav-link" data-scroll-target="#theorem-6.1-detailed-balance-for-mh">Theorem 6.1 (Detailed Balance for MH)</a></li>
+  <li><a href="#thm-mh-detailed-balance" id="toc-thm-mh-detailed-balance" class="nav-link" data-scroll-target="#thm-mh-detailed-balance">Theorem 6.1 (Detailed Balance for MH)</a></li>
   </ul></li>
   <li><a href="#irreducibility-aperiodicity-and-convergence" id="toc-irreducibility-aperiodicity-and-convergence" class="nav-link" data-scroll-target="#irreducibility-aperiodicity-and-convergence">3. Irreducibility, Aperiodicity, and Convergence</a>
   <ul class="collapse">
   <li><a href="#irreducibility" id="toc-irreducibility" class="nav-link" data-scroll-target="#irreducibility">3.1 Irreducibility</a></li>
   <li><a href="#aperiodicity" id="toc-aperiodicity" class="nav-link" data-scroll-target="#aperiodicity">3.2 Aperiodicity</a></li>
-  <li><a href="#theorem-6.2-convergence-to-stationarity" id="toc-theorem-6.2-convergence-to-stationarity" class="nav-link" data-scroll-target="#theorem-6.2-convergence-to-stationarity">Theorem 6.2 (Convergence to Stationarity)</a></li>
+  <li><a href="#thm-mh-convergence" id="toc-thm-mh-convergence" class="nav-link" data-scroll-target="#thm-mh-convergence">Theorem 6.2 (Convergence to Stationarity)</a></li>
   </ul></li>
   <li><a href="#optimal-scaling-in-high-dimensions" id="toc-optimal-scaling-in-high-dimensions" class="nav-link" data-scroll-target="#optimal-scaling-in-high-dimensions">4. Optimal Scaling in High Dimensions</a>
   <ul class="collapse">
-  <li><a href="#theorem-6.3-informal-optimal-scaling-result" id="toc-theorem-6.3-informal-optimal-scaling-result" class="nav-link" data-scroll-target="#theorem-6.3-informal-optimal-scaling-result">Theorem 6.3 (Informal Optimal Scaling Result)</a></li>
+  <li><a href="#thm-mh-optimal-scaling" id="toc-thm-mh-optimal-scaling" class="nav-link" data-scroll-target="#thm-mh-optimal-scaling">Theorem 6.3 (Informal Optimal Scaling Result)</a></li>
   </ul></li>
   <li><a href="#pathologies-and-failure-modes" id="toc-pathologies-and-failure-modes" class="nav-link" data-scroll-target="#pathologies-and-failure-modes">5. Pathologies and Failure Modes</a>
   <ul class="collapse">
@@ -369,19 +398,50 @@ ul.task-list li input[type="checkbox"] {
 </section>
 <section id="acceptance-probability" class="level3">
 <h3 class="anchored" data-anchor-id="acceptance-probability">1.2 Acceptance Probability</h3>
-<p>Define the acceptance probability [ (x,y) = { 1, } ] when the ratio is well-defined and positive. On sets where ((x) q(x,y) = 0), define ((x,y)) appropriately (e.g., 0) to obtain a measurable function.</p>
+<p>Define the acceptance probability <span class="math display">\[
+\alpha(x,y) = \min\left\{ 1, \frac{\pi(y) q(y,x)}{\pi(x) q(x,y)} \right\}
+\]</span> when the ratio is well-defined and positive. On sets where ((x) q(x,y) = 0), define ((x,y)) appropriately (e.g., 0) to obtain a measurable function.</p>
 </section>
 <section id="mh-transition-kernel" class="level3">
 <h3 class="anchored" data-anchor-id="mh-transition-kernel">1.3 MH Transition Kernel</h3>
-<p>The Metropolis–Hastings transition kernel is [ K(x, dy) = q(x, dy) (x,y) + r(x) , <em>x(dy), ] where [ r(x) = 1 - </em> q(x, dy) (x,y) ] ensures that (K(x, )) is a probability measure. Here, (_x) denotes the Dirac measure at (x).</p>
+<p>The Metropolis–Hastings transition kernel is <span class="math display">\[
+K(x, dy) = q(x, dy) \alpha(x,y) + r(x) \, \delta_x(dy),
+\]</span> where <span class="math display">\[
+r(x) = 1 - \int_\mathsf{X} q(x, dy) \alpha(x,y)
+\]</span> ensures that (K(x, )) is a probability measure. Here, (_x) denotes the Dirac measure at (x).</p>
 </section>
 </section>
 <section id="detailed-balance-and-stationarity" class="level2">
 <h2 class="anchored" data-anchor-id="detailed-balance-and-stationarity">2. Detailed Balance and Stationarity</h2>
-<section id="theorem-6.1-detailed-balance-for-mh" class="level3">
-<h3 class="anchored" data-anchor-id="theorem-6.1-detailed-balance-for-mh">Theorem 6.1 (Detailed Balance for MH)</h3>
-<p>Assume that (q(x,y) &gt; 0) whenever ((x) (y) &gt; 0). Then the MH kernel (K) satisfies detailed balance with respect to (): [ (dx) K(x, dy) = (dy) K(y, dx). ] In particular, () is invariant for (K).</p>
-<p><em>Proof:</em> For (x y), [ (dx) K(x, dy) = (dx) q(x, dy) (x,y), ] [ (dy) K(y, dx) = (dy) q(y, dx) (y,x). ] By construction, [ (x) q(x,y) (x,y) = { (x) q(x,y), (y) q(y,x) } ] and similarly [ (y) q(y,x) (y,x) = { (y) q(y,x), (x) q(x,y) }. ] Hence these expressions are equal, implying detailed balance for off-diagonal transitions. The diagonal part ensures normalization and is automatically symmetric when integrated over sets. Therefore, detailed balance holds, and invariance follows by Lemma 5.3.</p>
+<section id="thm-mh-detailed-balance" class="level3">
+<h3 class="anchored" data-anchor-id="thm-mh-detailed-balance">Theorem 6.1 (Detailed Balance for MH)</h3>
+<p>Assume that (q(x,y) &gt; 0) whenever ((x) (y) &gt; 0). Then the MH kernel (K) satisfies detailed balance with respect to (): <span class="math display">\[
+\pi(dx) K(x, dy) = \pi(dy) K(y, dx).
+\]</span> In particular, () is invariant for (K).</p>
+<p><em>Proof:</em> We verify the kernel form of detailed balance, <span class="math display">\[
+\pi(dx) K(x, dy) = \pi(dy) K(y, dx),
+\]</span> as equality of measures on (( , )). By definition, <span class="math display">\[
+K(x, dy) = q(x, dy) \alpha(x,y) + r(x) \, \delta_x(dy),
+\]</span> so <span class="math display">\[
+\pi(dx) K(x, dy)
+  = \pi(dx) q(x, dy) \alpha(x,y) + \pi(dx) r(x) \, \delta_x(dy).
+\]</span> The second term satisfies <span class="math display">\[
+\pi(dx) r(x) \, \delta_x(dy) = \pi(dy) r(y) \, \delta_y(dx),
+\]</span> which is symmetric in ((x,y)) by construction. Thus it remains to check symmetry of the off-diagonal part <span class="math display">\[
+\pi(dx) q(x, dy) \alpha(x,y).
+\]</span> On the product set where ((x) q(x,y) &gt; 0) and ((y) q(y,x) &gt; 0), the Metropolis–Hastings acceptance probabilities satisfy <span class="math display">\[
+\alpha(x,y) = \min\left\{1, \frac{\pi(y) q(y,x)}{\pi(x) q(x,y)} \right\},
+\qquad
+\alpha(y,x) = \min\left\{1, \frac{\pi(x) q(x,y)}{\pi(y) q(y,x)} \right\}.
+\]</span> Therefore, <span class="math display">\[
+\pi(x) q(x,y) \alpha(x,y)
+  = \min\{ \pi(x) q(x,y), \pi(y) q(y,x) \}
+  = \pi(y) q(y,x) \alpha(y,x).
+\]</span> Since both sides are densities of the corresponding measures with respect to the product reference measure ((dx) , (dy)), we have <span class="math display">\[
+\pi(dx) q(x, dy) \alpha(x,y) = \pi(dy) q(y, dx) \alpha(y,x)
+\]</span> on this set. On the complement where ((x) q(x,y) = 0) or ((y) q(y,x) = 0), the acceptance probabilities are defined so that each side is zero, so equality still holds. Combining off-diagonal and diagonal parts gives <span class="math display">\[
+\pi(dx) K(x, dy) = \pi(dy) K(y, dx)
+\]</span> as measures, i.e., detailed balance. In particular, () is invariant for (K) by Lemma 5.3. ()</p>
 </section>
 </section>
 <section id="irreducibility-aperiodicity-and-convergence" class="level2">
@@ -394,19 +454,25 @@ ul.task-list li input[type="checkbox"] {
 <h3 class="anchored" data-anchor-id="aperiodicity">3.2 Aperiodicity</h3>
 <p>MH chains are typically aperiodic provided there is a nonzero probability of remaining at the current state (e.g., via rejection). The self-transition probability (r(x)) ensures aperiodicity under mild conditions.</p>
 </section>
-<section id="theorem-6.2-convergence-to-stationarity" class="level3">
-<h3 class="anchored" data-anchor-id="theorem-6.2-convergence-to-stationarity">Theorem 6.2 (Convergence to Stationarity)</h3>
-<p>Under irreducibility, aperiodicity, and positive recurrence, the MH chain converges in distribution to (): for any initial distribution (_0), [ | <em>0 K^n - |</em>{} n . ]</p>
+<section id="thm-mh-convergence" class="level3">
+<h3 class="anchored" data-anchor-id="thm-mh-convergence">Theorem 6.2 (Convergence to Stationarity)</h3>
+<p>Under irreducibility, aperiodicity, and positive recurrence, the MH chain converges in distribution to (): for any initial distribution (_0), <span class="math display">\[
+\| \mu_0 K^n - \pi \|_{\text{TV}} \to 0 \quad \text{as } n \to \infty.
+\]</span></p>
 <p>Moreover, if suitable drift and minorization conditions hold, the convergence is geometric, and ergodic theorems and CLTs apply.</p>
 </section>
 </section>
 <section id="optimal-scaling-in-high-dimensions" class="level2">
 <h2 class="anchored" data-anchor-id="optimal-scaling-in-high-dimensions">4. Optimal Scaling in High Dimensions</h2>
-<p>Consider a sequence of target distributions (_d) on (^d), e.g., i.i.d. product measures, and random-walk MH with Gaussian proposals of the form [ Y = X + Z, Z N_d(0, I_d). ]</p>
-<section id="theorem-6.3-informal-optimal-scaling-result" class="level3">
-<h3 class="anchored" data-anchor-id="theorem-6.3-informal-optimal-scaling-result">Theorem 6.3 (Informal Optimal Scaling Result)</h3>
-<p>Under suitable regularity conditions (e.g., target is product of i.i.d. components with smooth log-density), the rescaled MH chain converges to a diffusion as (d ). The <strong>optimal acceptance rate</strong> maximizing the speed of this limiting diffusion is approximately [ ^* . ]</p>
-<p><em>Idea of proof:</em> Show weak convergence of the interpolated chain to a Langevin diffusion and optimize the diffusion speed with respect to ().</p>
+<p>Consider a sequence of target distributions (_d) on (^d), e.g., i.i.d. product measures, and random-walk MH with Gaussian proposals of the form <span class="math display">\[
+Y = X + \sqrt{\frac{\ell^2}{d}} Z, \quad Z \sim N_d(0, I_d).
+\]</span></p>
+<section id="thm-mh-optimal-scaling" class="level3">
+<h3 class="anchored" data-anchor-id="thm-mh-optimal-scaling">Theorem 6.3 (Informal Optimal Scaling Result)</h3>
+<p>Under suitable regularity conditions (e.g., target is product of i.i.d. components with smooth log-density), the rescaled MH chain converges to a diffusion as (d ). The <strong>optimal acceptance rate</strong> maximizing the speed of this limiting diffusion is approximately <span class="math display">\[
+\alpha^* \approx 0.234.
+\]</span></p>
+<p><em>Idea of proof:</em> Consider the sequence of (d)-dimensional targets and proposal scales such that the MH chain, linearly interpolated in time and appropriately rescaled, converges in distribution to a limiting Langevin diffusion (diffusion limit). The speed of this limiting diffusion depends on the proposal scale (), and one shows that it is maximized when the asymptotic average acceptance probability is approximately 0.234. This involves computing the generator of the limiting diffusion and optimizing its efficiency with respect to ().</p>
 </section>
 </section>
 <section id="pathologies-and-failure-modes" class="level2">
@@ -433,11 +499,11 @@ ul.task-list li input[type="checkbox"] {
 <section id="problem-set-6-representative-problems" class="level2">
 <h2 class="anchored" data-anchor-id="problem-set-6-representative-problems">6. Problem Set 6 (Representative Problems)</h2>
 <ol type="1">
-<li><p><strong>Detailed Balance for MH.</strong> Prove Theorem 6.1 rigorously, including the treatment of sets where ((x) q(x,y) = 0) and verifying measurability.</p></li>
-<li><p><strong>Irreducibility for Random-Walk MH.</strong> For a random-walk MH algorithm on (^d) with Gaussian proposal and target density strictly positive and continuous on (^d), prove that the chain is ()-irreducible.</p></li>
-<li><p><strong>Geometric Ergodicity and Heavy Tails.</strong> Consider a target distribution with polynomially decaying tails and a random-walk MH with Gaussian proposals. Investigate whether the chain satisfies a drift condition that implies geometric ergodicity.</p></li>
-<li><p><strong>Diffusion Limit Sketch.</strong> Outline the diffusion limit argument leading to the 0.234 optimal acceptance rate for high-dimensional random-walk MH, identifying the main probabilistic tools used.</p></li>
-<li><p><strong>Practical Tuning.</strong> Discuss heuristic rules for tuning proposal variances in MH in finite dimensions and relate them to the high-dimensional scaling theory.</p></li>
+<li><p><strong>Detailed Balance for MH.</strong> Prove Theorem <strong>?@thm-mh-detailed-balance</strong> rigorously, including the treatment of sets where ((x) q(x,y) = 0) and verifying measurability.</p></li>
+<li><p><strong>Irreducibility for Random-Walk MH.</strong> For a random-walk MH algorithm on (^d) with Gaussian proposal and target density strictly positive and continuous on (^d), prove that the chain is ()-irreducible. Explain how this, together with drift and minorization conditions from Module 5 (see Theorem <strong>?@thm-geom-ergodicity-drift-minorization</strong>), leads to convergence as in Theorem <strong>?@thm-mh-convergence</strong>.</p></li>
+<li><p><strong>Geometric Ergodicity and Heavy Tails.</strong> Consider a target distribution with polynomially decaying tails and a random-walk MH with Gaussian proposals. Investigate whether the chain satisfies a drift condition that implies geometric ergodicity, and relate your findings to the assumptions of Theorem <strong>?@thm-geom-ergodicity-drift-minorization</strong>.</p></li>
+<li><p><strong>Diffusion Limit Sketch.</strong> Outline the diffusion limit argument leading to the 0.234 optimal acceptance rate for high-dimensional random-walk MH, identifying the main probabilistic tools used, and connect your argument to Theorem <strong>?@thm-mh-optimal-scaling</strong>.</p></li>
+<li><p><strong>Practical Tuning.</strong> Discuss heuristic rules for tuning proposal variances in MH in finite dimensions and relate them to the high-dimensional scaling theory and the qualitative conclusions of Theorem <strong>?@thm-mh-optimal-scaling</strong>.</p></li>
 </ol>
 
 

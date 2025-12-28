@@ -438,8 +438,8 @@ q^* \in \arg\min_{q \in \mathcal{Q}} \operatorname{KL}\bigl(q \Vert p(\cdot \mid
                   - \mathbb{E}_q\bigl[ \log q(\theta) \bigr].
 \]</span></p>
 <p>We will show that maximizing <span class="math inline">\(\mathcal{L}(q)\)</span> is equivalent to minimizing <span class="math inline">\(\operatorname{KL}\bigl(q \Vert p(\cdot \mid x)\bigr)\)</span>.</p>
-<div class="theorem">
-<p><strong>Theorem 9.1 (ELBO–KL Decomposition).</strong></p>
+<div id="thm-elbo-kl" class="theorem">
+<p><span class="theorem-title"><strong>Theorem 1</strong></span> <strong>Theorem 9.1 (ELBO–KL Decomposition).</strong></p>
 <p>For any density <span class="math inline">\(q\)</span> such that <span class="math inline">\(\operatorname{KL}\bigl(q \Vert p(\cdot \mid x)\bigr) &lt; \infty\)</span>, we have</p>
 <p><span class="math display">\[
 \log p(x) = \mathcal{L}(q)
@@ -503,8 +503,8 @@ q^* \in \arg\min_{q \in \mathcal{Q}} \operatorname{KL}\bigl(q \Vert p(\cdot \mid
   q_j \ge 0, \; \int q_j(\theta_j)\, d\theta_j = 1.
 \]</span></p>
 <p>Exact joint optimization is often difficult, but we can use <strong>coordinate ascent</strong>: repeatedly optimize <span class="math inline">\(\mathcal{L}(q)\)</span> with respect to a single factor <span class="math inline">\(q_j\)</span>, holding the others fixed. The optimal <span class="math inline">\(q_j\)</span> has a closed form.</p>
-<div class="theorem">
-<p><strong>Theorem 9.2 (Optimal Mean-Field Factor Updates).</strong></p>
+<div id="thm-mean-field-cavi" class="theorem">
+<p><span class="theorem-title"><strong>Theorem 2</strong></span> <strong>Theorem 9.2 (Optimal Mean-Field Factor Updates).</strong></p>
 <p>Fix <span class="math inline">\(q_{-j}(\theta_{-j}) = \prod_{k \ne j} q_k(\theta_k)\)</span> and consider <span class="math inline">\(q_j\)</span> varying over densities on <span class="math inline">\(\Theta_j\)</span>. Then, up to multiplicative normalization,</p>
 <p><span class="math display">\[
 \log q_j^*(\theta_j)
@@ -635,8 +635,8 @@ q(\theta_1, \theta_2) = q_1(\theta_1) q_2(\theta_2),
 <section id="problem-set-9-representative-problems" class="level2">
 <h2 class="anchored" data-anchor-id="problem-set-9-representative-problems">5. Problem Set 9 (Representative Problems)</h2>
 <ol type="1">
-<li><p><strong>ELBO Identity (Measure-Theoretic Proof).</strong> Prove Theorem 9.1 in full generality using probability measures <span class="math inline">\(P\)</span> and <span class="math inline">\(Q\)</span> and Radon–Nikodym derivatives, explicitly checking conditions under which termwise integration and changes of measure are justified.</p></li>
-<li><p><strong>CAVI Derivation with Functional Analysis.</strong> Re-derive Theorem 9.2 using functional-analytic language (e.g., viewing the space of densities as a convex subset of <span class="math inline">\(L^1\)</span>), and show that the ELBO is strictly concave in each factor <span class="math inline">\(q_j\)</span> when <span class="math inline">\(p(\theta,x)\)</span> is strictly positive.</p></li>
+<li><p><strong>ELBO Identity (Measure-Theoretic Proof).</strong> Prove Theorem <a href="#thm-elbo-kl" class="quarto-xref">Theorem&nbsp;1</a> in full generality using probability measures <span class="math inline">\(P\)</span> and <span class="math inline">\(Q\)</span> and Radon–Nikodym derivatives, explicitly checking conditions under which termwise integration and changes of measure are justified.</p></li>
+<li><p><strong>CAVI Derivation with Functional Analysis.</strong> Re-derive Theorem <a href="#thm-mean-field-cavi" class="quarto-xref">Theorem&nbsp;2</a> using functional-analytic language (e.g., viewing the space of densities as a convex subset of <span class="math inline">\(L^1\)</span>), and show that the ELBO is strictly concave in each factor <span class="math inline">\(q_j\)</span> when <span class="math inline">\(p(\theta,x)\)</span> is strictly positive.</p></li>
 <li><p><strong>VI in a Conjugate Model.</strong> For the Normal–Normal model with known variance, work out a variational approximation in which <span class="math inline">\(q\)</span> is restricted to a Normal family. Verify that the variational optimum coincides with the exact posterior, and compute the ELBO at the optimum.</p></li>
 <li><p><strong>Bias in a Correlated Gaussian Posterior.</strong> Consider a bivariate Normal posterior <span class="math inline">\(N_2(m, \Sigma)\)</span> with nonzero off-diagonal entries. Approximate it by a mean-field product <span class="math inline">\(q(\theta_1,\theta_2) = q_1(\theta_1) q_2(\theta_2)\)</span> with <span class="math inline">\(q_j\)</span> univariate Normals, and explicitly compute <span class="math inline">\(q_1, q_2\)</span> and the resulting approximation error in means and variances.</p></li>
 <li><p><strong>VI vs MCMC in High Dimensions.</strong> Consider a high-dimensional Bayesian logistic regression model. Discuss qualitatively and, where possible, quantitatively how VI and MCMC scale with dimension and sample size. In particular, relate the computational complexity of CAVI updates to that of one MCMC sweep (e.g., random-walk MH or HMC), and discuss the implications for bias and variance.</p></li>

@@ -69,6 +69,35 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <link rel="stylesheet" href="../styles.css">
 </head>
@@ -303,14 +332,14 @@ ul.task-list li input[type="checkbox"] {
   <ul class="collapse">
   <li><a href="#posterior-predictive-checks" id="toc-posterior-predictive-checks" class="nav-link" data-scroll-target="#posterior-predictive-checks">1. Posterior Predictive Checks</a>
   <ul class="collapse">
-  <li><a href="#posterior-predictive-distribution" id="toc-posterior-predictive-distribution" class="nav-link" data-scroll-target="#posterior-predictive-distribution">1.1 Posterior Predictive Distribution</a></li>
-  <li><a href="#test-statistics-and-discrepancy-measures" id="toc-test-statistics-and-discrepancy-measures" class="nav-link" data-scroll-target="#test-statistics-and-discrepancy-measures">1.2 Test Statistics and Discrepancy Measures</a></li>
+  <li><a href="#def-posterior-predictive" id="toc-def-posterior-predictive" class="nav-link" data-scroll-target="#def-posterior-predictive">1.1 Posterior Predictive Distribution</a></li>
+  <li><a href="#def-ppc" id="toc-def-ppc" class="nav-link" data-scroll-target="#def-ppc">1.2 Test Statistics and Discrepancy Measures</a></li>
   <li><a href="#interpretation" id="toc-interpretation" class="nav-link" data-scroll-target="#interpretation">1.3 Interpretation</a></li>
   </ul></li>
   <li><a href="#sensitivity-to-priors-and-bayesian-robustness" id="toc-sensitivity-to-priors-and-bayesian-robustness" class="nav-link" data-scroll-target="#sensitivity-to-priors-and-bayesian-robustness">2. Sensitivity to Priors and Bayesian Robustness</a>
   <ul class="collapse">
-  <li><a href="#local-sensitivity" id="toc-local-sensitivity" class="nav-link" data-scroll-target="#local-sensitivity">2.1 Local Sensitivity</a></li>
-  <li><a href="#global-sensitivity-and-robust-priors" id="toc-global-sensitivity-and-robust-priors" class="nav-link" data-scroll-target="#global-sensitivity-and-robust-priors">2.2 Global Sensitivity and Robust Priors</a></li>
+  <li><a href="#def-local-sensitivity" id="toc-def-local-sensitivity" class="nav-link" data-scroll-target="#def-local-sensitivity">2.1 Local Sensitivity</a></li>
+  <li><a href="#def-eps-contamination" id="toc-def-eps-contamination" class="nav-link" data-scroll-target="#def-eps-contamination">2.2 Global Sensitivity and Robust Priors</a></li>
   <li><a href="#robustness-criteria" id="toc-robustness-criteria" class="nav-link" data-scroll-target="#robustness-criteria">2.3 Robustness Criteria</a></li>
   </ul></li>
   <li><a href="#prior-elicitation" id="toc-prior-elicitation" class="nav-link" data-scroll-target="#prior-elicitation">3. Prior Elicitation</a>
@@ -351,14 +380,18 @@ ul.task-list li input[type="checkbox"] {
 <p>This module focuses on tools for assessing the adequacy of Bayesian models: posterior predictive checks, sensitivity to priors, prior elicitation, and robustness analyses.</p>
 <section id="posterior-predictive-checks" class="level2">
 <h2 class="anchored" data-anchor-id="posterior-predictive-checks">1. Posterior Predictive Checks</h2>
-<section id="posterior-predictive-distribution" class="level3">
-<h3 class="anchored" data-anchor-id="posterior-predictive-distribution">1.1 Posterior Predictive Distribution</h3>
-<p>Given data (x), prior (), and likelihood (p(x )), the <strong>posterior predictive distribution</strong> for replicated data (X_{}) is [ p(x_{} x) = p(x_{} ) , (dx). ]</p>
+<section id="def-posterior-predictive" class="level3">
+<h3 class="anchored" data-anchor-id="def-posterior-predictive">1.1 Posterior Predictive Distribution</h3>
+<p>Given data (x), prior (), and likelihood (p(x )), the <strong>posterior predictive distribution</strong> for replicated data (X_{}) is <span class="math display">\[
+p(x_{\text{rep}} \mid x) = \int p(x_{\text{rep}} \mid \theta) \, \Pi(d\theta \mid x).
+\]</span></p>
 </section>
-<section id="test-statistics-and-discrepancy-measures" class="level3">
-<h3 class="anchored" data-anchor-id="test-statistics-and-discrepancy-measures">1.2 Test Statistics and Discrepancy Measures</h3>
+<section id="def-ppc" class="level3">
+<h3 class="anchored" data-anchor-id="def-ppc">1.2 Test Statistics and Discrepancy Measures</h3>
 <p>Choose a test statistic or discrepancy function (T(x, )) capturing aspects of the data or model of interest (e.g., tail behavior, dispersion).</p>
-<p>The posterior predictive p-value is [ p_{} = ( T(X_{}, ) T(x, ) x ), ] where the probability is with respect to the joint posterior predictive distribution of ((X_{}, )).</p>
+<p>The posterior predictive p-value is <span class="math display">\[
+p_{\text{ppc}} = \mathbb{P}( T(X_{\text{rep}}, \theta) \ge T(x, \theta) \mid x ),
+\]</span> where the probability is with respect to the joint posterior predictive distribution of ((X_{}, )).</p>
 </section>
 <section id="interpretation" class="level3">
 <h3 class="anchored" data-anchor-id="interpretation">1.3 Interpretation</h3>
@@ -367,15 +400,24 @@ ul.task-list li input[type="checkbox"] {
 </section>
 <section id="sensitivity-to-priors-and-bayesian-robustness" class="level2">
 <h2 class="anchored" data-anchor-id="sensitivity-to-priors-and-bayesian-robustness">2. Sensitivity to Priors and Bayesian Robustness</h2>
-<section id="local-sensitivity" class="level3">
-<h3 class="anchored" data-anchor-id="local-sensitivity">2.1 Local Sensitivity</h3>
-<p>Consider posterior expectations (_) as functions of prior hyperparameters (). Local sensitivity analysis studies derivatives [ [g() x; ]. ]</p>
-<p>These derivatives can be expressed in terms of posterior covariances between (g()) and score functions of the prior.</p>
+<section id="def-local-sensitivity" class="level3">
+<h3 class="anchored" data-anchor-id="def-local-sensitivity">2.1 Local Sensitivity</h3>
+<p>Consider posterior expectations (_) as functions of prior hyperparameters (). Local sensitivity analysis studies derivatives <span class="math display">\[
+\frac{\partial}{\partial \eta} \mathbb{E}[g(\theta) \mid x; \eta].
+\]</span></p>
+<p>Writing the posterior under prior density (()) as <span class="math display">\[
+\Pi(d\theta \mid x; \eta) = \frac{p(x \mid \theta) \pi(\theta \mid \eta)}{m(x; \eta)} \, d\theta,
+\]</span> one can differentiate under the integral sign (under suitable regularity conditions) to obtain the identity <span class="math display">\[
+\frac{\partial}{\partial \eta} \mathbb{E}[g(\theta) \mid x; \eta]
+  = \operatorname{Cov}_\Pi\bigl(g(\theta), \partial_\eta \log \pi(\theta \mid \eta) \mid x; \eta\bigr),
+\]</span> which expresses local sensitivity in terms of a posterior covariance between (g()) and the prior score function.</p>
 </section>
-<section id="global-sensitivity-and-robust-priors" class="level3">
-<h3 class="anchored" data-anchor-id="global-sensitivity-and-robust-priors">2.2 Global Sensitivity and Robust Priors</h3>
+<section id="def-eps-contamination" class="level3">
+<h3 class="anchored" data-anchor-id="def-eps-contamination">2.2 Global Sensitivity and Robust Priors</h3>
 <ul>
-<li><strong>()-contamination priors:</strong> [ _= (1-) _0 + Q, ] where (Q) represents a contaminating distribution.</li>
+<li><strong>()-contamination priors:</strong> <span class="math display">\[
+\Pi_\varepsilon = (1-\varepsilon) \Pi_0 + \varepsilon Q,
+\]</span> where (Q) represents a contaminating distribution.</li>
 <li>Study the range of posterior summaries as () varies, assessing robustness to prior perturbations.</li>
 </ul>
 </section>
@@ -417,9 +459,9 @@ ul.task-list li input[type="checkbox"] {
 <section id="problem-set-13-representative-problems" class="level2">
 <h2 class="anchored" data-anchor-id="problem-set-13-representative-problems">5. Problem Set 13 (Representative Problems)</h2>
 <ol type="1">
-<li><p><strong>Posterior Predictive Check for Poisson.</strong> For a Poisson–Gamma model, derive the posterior predictive distribution and construct a test statistic sensitive to overdispersion. Analyze how the posterior predictive p-value behaves when data are generated from an overdispersed process.</p></li>
-<li><p><strong>Local Sensitivity Derivative.</strong> Let the prior density be (()). Derive an expression for (/, [g() x; ]) in terms of posterior expectations and derivatives of (()).</p></li>
-<li><p><strong>()-Contamination Analysis.</strong> Implement an ()-contamination analysis in a simple Normal model with unknown mean and known variance. Study how posterior means and credible intervals change as () varies.</p></li>
+<li><p><strong>Posterior Predictive Check for Poisson.</strong> For a Poisson–Gamma model, derive the posterior predictive distribution (Definition <strong>?@def-posterior-predictive</strong>) and construct a test statistic sensitive to overdispersion. Analyze how the posterior predictive p-value (Definition <strong>?@def-ppc</strong>) behaves when data are generated from an overdispersed process.</p></li>
+<li><p><strong>Local Sensitivity Derivative.</strong> Let the prior density be (()). Derive an expression for (/, [g() x; ]) in terms of posterior expectations and derivatives of (()), making precise the covariance identity in Definition <strong>?@def-local-sensitivity</strong>.</p></li>
+<li><p><strong>()-Contamination Analysis.</strong> Implement an ()-contamination analysis (Definition <strong>?@def-eps-contamination</strong>) in a simple Normal model with unknown mean and known variance. Study how posterior means and credible intervals change as () varies.</p></li>
 <li><p><strong>Robust Prior Construction.</strong> Propose a heavy-tailed prior for a location parameter (e.g., Cauchy) and analyze its robustness properties compared to a Normal prior, particularly in the presence of outliers.</p></li>
 <li><p><strong>Prior Elicitation Exercise.</strong> In a Beta–Binomial context, suppose an expert believes the success probability lies between 0.3 and 0.7 with high probability and that 10 pseudo-observations are appropriate. Derive hyperparameters ((, )) consistent with these beliefs and discuss the resulting prior density.</p></li>
 </ol>

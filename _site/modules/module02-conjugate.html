@@ -69,6 +69,35 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <link rel="stylesheet" href="../styles.css">
 </head>
@@ -304,12 +333,12 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#exponential-family-models" id="toc-exponential-family-models" class="nav-link" data-scroll-target="#exponential-family-models">1. Exponential Family Models</a>
   <ul class="collapse">
   <li><a href="#definition-2.1-canonical-exponential-family" id="toc-definition-2.1-canonical-exponential-family" class="nav-link" data-scroll-target="#definition-2.1-canonical-exponential-family">Definition 2.1 (Canonical Exponential Family)</a></li>
-  <li><a href="#proposition-2.2-moments-via-log-partition-function" id="toc-proposition-2.2-moments-via-log-partition-function" class="nav-link" data-scroll-target="#proposition-2.2-moments-via-log-partition-function">Proposition 2.2 (Moments via Log-Partition Function)</a></li>
+  <li><a href="#prop-expfam-moments" id="toc-prop-expfam-moments" class="nav-link" data-scroll-target="#prop-expfam-moments">Proposition 2.2 (Moments via Log-Partition Function)</a></li>
   </ul></li>
   <li><a href="#conjugate-priors-in-exponential-families" id="toc-conjugate-priors-in-exponential-families" class="nav-link" data-scroll-target="#conjugate-priors-in-exponential-families">2. Conjugate Priors in Exponential Families</a>
   <ul class="collapse">
   <li><a href="#definition-2.3-conjugate-prior" id="toc-definition-2.3-conjugate-prior" class="nav-link" data-scroll-target="#definition-2.3-conjugate-prior">Definition 2.3 (Conjugate Prior)</a></li>
-  <li><a href="#theorem-2.4-general-conjugate-prior-for-exponential-families" id="toc-theorem-2.4-general-conjugate-prior-for-exponential-families" class="nav-link" data-scroll-target="#theorem-2.4-general-conjugate-prior-for-exponential-families">Theorem 2.4 (General Conjugate Prior for Exponential Families)</a></li>
+  <li><a href="#thm-expfam-conjugate" id="toc-thm-expfam-conjugate" class="nav-link" data-scroll-target="#thm-expfam-conjugate">Theorem 2.4 (General Conjugate Prior for Exponential Families)</a></li>
   <li><a href="#assumptions" id="toc-assumptions" class="nav-link" data-scroll-target="#assumptions">Assumptions</a></li>
   </ul></li>
   <li><a href="#classical-conjugate-pairs" id="toc-classical-conjugate-pairs" class="nav-link" data-scroll-target="#classical-conjugate-pairs">3. Classical Conjugate Pairs</a>
@@ -366,13 +395,32 @@ ul.task-list li input[type="checkbox"] {
 <li>a log-partition function (A: ),</li>
 <li>a base density (h: [0,)),</li>
 </ul>
-<p>such that [ p_(x) = h(x) { ^T(x) - A() }, , ; x . ]</p>
+<p>such that <span class="math display">\[
+p_\theta(x) = h(x) \exp\{ \theta^\top T(x) - A(\theta) \}, \quad \theta \in \Theta, \; x \in \mathcal{X}.
+\]</span></p>
 <p>We assume (A() &lt; ) for () and that () is open.</p>
 </section>
-<section id="proposition-2.2-moments-via-log-partition-function" class="level3">
-<h3 class="anchored" data-anchor-id="proposition-2.2-moments-via-log-partition-function">Proposition 2.2 (Moments via Log-Partition Function)</h3>
-<p>Assume differentiability of (A). Then [ A() = <em>, ^2 A() = </em>(T(X)). ]</p>
-<p><em>Proof idea:</em> Differentiate the normalizing identity (p_(x),(dx) = 1) with respect to ().</p>
+<section id="prop-expfam-moments" class="level3">
+<h3 class="anchored" data-anchor-id="prop-expfam-moments">Proposition 2.2 (Moments via Log-Partition Function)</h3>
+<p>Assume differentiability of (A) and sufficient regularity to justify differentiating under the integral sign (e.g., dominated convergence conditions). Then <span class="math display">\[
+\nabla A(\theta) = \mathbb{E}_\theta[T(X)], \quad \nabla^2 A(\theta) = \operatorname{Var}_\theta(T(X)).
+\]</span></p>
+<p><em>Proof:</em> By definition of (A), the normalizing identity is <span class="math display">\[
+\int_\mathcal{X} h(x) \exp\{ \theta^\top T(x) - A(\theta) \}\, \lambda(dx) = 1, \quad \theta \in \Theta.
+\]</span> Differentiate both sides with respect to (<em>j), the (j)-th coordinate of (). The left-hand side gives <span class="math display">\[
+\int_\mathcal{X} h(x) \exp\{ \theta^\top T(x) - A(\theta) \}\, (T_j(x) - \partial_{\theta_j} A(\theta))\, \lambda(dx) = 0,
+\]</span> since the derivative of (-A()) contributes (-</em>{<em>j} A()). Recognizing the density (p</em>(x) = h(x) { ^T(x) - A() }), we rewrite this as <span class="math display">\[
+\int_\mathcal{X} (T_j(x) - \partial_{\theta_j} A(\theta))\, p_\theta(x)\, \lambda(dx) = 0,
+\]</span> so <span class="math display">\[
+\partial_{\theta_j} A(\theta) = \int_\mathcal{X} T_j(x) p_\theta(x)\, \lambda(dx) = \mathbb{E}_\theta[T_j(X)].
+\]</span> This yields (A() = <em>). Differentiating once more gives <span class="math display">\[
+\partial_{\theta_k} \partial_{\theta_j} A(\theta)
+  = \partial_{\theta_k} \mathbb{E}_\theta[T_j(X)]
+  = \int_\mathcal{X} T_j(x) (T_k(x) - \partial_{\theta_k} A(\theta))\, p_\theta(x)\, \lambda(dx).
+\]</span> Substituting (</em>{<em>k} A() = </em>) yields <span class="math display">\[
+\partial_{\theta_k} \partial_{\theta_j} A(\theta)
+  = \mathbb{E}_\theta[T_j(X) T_k(X)] - \mathbb{E}_\theta[T_j(X)]\, \mathbb{E}_\theta[T_k(X)],
+\]</span> which is the ((j,k))-entry of the covariance matrix of (T(X)). Hence (^2 A() = _(T(X))). ()</p>
 </section>
 </section>
 <section id="conjugate-priors-in-exponential-families" class="level2">
@@ -381,11 +429,35 @@ ul.task-list li input[type="checkbox"] {
 <h3 class="anchored" data-anchor-id="definition-2.3-conjugate-prior">Definition 2.3 (Conjugate Prior)</h3>
 <p>Let ({P_: }) be a parametric family of distributions on ((, )). A family of priors ({<em>{}: H}) on ((, )) is <strong>conjugate</strong> for ({P</em>}) if for any prior (<em>{}) and observed data (x), the posterior ((x)) is again in the same family, i.e.&nbsp;equals (</em>{‘}) for some updated hyperparameter (’).</p>
 </section>
-<section id="theorem-2.4-general-conjugate-prior-for-exponential-families" class="level3">
-<h3 class="anchored" data-anchor-id="theorem-2.4-general-conjugate-prior-for-exponential-families">Theorem 2.4 (General Conjugate Prior for Exponential Families)</h3>
-<p>Consider an exponential family (p_(x) = h(x){^T(x) - A()}). For hyperparameters (_0 ^k) and (_0 &gt; 0), define a prior density on () with respect to some reference measure () by [ (_0, _0) { _0^- _0 A() }. ]</p>
-<p>Let (X_1, , X_n) be conditionally i.i.d. given () from (p_). Then the posterior density is [ (x_{1:n}) { (<em>0 + </em>{i=1}^n T(x_i))^- (_0 + n) A() }, ] i.e.&nbsp;the same functional form with updated hyperparameters [ _n = <em>0 + </em>{i=1}^n T(x_i), _n = _0 + n. ]</p>
-<p><em>Proof:</em> Compute the joint density of ((, x_{1:n})) up to normalizing constants: [ (<em>0, <em>0) </em>{i=1}^n p</em>(x_i) { _0^- <em>0 A() + </em>{i=1}^n (^T(x_i) - A()) }. ] Group terms in () and (A()) to obtain the posterior kernel.</p>
+<section id="thm-expfam-conjugate" class="level3">
+<h3 class="anchored" data-anchor-id="thm-expfam-conjugate">Theorem 2.4 (General Conjugate Prior for Exponential Families)</h3>
+<p>Consider an exponential family (p_(x) = h(x){^T(x) - A()}). For hyperparameters (_0 ^k) and (_0 &gt; 0), define a prior density on () with respect to some reference measure () by <span class="math display">\[
+\pi(\theta \mid \eta_0, \tau_0) \propto \exp\{ \eta_0^\top \theta - \tau_0 A(\theta) \}.
+\]</span></p>
+<p>Let (X_1, , X_n) be conditionally i.i.d. given () from (p_). Then the posterior density is <span class="math display">\[
+\pi(\theta \mid x_{1:n}) \propto \exp\big\{ (\eta_0 + \textstyle\sum_{i=1}^n T(x_i))^\top \theta - (\tau_0 + n) A(\theta) \big\},
+\]</span> i.e.&nbsp;the same functional form with updated hyperparameters <span class="math display">\[
+\eta_n = \eta_0 + \sum_{i=1}^n T(x_i), \quad \tau_n = \tau_0 + n.
+\]</span></p>
+<p><em>Proof:</em> The prior density is <span class="math display">\[
+\pi(\theta \mid \eta_0, \tau_0) \propto \exp\{ \eta_0^\top \theta - \tau_0 A(\theta) \}.
+\]</span> The likelihood for conditionally i.i.d. observations is <span class="math display">\[
+\prod_{i=1}^n p_\theta(x_i)
+  = \prod_{i=1}^n h(x_i) \exp\{ \theta^\top T(x_i) - A(\theta) \}
+  = \Bigl( \prod_{i=1}^n h(x_i) \Bigr)
+    \exp\Bigl\{ \theta^\top \sum_{i=1}^n T(x_i) - n A(\theta) \Bigr\}.
+\]</span> The joint density of ((, x_{1:n})), up to a factor depending only on (x_{1:n}), is <span class="math display">\[
+\pi(\theta \mid \eta_0, \tau_0) \prod_{i=1}^n p_\theta(x_i)
+\propto \exp\Bigl\{ \eta_0^\top \theta - \tau_0 A(\theta)
+            + \theta^\top \sum_{i=1}^n T(x_i) - n A(\theta) \Bigr\}.
+\]</span> Grouping terms in () and (A()) gives <span class="math display">\[
+\eta_0^\top \theta + \theta^\top \sum_{i=1}^n T(x_i)
+  = (\eta_0 + \textstyle\sum_{i=1}^n T(x_i))^\top \theta,
+\]</span> and <span class="math display">\[
+-\tau_0 A(\theta) - n A(\theta) = - (\tau_0 + n) A(\theta).
+\]</span> Thus the posterior kernel has the claimed exponential family form with updated hyperparameters <span class="math display">\[
+\eta_n = \eta_0 + \sum_{i=1}^n T(x_i), \qquad \tau_n = \tau_0 + n.
+\]</span> Finiteness of the normalizing constant (posterior propriety) follows from suitable integrability conditions on (A), (_0), and (_0). ()</p>
 </section>
 <section id="assumptions" class="level3">
 <h3 class="anchored" data-anchor-id="assumptions">Assumptions</h3>
@@ -401,21 +473,62 @@ ul.task-list li input[type="checkbox"] {
 <section id="betabinomial-model" class="level3">
 <h3 class="anchored" data-anchor-id="betabinomial-model">3.1 Beta–Binomial Model</h3>
 <ul>
-<li>Likelihood: (X p (n,p)), [ (X=x p) = p<sup>x(1-p)</sup>{n-x}, x=0,1,,n. ]</li>
-<li>Prior: (p (, )), density [ (p) = p<sup>{}(1-p)</sup>{}, &lt;p&lt;1. ]</li>
+<li>Likelihood: (X p (n,p)), <span class="math display">\[
+\mathbb{P}(X=x \mid p) = \binom{n}{x} p^x(1-p)^{n-x}, \quad x=0,1,\dots,n.
+\]</span></li>
+<li>Prior: (p (, )), density <span class="math display">\[
+\pi(p) = \frac{1}{B(\alpha, \beta)} p^{\alpha-1}(1-p)^{\beta-1}, \quad 0&lt;p&lt;1.
+\]</span></li>
 </ul>
-<p><strong>Theorem 2.5 (Beta–Binomial Conjugacy).</strong> The posterior is [ p x (+ x, + n - x). ]</p>
-<p><em>Proof:</em> Combine likelihood and prior, collect exponents of (p) and (1-p), and read off the Beta kernel.</p>
-<p><strong>Posterior Predictive Distribution.</strong> For a new count (X_{} p (m,p)), the posterior predictive mass function is [ (X_{} = k x) = _0^1 p<sup>k(1-p)</sup>{m-k} , (p +x, + n - x), dp. ] This integral evaluates to a Beta–Binomial distribution; compute explicitly using Beta function identities.</p>
+<p><strong>Theorem 2.5 (Beta–Binomial Conjugacy).</strong> {#thm-beta-binomial}</p>
+<p>The posterior is <span class="math display">\[
+p \mid x \sim \operatorname{Beta}(\alpha + x, \beta + n - x).
+\]</span></p>
+<p><em>Proof:</em> The likelihood is <span class="math display">\[
+\mathbb{P}(X=x \mid p) = \binom{n}{x} p^x (1-p)^{n-x},
+\]</span> and the prior density is <span class="math display">\[
+\pi(p) = \frac{1}{B(\alpha, \beta)} p^{\alpha-1}(1-p)^{\beta-1}, \quad 0&lt;p&lt;1.
+\]</span> Bayes’ theorem gives the posterior density (up to a normalizing constant) as <span class="math display">\[
+\pi(p \mid x)
+  \propto \mathbb{P}(X=x \mid p) \, \pi(p)
+  \propto p^x (1-p)^{n-x} \, p^{\alpha-1} (1-p)^{\beta-1}
+  = p^{\alpha + x - 1} (1-p)^{\beta + n - x - 1}.
+\]</span> This is exactly the kernel of a ((+ x, + n - x)) density, so after normalization we obtain the stated result. ()</p>
+<p><strong>Posterior Predictive Distribution.</strong> For a new count (X_{} p (m,p)), the posterior predictive mass function is <span class="math display">\[
+\mathbb{P}(X_{\text{new}} = k \mid x)
+= \int_0^1 \binom{m}{k} p^k(1-p)^{m-k} \, \operatorname{Beta}(p \mid \alpha+x, \beta + n - x)\, dp.
+\]</span> This integral evaluates to a Beta–Binomial distribution; compute explicitly using Beta function identities.</p>
 </section>
 <section id="gammapoisson-model" class="level3">
 <h3 class="anchored" data-anchor-id="gammapoisson-model">3.2 Gamma–Poisson Model</h3>
 <ul>
 <li>Likelihood: (X_i ()) i.i.d., ((X_i=k ) = e^{-} ^k / k!).</li>
-<li>Prior: ((, )) (shape–rate), density [ () = ^{} e^{-}, &gt;0. ]</li>
+<li>Prior: ((, )) (shape–rate), density <span class="math display">\[
+\pi(\lambda) = \frac{\beta^{\alpha}}{\Gamma(\alpha)} \lambda^{\alpha-1} e^{-\beta \lambda}, \quad \lambda&gt;0.
+\]</span></li>
 </ul>
-<p><strong>Theorem 2.6 (Gamma–Poisson Conjugacy).</strong> If (X_1,,X_n ) i.i.d. Poisson, the posterior is [ x_{1:n} (+ _{i=1}^n x_i,; + n). ]</p>
-<p><strong>Posterior Predictive.</strong> For future count (X_{} ()), derive the Negative Binomial predictive distribution by integrating out ().</p>
+<p><strong>Theorem 2.6 (Gamma–Poisson Conjugacy).</strong> {#thm-gamma-poisson}</p>
+<p>If (X_1,,X_n ) are i.i.d. Poisson, the posterior is <span class="math display">\[
+\lambda \mid x_{1:n} \sim \operatorname{Gamma}\Big(\alpha + \sum_{i=1}^n x_i,\; \beta + n\Big).
+\]</span></p>
+<p><em>Proof:</em> The joint likelihood is <span class="math display">\[
+\prod_{i=1}^n \mathbb{P}(X_i = x_i \mid \lambda)
+  = \prod_{i=1}^n e^{-\lambda} \frac{\lambda^{x_i}}{x_i!}
+  = e^{-n\lambda} \lambda^{\sum_{i=1}^n x_i} \prod_{i=1}^n \frac{1}{x_i!}.
+\]</span> The prior density is <span class="math display">\[
+\pi(\lambda)
+  = \frac{\beta^{\alpha}}{\Gamma(\alpha)} \lambda^{\alpha-1} e^{-\beta \lambda}, \quad \lambda&gt;0.
+\]</span> Thus the posterior kernel is <span class="math display">\[
+\pi(\lambda \mid x_{1:n})
+  \propto e^{-n\lambda} \lambda^{\sum x_i} \, \lambda^{\alpha-1} e^{-\beta \lambda}
+  = \lambda^{\alpha + \sum x_i - 1} e^{-(\beta + n) \lambda}, \quad \lambda&gt;0,
+\]</span> which is exactly the kernel of a ((+ x_i, + n)) density. Normalization gives the stated posterior. ()</p>
+<p><strong>Posterior Predictive.</strong> For a future count (X_{} ()), the posterior predictive mass function is <span class="math display">\[
+\mathbb{P}(X_{\text{new}} = k \mid x_{1:n})
+  = \int_0^\infty \mathbb{P}(X_{\text{new}} = k \mid \lambda) \, \pi(\lambda \mid x_{1:n})\, d\lambda,
+\]</span> which can be evaluated in closed form to yield a Negative Binomial distribution by using the Gamma function identity <span class="math display">\[
+\int_0^\infty \lambda^{a-1} e^{-b\lambda} d\lambda = \frac{\Gamma(a)}{b^a}.
+\]</span></p>
 </section>
 <section id="normalnormal-models" class="level3">
 <h3 class="anchored" data-anchor-id="normalnormal-models">3.3 Normal–Normal Models</h3>
@@ -430,8 +543,41 @@ ul.task-list li input[type="checkbox"] {
 <li>Likelihood: (Y_i N(, ^2)) i.i.d.</li>
 <li>Prior: (N(m_0, v_0)).</li>
 </ul>
-<p><strong>Theorem 2.7 (Normal–Normal Conjugacy, Known Variance).</strong> The posterior for () is [ y_{1:n} N(m_n, v_n), ] where [ v_n^{-1} = v_0^{-1} + , m_n = v_n ( v_0^{-1} m_0 + ). ]</p>
-<p><em>Proof:</em> Complete the square in the exponent of the joint density of () and (y_{1:n}).</p>
+<p><strong>Theorem 2.7 (Normal–Normal Conjugacy, Known Variance).</strong> {#thm-normal-normal-knownvar}</p>
+<p>The posterior for () is <span class="math display">\[
+\mu \mid y_{1:n} \sim N(m_n, v_n),
+\]</span> where <span class="math display">\[
+v_n^{-1} = v_0^{-1} + \frac{n}{\sigma^2},
+\quad m_n = v_n \Big( v_0^{-1} m_0 + \frac{n \bar{y}}{\sigma^2} \Big).
+\]</span></p>
+<p><em>Proof:</em> The likelihood is <span class="math display">\[
+p(y_{1:n} \mid \mu)
+  = \prod_{i=1}^n \frac{1}{\sqrt{2\pi \sigma^2}}
+     \exp\Bigl\{ -\frac{1}{2\sigma^2} (y_i - \mu)^2 \Bigr\}
+  \propto \exp\Bigl\{ -\frac{1}{2\sigma^2} \sum_{i=1}^n (y_i - \mu)^2 \Bigr\}.
+\]</span> The prior density is <span class="math display">\[
+\pi(\mu) \propto \exp\Bigl\{ -\frac{1}{2 v_0} (\mu - m_0)^2 \Bigr\}.
+\]</span> The posterior kernel is therefore <span class="math display">\[
+\pi(\mu \mid y_{1:n})
+  \propto \exp\Bigl\{ -\frac{1}{2\sigma^2} \sum_{i=1}^n (y_i - \mu)^2
+                      - \frac{1}{2 v_0} (\mu - m_0)^2 \Bigr\}.
+\]</span> Expand the quadratic terms in (). We have <span class="math display">\[
+\sum_{i=1}^n (y_i - \mu)^2
+  = \sum_{i=1}^n (y_i^2 - 2 y_i \mu + \mu^2)
+  = \sum_{i=1}^n y_i^2 - 2 \mu \sum_{i=1}^n y_i + n \mu^2.
+\]</span> Similarly, <span class="math display">\[
+(\mu - m_0)^2 = \mu^2 - 2 m_0 \mu + m_0^2.
+\]</span> Collecting coefficients of (^2) and () in the exponent, the posterior kernel is proportional to <span class="math display">\[
+\exp\Bigl\{ -\tfrac{1}{2} \Bigl( \Bigl( \tfrac{n}{\sigma^2} + \tfrac{1}{v_0} \Bigr) \mu^2
+      - 2 \Bigl( \tfrac{\sum y_i}{\sigma^2} + \tfrac{m_0}{v_0} \Bigr) \mu + \text{const} \Bigr) \Bigr\}.
+\]</span> Completing the square, <span class="math display">\[
+\Bigl( \tfrac{n}{\sigma^2} + \tfrac{1}{v_0} \Bigr) \mu^2
+  - 2 \Bigl( \tfrac{\sum y_i}{\sigma^2} + \tfrac{m_0}{v_0} \Bigr) \mu
+  = v_n^{-1} (\mu - m_n)^2 + \text{const},
+\]</span> where <span class="math display">\[
+v_n^{-1} = v_0^{-1} + \frac{n}{\sigma^2},
+\qquad m_n = v_n \Bigl( v_0^{-1} m_0 + \frac{n \bar{y}}{\sigma^2} \Bigr),
+\]</span> with ({y} = n^{-1} y_i). Thus the posterior is Normal with mean (m_n) and variance (v_n). ()</p>
 </section>
 </section>
 </section>
@@ -439,12 +585,16 @@ ul.task-list li input[type="checkbox"] {
 <h2 class="anchored" data-anchor-id="marginal-likelihood-and-bayes-factors">4. Marginal Likelihood and Bayes Factors</h2>
 <section id="definition-2.8-marginal-likelihood" class="level3">
 <h3 class="anchored" data-anchor-id="definition-2.8-marginal-likelihood">Definition 2.8 (Marginal Likelihood)</h3>
-<p>Given prior () and likelihood (p(x )), the <strong>marginal likelihood</strong> (or evidence) is [ m(x) = _p(x ), (d). ]</p>
+<p>Given prior () and likelihood (p(x )), the <strong>marginal likelihood</strong> (or evidence) is <span class="math display">\[
+m(x) = \int_\Theta p(x \mid \theta)\, \Pi(d\theta).
+\]</span></p>
 <p>This normalizing constant appears in Bayes’ theorem and is central to model comparison.</p>
 </section>
 <section id="definition-2.9-bayes-factor" class="level3">
 <h3 class="anchored" data-anchor-id="definition-2.9-bayes-factor">Definition 2.9 (Bayes Factor)</h3>
-<p>For two models (M_1, M_2) with priors (_1, <em>2) and marginal likelihoods (m_1(x), m_2(x)), the <strong>Bayes factor</strong> in favor of (M_1) over (M_2) is [ BF</em>{12}(x) = . ]</p>
+<p>For two models (M_1, M_2) with priors (_1, _2) and marginal likelihoods (m_1(x), m_2(x)), the <strong>Bayes factor</strong> in favor of (M_1) over (M_2) is <span class="math display">\[
+BF_{12}(x) = \frac{m_1(x)}{m_2(x)}.
+\]</span></p>
 </section>
 <section id="example-2.10-betabinomial-model-comparison" class="level3">
 <h3 class="anchored" data-anchor-id="example-2.10-betabinomial-model-comparison">Example 2.10 (Beta–Binomial Model Comparison)</h3>
@@ -462,10 +612,10 @@ ul.task-list li input[type="checkbox"] {
 <section id="problem-set-2-representative-problems" class="level2">
 <h2 class="anchored" data-anchor-id="problem-set-2-representative-problems">6. Problem Set 2 (Representative Problems)</h2>
 <ol type="1">
-<li><p><strong>General Conjugacy in Exponential Families.</strong> Prove Theorem 2.4 in full detail, including the case of multiple observations and verifying all measurability conditions.</p></li>
-<li><p><strong>Beta–Binomial Predictive Distribution.</strong> Derive the Beta–Binomial posterior predictive distribution explicitly and compute its mean and variance. Compare these to the plug-in predictive distribution using the posterior mean of (p).</p></li>
-<li><p><strong>Gamma–Poisson Predictive and Overdispersion.</strong> Show that the Gamma–Poisson predictive distribution is Negative Binomial and analyze its overdispersion relative to a Poisson with parameter equal to the posterior mean of ().</p></li>
-<li><p><strong>Normal–Normal with Unknown Variance.</strong> For the Normal model with unknown variance and conjugate Normal–Inverse-Gamma prior, derive the joint posterior of ((,^2)) and the marginal posterior of (). Identify the Student-t predictive distribution for future observations.</p></li>
+<li><p><strong>General Conjugacy in Exponential Families.</strong> Prove Theorem <strong>?@thm-expfam-conjugate</strong> in full detail, including the case of multiple observations and verifying all measurability conditions.</p></li>
+<li><p><strong>Beta–Binomial Predictive Distribution.</strong> Starting from Theorem <strong>?@thm-beta-binomial</strong>, derive the Beta–Binomial posterior predictive distribution explicitly and compute its mean and variance. Compare these to the plug-in predictive distribution using the posterior mean of (p).</p></li>
+<li><p><strong>Gamma–Poisson Predictive and Overdispersion.</strong> Using Theorem <strong>?@thm-gamma-poisson</strong>, show that the Gamma–Poisson predictive distribution is Negative Binomial and analyze its overdispersion relative to a Poisson with parameter equal to the posterior mean of ().</p></li>
+<li><p><strong>Normal–Normal with Unknown Variance.</strong> For the Normal model with unknown variance and conjugate Normal–Inverse-Gamma prior, derive the joint posterior of ((,^2)) and the marginal posterior of (). Relate your expression for the marginal posterior of () to the known-variance result in Theorem <strong>?@thm-normal-normal-knownvar</strong>, and identify the Student-t predictive distribution for future observations.</p></li>
 <li><p><strong>Bayes Factors with Conjugate Priors.</strong> In a normal mean testing problem with known variance, compute analytically the Bayes factor for testing (H_0: ) vs (H_1: ) using a Normal prior under (H_1). Compare the resulting evidence measure to the classical z-test p-value.</p></li>
 </ol>
 

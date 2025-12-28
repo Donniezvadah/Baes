@@ -18,49 +18,75 @@ This module derives the Metropolis–Hastings (MH) algorithm from detailed balan
 ### 1.2 Acceptance Probability
 
 Define the acceptance probability
-5959
+$$
  \alpha(x,y) = \min\left\{ 1, \frac{\pi(y) q(y,x)}{\pi(x) q(x,y)} \right\}
-5959
+$$
 when the ratio is well-defined and positive. On sets where \(\pi(x) q(x,y) = 0\), define \(\alpha(x,y)\) appropriately (e.g., 0) to obtain a measurable function.
 
 ### 1.3 MH Transition Kernel
 
 The Metropolis–Hastings transition kernel is
-5959
+$$
  K(x, dy) = q(x, dy) \alpha(x,y) + r(x) \, \delta_x(dy),
-5959
+$$
 where
-5959
+$$
  r(x) = 1 - \int_\mathsf{X} q(x, dy) \alpha(x,y)
-5959
+$$
 ensures that \(K(x, \cdot)\) is a probability measure. Here, \(\delta_x\) denotes the Dirac measure at \(x\).
 
 ## 2. Detailed Balance and Stationarity
 
-### Theorem 6.1 (Detailed Balance for MH)
+### Theorem 6.1 (Detailed Balance for MH) {#thm-mh-detailed-balance}
 
 Assume that \(q(x,y) > 0\) whenever \(\pi(x) \pi(y) > 0\). Then the MH kernel \(K\) satisfies detailed balance with respect to \(\pi\):
-5959
+$$
  \pi(dx) K(x, dy) = \pi(dy) K(y, dx).
-5959
+$$
 In particular, \(\pi\) is invariant for \(K\).
 
-*Proof:* For \(x \neq y\),
-5959
- \pi(dx) K(x, dy) = \pi(dx) q(x, dy) \alpha(x,y),
-5959
-5959
- \pi(dy) K(y, dx) = \pi(dy) q(y, dx) \alpha(y,x).
-5959
-By construction,
-5959
- \pi(x) q(x,y) \alpha(x,y) = \min\{ \pi(x) q(x,y), \pi(y) q(y,x) \}
-5959
-and similarly
-5959
- \pi(y) q(y,x) \alpha(y,x) = \min\{ \pi(y) q(y,x), \pi(x) q(x,y) \}.
-5959
-Hence these expressions are equal, implying detailed balance for off-diagonal transitions. The diagonal part ensures normalization and is automatically symmetric when integrated over sets. Therefore, detailed balance holds, and invariance follows by Lemma 5.3.
+*Proof:* We verify the kernel form of detailed balance,
+$$
+ \pi(dx) K(x, dy) = \pi(dy) K(y, dx),
+$$
+as equality of measures on \((\mathsf{X} \times \mathsf{X}, \mathcal{X} \otimes \mathcal{X})\). By definition,
+$$
+ K(x, dy) = q(x, dy) \alpha(x,y) + r(x) \, \delta_x(dy),
+$$
+so
+$$
+ \pi(dx) K(x, dy)
+  = \pi(dx) q(x, dy) \alpha(x,y) + \pi(dx) r(x) \, \delta_x(dy).
+$$
+The second term satisfies
+$$
+ \pi(dx) r(x) \, \delta_x(dy) = \pi(dy) r(y) \, \delta_y(dx),
+$$
+which is symmetric in \((x,y)\) by construction. Thus it remains to check symmetry of the off-diagonal part
+$$
+ \pi(dx) q(x, dy) \alpha(x,y).
+$$
+On the product set where \(\pi(x) q(x,y) > 0\) and \(\pi(y) q(y,x) > 0\), the Metropolis–Hastings acceptance probabilities satisfy
+$$
+ \alpha(x,y) = \min\left\{1, \frac{\pi(y) q(y,x)}{\pi(x) q(x,y)} \right\},
+ \qquad
+ \alpha(y,x) = \min\left\{1, \frac{\pi(x) q(x,y)}{\pi(y) q(y,x)} \right\}.
+$$
+Therefore,
+$$
+ \pi(x) q(x,y) \alpha(x,y)
+  = \min\{ \pi(x) q(x,y), \pi(y) q(y,x) \}
+  = \pi(y) q(y,x) \alpha(y,x).
+$$
+Since both sides are densities of the corresponding measures with respect to the product reference measure \(\mu(dx) \, \mu(dy)\), we have
+$$
+ \pi(dx) q(x, dy) \alpha(x,y) = \pi(dy) q(y, dx) \alpha(y,x)
+$$
+on this set. On the complement where \(\pi(x) q(x,y) = 0\) or \(\pi(y) q(y,x) = 0\), the acceptance probabilities are defined so that each side is zero, so equality still holds. Combining off-diagonal and diagonal parts gives
+$$
+ \pi(dx) K(x, dy) = \pi(dy) K(y, dx)
+$$
+as measures, i.e., detailed balance. In particular, \(\pi\) is invariant for \(K\) by Lemma 5.3. \(\square\)
 
 ## 3. Irreducibility, Aperiodicity, and Convergence
 
@@ -72,30 +98,30 @@ If the proposal kernel \(q\) is \(\nu\)-irreducible on the support of \(\pi\) (f
 
 MH chains are typically aperiodic provided there is a nonzero probability of remaining at the current state (e.g., via rejection). The self-transition probability \(r(x)\) ensures aperiodicity under mild conditions.
 
-### Theorem 6.2 (Convergence to Stationarity)
+### Theorem 6.2 (Convergence to Stationarity) {#thm-mh-convergence}
 
 Under irreducibility, aperiodicity, and positive recurrence, the MH chain converges in distribution to \(\pi\): for any initial distribution \(\mu_0\),
-5959
+$$
  \| \mu_0 K^n - \pi \|_{\text{TV}} \to 0 \quad \text{as } n \to \infty.
-5959
+$$
 
 Moreover, if suitable drift and minorization conditions hold, the convergence is geometric, and ergodic theorems and CLTs apply.
 
 ## 4. Optimal Scaling in High Dimensions
 
 Consider a sequence of target distributions \(\pi_d\) on \(\mathbb{R}^d\), e.g., i.i.d. product measures, and random-walk MH with Gaussian proposals of the form
-5959
+$$
  Y = X + \sqrt{\frac{\ell^2}{d}} Z, \quad Z \sim N_d(0, I_d).
-5959
+$$
 
-### Theorem 6.3 (Informal Optimal Scaling Result)
+### Theorem 6.3 (Informal Optimal Scaling Result) {#thm-mh-optimal-scaling}
 
 Under suitable regularity conditions (e.g., target is product of i.i.d. components with smooth log-density), the rescaled MH chain converges to a diffusion as \(d \to \infty\). The **optimal acceptance rate** maximizing the speed of this limiting diffusion is approximately
-5959
+$$
  \alpha^* \approx 0.234.
-5959
+$$
 
-*Idea of proof:* Show weak convergence of the interpolated chain to a Langevin diffusion and optimize the diffusion speed with respect to \(\ell\).
+*Idea of proof:* Consider the sequence of \(d\)-dimensional targets and proposal scales such that the MH chain, linearly interpolated in time and appropriately rescaled, converges in distribution to a limiting Langevin diffusion (diffusion limit). The speed of this limiting diffusion depends on the proposal scale \(\ell\), and one shows that it is maximized when the asymptotic average acceptance probability is approximately 0.234. This involves computing the generator of the limiting diffusion and optimizing its efficiency with respect to \(\ell\).
 
 ## 5. Pathologies and Failure Modes
 
@@ -115,12 +141,12 @@ For targets with heavy tails, random-walk MH may fail to be geometrically ergodi
 
 ## 6. Problem Set 6 (Representative Problems)
 
-1. **Detailed Balance for MH.** Prove Theorem 6.1 rigorously, including the treatment of sets where \(\pi(x) q(x,y) = 0\) and verifying measurability.
+1. **Detailed Balance for MH.** Prove Theorem @thm-mh-detailed-balance rigorously, including the treatment of sets where \(\pi(x) q(x,y) = 0\) and verifying measurability.
 
-2. **Irreducibility for Random-Walk MH.** For a random-walk MH algorithm on \(\mathbb{R}^d\) with Gaussian proposal and target density strictly positive and continuous on \(\mathbb{R}^d\), prove that the chain is \(\pi\)-irreducible.
+2. **Irreducibility for Random-Walk MH.** For a random-walk MH algorithm on \(\mathbb{R}^d\) with Gaussian proposal and target density strictly positive and continuous on \(\mathbb{R}^d\), prove that the chain is \(\pi\)-irreducible. Explain how this, together with drift and minorization conditions from Module 5 (see Theorem @thm-geom-ergodicity-drift-minorization), leads to convergence as in Theorem @thm-mh-convergence.
 
-3. **Geometric Ergodicity and Heavy Tails.** Consider a target distribution with polynomially decaying tails and a random-walk MH with Gaussian proposals. Investigate whether the chain satisfies a drift condition that implies geometric ergodicity.
+3. **Geometric Ergodicity and Heavy Tails.** Consider a target distribution with polynomially decaying tails and a random-walk MH with Gaussian proposals. Investigate whether the chain satisfies a drift condition that implies geometric ergodicity, and relate your findings to the assumptions of Theorem @thm-geom-ergodicity-drift-minorization.
 
-4. **Diffusion Limit Sketch.** Outline the diffusion limit argument leading to the 0.234 optimal acceptance rate for high-dimensional random-walk MH, identifying the main probabilistic tools used.
+4. **Diffusion Limit Sketch.** Outline the diffusion limit argument leading to the 0.234 optimal acceptance rate for high-dimensional random-walk MH, identifying the main probabilistic tools used, and connect your argument to Theorem @thm-mh-optimal-scaling.
 
-5. **Practical Tuning.** Discuss heuristic rules for tuning proposal variances in MH in finite dimensions and relate them to the high-dimensional scaling theory.
+5. **Practical Tuning.** Discuss heuristic rules for tuning proposal variances in MH in finite dimensions and relate them to the high-dimensional scaling theory and the qualitative conclusions of Theorem @thm-mh-optimal-scaling.

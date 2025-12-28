@@ -19,20 +19,47 @@ Let \((\mathcal{X}, \mathcal{B}, \lambda)\) be a measure space. A family of dens
 - a base density \(h: \mathcal{X} \to [0,\infty)\),
 
 such that
-5959
+$$
  p_\theta(x) = h(x) \exp\{ \theta^\top T(x) - A(\theta) \}, \quad \theta \in \Theta, \; x \in \mathcal{X}.
-5959
+$$
 
 We assume \(A(\theta) < \infty\) for \(\theta \in \Theta\) and that \(\Theta\) is open.
 
-### Proposition 2.2 (Moments via Log-Partition Function)
+### Proposition 2.2 (Moments via Log-Partition Function) {#prop-expfam-moments}
 
-Assume differentiability of \(A\). Then
-5959
+Assume differentiability of \(A\) and sufficient regularity to justify differentiating under the integral sign (e.g., dominated convergence conditions). Then
+$$
  \nabla A(\theta) = \mathbb{E}_\theta[T(X)], \quad \nabla^2 A(\theta) = \operatorname{Var}_\theta(T(X)).
-5959
+$$
 
-*Proof idea:* Differentiate the normalizing identity \(\int p_\theta(x)\,\lambda(dx) = 1\) with respect to \(\theta\).
+*Proof:* By definition of \(A\), the normalizing identity is
+$$
+ \int_\mathcal{X} h(x) \exp\{ \theta^\top T(x) - A(\theta) \}\, \lambda(dx) = 1, \quad \theta \in \Theta.
+$$
+Differentiate both sides with respect to \(\theta_j\), the \(j\)-th coordinate of \(\theta\). The left-hand side gives
+$$
+ \int_\mathcal{X} h(x) \exp\{ \theta^\top T(x) - A(\theta) \}\, (T_j(x) - \partial_{\theta_j} A(\theta))\, \lambda(dx) = 0,
+$$
+since the derivative of \(-A(\theta)\) contributes \(-\partial_{\theta_j} A(\theta)\). Recognizing the density \(p_\theta(x) = h(x) \exp\{ \theta^\top T(x) - A(\theta) \}\), we rewrite this as
+$$
+ \int_\mathcal{X} (T_j(x) - \partial_{\theta_j} A(\theta))\, p_\theta(x)\, \lambda(dx) = 0,
+$$
+so
+$$
+ \partial_{\theta_j} A(\theta) = \int_\mathcal{X} T_j(x) p_\theta(x)\, \lambda(dx) = \mathbb{E}_\theta[T_j(X)].
+$$
+This yields \(\nabla A(\theta) = \mathbb{E}_\theta[T(X)]\). Differentiating once more gives
+$$
+ \partial_{\theta_k} \partial_{\theta_j} A(\theta)
+  = \partial_{\theta_k} \mathbb{E}_\theta[T_j(X)]
+  = \int_\mathcal{X} T_j(x) (T_k(x) - \partial_{\theta_k} A(\theta))\, p_\theta(x)\, \lambda(dx).
+$$
+Substituting \(\partial_{\theta_k} A(\theta) = \mathbb{E}_\theta[T_k(X)]\) yields
+$$
+ \partial_{\theta_k} \partial_{\theta_j} A(\theta)
+  = \mathbb{E}_\theta[T_j(X) T_k(X)] - \mathbb{E}_\theta[T_j(X)]\, \mathbb{E}_\theta[T_k(X)],
+$$
+which is the \((j,k)\)-entry of the covariance matrix of \(T(X)\). Hence \(\nabla^2 A(\theta) = \operatorname{Var}_\theta(T(X))\). \(\square\)
 
 ## 2. Conjugate Priors in Exponential Families
 
@@ -40,28 +67,53 @@ Assume differentiability of \(A\). Then
 
 Let \(\{P_\theta: \theta \in \Theta\}\) be a parametric family of distributions on \((\mathcal{X}, \mathcal{B})\). A family of priors \(\{\Pi_{\eta}: \eta \in H\}\) on \((\Theta, \mathcal{T})\) is **conjugate** for \(\{P_\theta\}\) if for any prior \(\Pi_{\eta}\) and observed data \(x\), the posterior \(\Pi(\cdot \mid x)\) is again in the same family, i.e. equals \(\Pi_{\eta'}\) for some updated hyperparameter \(\eta'\).
 
-### Theorem 2.4 (General Conjugate Prior for Exponential Families)
+### Theorem 2.4 (General Conjugate Prior for Exponential Families) {#thm-expfam-conjugate}
 
 Consider an exponential family \(p_\theta(x) = h(x)\exp\{\theta^\top T(x) - A(\theta)\}\). For hyperparameters \(\eta_0 \in \mathbb{R}^k\) and \(\tau_0 > 0\), define a prior density on \(\Theta\) with respect to some reference measure \(\nu\) by
-5959
+$$
  \pi(\theta \mid \eta_0, \tau_0) \propto \exp\{ \eta_0^\top \theta - \tau_0 A(\theta) \}.
-5959
+$$
 
 Let \(X_1, \dots, X_n\) be conditionally i.i.d. given \(\theta\) from \(p_\theta\). Then the posterior density is
-5959
+$$
  \pi(\theta \mid x_{1:n}) \propto \exp\big\{ (\eta_0 + \textstyle\sum_{i=1}^n T(x_i))^\top \theta - (\tau_0 + n) A(\theta) \big\},
-5959
+$$
 i.e. the same functional form with updated hyperparameters
-5959
+$$
  \eta_n = \eta_0 + \sum_{i=1}^n T(x_i), \quad \tau_n = \tau_0 + n.
-5959
+$$
 
-*Proof:* Compute the joint density of \((\theta, x_{1:n})\) up to normalizing constants:
-5959
+*Proof:* The prior density is
+$$
+ \pi(\theta \mid \eta_0, \tau_0) \propto \exp\{ \eta_0^\top \theta - \tau_0 A(\theta) \}.
+$$
+The likelihood for conditionally i.i.d. observations is
+$$
+ \prod_{i=1}^n p_\theta(x_i)
+  = \prod_{i=1}^n h(x_i) \exp\{ \theta^\top T(x_i) - A(\theta) \}
+  = \Bigl( \prod_{i=1}^n h(x_i) \Bigr)
+    \exp\Bigl\{ \theta^\top \sum_{i=1}^n T(x_i) - n A(\theta) \Bigr\}.
+$$
+The joint density of \((\theta, x_{1:n})\), up to a factor depending only on \(x_{1:n}\), is
+$$
  \pi(\theta \mid \eta_0, \tau_0) \prod_{i=1}^n p_\theta(x_i)
- \propto \exp\big\{ \eta_0^\top \theta - \tau_0 A(\theta) + \sum_{i=1}^n (\theta^\top T(x_i) - A(\theta)) \big\}.
-5959
-Group terms in \(\theta\) and \(A(\theta)\) to obtain the posterior kernel.
+ \propto \exp\Bigl\{ \eta_0^\top \theta - \tau_0 A(\theta)
+            + \theta^\top \sum_{i=1}^n T(x_i) - n A(\theta) \Bigr\}.
+$$
+Grouping terms in \(\theta\) and \(A(\theta)\) gives
+$$
+ \eta_0^\top \theta + \theta^\top \sum_{i=1}^n T(x_i)
+  = (\eta_0 + \textstyle\sum_{i=1}^n T(x_i))^\top \theta,
+$$
+and
+$$
+ -\tau_0 A(\theta) - n A(\theta) = - (\tau_0 + n) A(\theta).
+$$
+Thus the posterior kernel has the claimed exponential family form with updated hyperparameters
+$$
+ \eta_n = \eta_0 + \sum_{i=1}^n T(x_i), \qquad \tau_n = \tau_0 + n.
+$$
+Finiteness of the normalizing constant (posterior propriety) follows from suitable integrability conditions on \(A\), \(\eta_0\), and \(\tau_0\). \(\square\)
 
 ### Assumptions
 
@@ -74,26 +126,43 @@ Group terms in \(\theta\) and \(A(\theta)\) to obtain the posterior kernel.
 ### 3.1 Beta–Binomial Model
 
 - Likelihood: \(X \mid p \sim \operatorname{Binomial}(n,p)\),
-  5959
+  $$
    \mathbb{P}(X=x \mid p) = \binom{n}{x} p^x(1-p)^{n-x}, \quad x=0,1,\dots,n.
-  5959
+  $$
 - Prior: \(p \sim \operatorname{Beta}(\alpha, \beta)\), density
-  5959
+  $$
   \pi(p) = \frac{1}{B(\alpha, \beta)} p^{\alpha-1}(1-p)^{\beta-1}, \quad 0<p<1.
-  5959
+  $$
 
-**Theorem 2.5 (Beta–Binomial Conjugacy).** The posterior is
-5959
+**Theorem 2.5 (Beta–Binomial Conjugacy).** {#thm-beta-binomial}
+
+The posterior is
+$$
  p \mid x \sim \operatorname{Beta}(\alpha + x, \beta + n - x).
-5959
+$$
 
-*Proof:* Combine likelihood and prior, collect exponents of \(p\) and \(1-p\), and read off the Beta kernel.
+*Proof:* The likelihood is
+$$
+ \mathbb{P}(X=x \mid p) = \binom{n}{x} p^x (1-p)^{n-x},
+$$
+and the prior density is
+$$
+ \pi(p) = \frac{1}{B(\alpha, \beta)} p^{\alpha-1}(1-p)^{\beta-1}, \quad 0<p<1.
+$$
+Bayes' theorem gives the posterior density (up to a normalizing constant) as
+$$
+ \pi(p \mid x)
+  \propto \mathbb{P}(X=x \mid p) \, \pi(p)
+  \propto p^x (1-p)^{n-x} \, p^{\alpha-1} (1-p)^{\beta-1}
+  = p^{\alpha + x - 1} (1-p)^{\beta + n - x - 1}.
+$$
+This is exactly the kernel of a \(\operatorname{Beta}(\alpha + x, \beta + n - x)\) density, so after normalization we obtain the stated result. \(\square\)
 
 **Posterior Predictive Distribution.** For a new count \(X_{\text{new}} \mid p \sim \operatorname{Binomial}(m,p)\), the posterior predictive mass function is
-5959
+$$
  \mathbb{P}(X_{\text{new}} = k \mid x)
  = \int_0^1 \binom{m}{k} p^k(1-p)^{m-k} \, \operatorname{Beta}(p \mid \alpha+x, \beta + n - x)\, dp.
-5959
+$$
 This integral evaluates to a Beta–Binomial distribution; compute explicitly using Beta function identities.
 
 ### 3.2 Gamma–Poisson Model
@@ -101,16 +170,45 @@ This integral evaluates to a Beta–Binomial distribution; compute explicitly us
 - Likelihood: \(X_i \mid \lambda \sim \operatorname{Poisson}(\lambda)\) i.i.d.,
   \(\mathbb{P}(X_i=k \mid \lambda) = e^{-\lambda} \lambda^k / k!\).
 - Prior: \(\lambda \sim \operatorname{Gamma}(\alpha, \beta)\) (shape–rate), density
-  5959
+  $$
    \pi(\lambda) = \frac{\beta^{\alpha}}{\Gamma(\alpha)} \lambda^{\alpha-1} e^{-\beta \lambda}, \quad \lambda>0.
-  5959
+  $$
 
-**Theorem 2.6 (Gamma–Poisson Conjugacy).** If \(X_1,\dots,X_n \mid \lambda\) i.i.d. Poisson, the posterior is
-5959
+**Theorem 2.6 (Gamma–Poisson Conjugacy).** {#thm-gamma-poisson}
+
+If \(X_1,\dots,X_n \mid \lambda\) are i.i.d. Poisson, the posterior is
+$$
  \lambda \mid x_{1:n} \sim \operatorname{Gamma}\Big(\alpha + \sum_{i=1}^n x_i,\; \beta + n\Big).
-5959
+$$
 
-**Posterior Predictive.** For future count \(X_{\text{new}} \mid \lambda \sim \operatorname{Poisson}(\lambda)\), derive the Negative Binomial predictive distribution by integrating out \(\lambda\).
+*Proof:* The joint likelihood is
+$$
+ \prod_{i=1}^n \mathbb{P}(X_i = x_i \mid \lambda)
+  = \prod_{i=1}^n e^{-\lambda} \frac{\lambda^{x_i}}{x_i!}
+  = e^{-n\lambda} \lambda^{\sum_{i=1}^n x_i} \prod_{i=1}^n \frac{1}{x_i!}.
+$$
+The prior density is
+$$
+ \pi(\lambda)
+  = \frac{\beta^{\alpha}}{\Gamma(\alpha)} \lambda^{\alpha-1} e^{-\beta \lambda}, \quad \lambda>0.
+$$
+Thus the posterior kernel is
+$$
+ \pi(\lambda \mid x_{1:n})
+  \propto e^{-n\lambda} \lambda^{\sum x_i} \, \lambda^{\alpha-1} e^{-\beta \lambda}
+  = \lambda^{\alpha + \sum x_i - 1} e^{-(\beta + n) \lambda}, \quad \lambda>0,
+$$
+which is exactly the kernel of a \(\operatorname{Gamma}(\alpha + \sum x_i, \beta + n)\) density. Normalization gives the stated posterior. \(\square\)
+
+**Posterior Predictive.** For a future count \(X_{\text{new}} \mid \lambda \sim \operatorname{Poisson}(\lambda)\), the posterior predictive mass function is
+$$
+ \mathbb{P}(X_{\text{new}} = k \mid x_{1:n})
+  = \int_0^\infty \mathbb{P}(X_{\text{new}} = k \mid \lambda) \, \pi(\lambda \mid x_{1:n})\, d\lambda,
+$$
+which can be evaluated in closed form to yield a Negative Binomial distribution by using the Gamma function identity
+$$
+ \int_0^\infty \lambda^{a-1} e^{-b\lambda} d\lambda = \frac{\Gamma(a)}{b^a}.
+$$
 
 ### 3.3 Normal–Normal Models
 
@@ -124,35 +222,80 @@ We treat two cases:
 - Likelihood: \(Y_i \mid \mu \sim N(\mu, \sigma^2)\) i.i.d.
 - Prior: \(\mu \sim N(m_0, v_0)\).
 
-**Theorem 2.7 (Normal–Normal Conjugacy, Known Variance).** The posterior for \(\mu\) is
-5959
+**Theorem 2.7 (Normal–Normal Conjugacy, Known Variance).** {#thm-normal-normal-knownvar}
+
+The posterior for \(\mu\) is
+$$
  \mu \mid y_{1:n} \sim N(m_n, v_n),
-5959
+$$
 where
-5959
+$$
  v_n^{-1} = v_0^{-1} + \frac{n}{\sigma^2},
  \quad m_n = v_n \Big( v_0^{-1} m_0 + \frac{n \bar{y}}{\sigma^2} \Big).
-5959
+$$
 
-*Proof:* Complete the square in the exponent of the joint density of \(\mu\) and \(y_{1:n}\).
+*Proof:* The likelihood is
+$$
+ p(y_{1:n} \mid \mu)
+  = \prod_{i=1}^n \frac{1}{\sqrt{2\pi \sigma^2}}
+     \exp\Bigl\{ -\frac{1}{2\sigma^2} (y_i - \mu)^2 \Bigr\}
+  \propto \exp\Bigl\{ -\frac{1}{2\sigma^2} \sum_{i=1}^n (y_i - \mu)^2 \Bigr\}.
+$$
+The prior density is
+$$
+ \pi(\mu) \propto \exp\Bigl\{ -\frac{1}{2 v_0} (\mu - m_0)^2 \Bigr\}.
+$$
+The posterior kernel is therefore
+$$
+ \pi(\mu \mid y_{1:n})
+  \propto \exp\Bigl\{ -\frac{1}{2\sigma^2} \sum_{i=1}^n (y_i - \mu)^2
+                      - \frac{1}{2 v_0} (\mu - m_0)^2 \Bigr\}.
+$$
+Expand the quadratic terms in \(\mu\). We have
+$$
+ \sum_{i=1}^n (y_i - \mu)^2
+  = \sum_{i=1}^n (y_i^2 - 2 y_i \mu + \mu^2)
+  = \sum_{i=1}^n y_i^2 - 2 \mu \sum_{i=1}^n y_i + n \mu^2.
+$$
+Similarly,
+$$
+ (\mu - m_0)^2 = \mu^2 - 2 m_0 \mu + m_0^2.
+$$
+Collecting coefficients of \(\mu^2\) and \(\mu\) in the exponent, the posterior kernel is proportional to
+$$
+ \exp\Bigl\{ -\tfrac{1}{2} \Bigl( \Bigl( \tfrac{n}{\sigma^2} + \tfrac{1}{v_0} \Bigr) \mu^2
+      - 2 \Bigl( \tfrac{\sum y_i}{\sigma^2} + \tfrac{m_0}{v_0} \Bigr) \mu + \text{const} \Bigr) \Bigr\}.
+$$
+Completing the square,
+$$
+ \Bigl( \tfrac{n}{\sigma^2} + \tfrac{1}{v_0} \Bigr) \mu^2
+  - 2 \Bigl( \tfrac{\sum y_i}{\sigma^2} + \tfrac{m_0}{v_0} \Bigr) \mu
+  = v_n^{-1} (\mu - m_n)^2 + \text{const},
+$$
+where
+$$
+ v_n^{-1} = v_0^{-1} + \frac{n}{\sigma^2},
+ \qquad m_n = v_n \Bigl( v_0^{-1} m_0 + \frac{n \bar{y}}{\sigma^2} \Bigr),
+$$
+with \(\bar{y} = n^{-1} \sum y_i\). Thus the posterior is Normal with mean \(m_n\) and variance \(v_n\). \(\square\)
 
 ## 4. Marginal Likelihood and Bayes Factors
 
 ### Definition 2.8 (Marginal Likelihood)
 
 Given prior \(\Pi\) and likelihood \(p(x \mid \theta)\), the **marginal likelihood** (or evidence) is
-5959
+$$
  m(x) = \int_\Theta p(x \mid \theta)\, \Pi(d\theta).
-5959
+$$
 
 This normalizing constant appears in Bayes' theorem and is central to model comparison.
 
 ### Definition 2.9 (Bayes Factor)
 
 For two models \(M_1, M_2\) with priors \(\Pi_1, \Pi_2\) and marginal likelihoods \(m_1(x), m_2(x)\), the **Bayes factor** in favor of \(M_1\) over \(M_2\) is
-5959
+$$
  BF_{12}(x) = \frac{m_1(x)}{m_2(x)}.
-5959
+$$
 
 ### Example 2.10 (Beta–Binomial Model Comparison)
 
@@ -166,12 +309,12 @@ Consider two Beta priors on the same Binomial likelihood, \(\operatorname{Beta}(
 
 ## 6. Problem Set 2 (Representative Problems)
 
-1. **General Conjugacy in Exponential Families.** Prove Theorem 2.4 in full detail, including the case of multiple observations and verifying all measurability conditions.
+1. **General Conjugacy in Exponential Families.** Prove Theorem @thm-expfam-conjugate in full detail, including the case of multiple observations and verifying all measurability conditions.
 
-2. **Beta–Binomial Predictive Distribution.** Derive the Beta–Binomial posterior predictive distribution explicitly and compute its mean and variance. Compare these to the plug-in predictive distribution using the posterior mean of \(p\).
+2. **Beta–Binomial Predictive Distribution.** Starting from Theorem @thm-beta-binomial, derive the Beta–Binomial posterior predictive distribution explicitly and compute its mean and variance. Compare these to the plug-in predictive distribution using the posterior mean of \(p\).
 
-3. **Gamma–Poisson Predictive and Overdispersion.** Show that the Gamma–Poisson predictive distribution is Negative Binomial and analyze its overdispersion relative to a Poisson with parameter equal to the posterior mean of \(\lambda\).
+3. **Gamma–Poisson Predictive and Overdispersion.** Using Theorem @thm-gamma-poisson, show that the Gamma–Poisson predictive distribution is Negative Binomial and analyze its overdispersion relative to a Poisson with parameter equal to the posterior mean of \(\lambda\).
 
-4. **Normal–Normal with Unknown Variance.** For the Normal model with unknown variance and conjugate Normal–Inverse-Gamma prior, derive the joint posterior of \((\mu,\sigma^2)\) and the marginal posterior of \(\mu\). Identify the Student-t predictive distribution for future observations.
+4. **Normal–Normal with Unknown Variance.** For the Normal model with unknown variance and conjugate Normal–Inverse-Gamma prior, derive the joint posterior of \((\mu,\sigma^2)\) and the marginal posterior of \(\mu\). Relate your expression for the marginal posterior of \(\mu\) to the known-variance result in Theorem @thm-normal-normal-knownvar, and identify the Student-t predictive distribution for future observations.
 
 5. **Bayes Factors with Conjugate Priors.** In a normal mean testing problem with known variance, compute analytically the Bayes factor for testing \(H_0: \mu=0\) vs \(H_1: \mu \neq 0\) using a Normal prior under \(H_1\). Compare the resulting evidence measure to the classical z-test p-value.

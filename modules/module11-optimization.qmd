@@ -9,16 +9,16 @@ This module focuses on optimization problems arising in Bayesian inference, espe
 
 ## 1. MAP Estimation
 
-### 1.1 Definition
+### Definition 11.1 (MAP Estimator) {#def-map}
 
 Let \(\pi(\theta \mid x)\) denote the posterior density of \(\theta\) given data \(x\). A **MAP estimator** is
-5959
+$$
  \hat{\theta}_{\text{MAP}} \in \arg\max_{\theta} \pi(\theta \mid x).
-5959
+$$
 Equivalently, it minimizes the negative log-posterior:
-5959
+$$
  \hat{\theta}_{\text{MAP}} \in \arg\min_{\theta} \{-\log \pi(\theta \mid x)\}.
-5959
+$$
 
 ### 1.2 Relation to MLE
 
@@ -31,13 +31,13 @@ In exponential family models with conjugate priors, the MAP often has a closed-f
 ### 2.1 First-Order Methods
 
 Let
-5959
+$$
  L(\theta) = -\log \pi(\theta \mid x)
-5959
+$$
 be the objective function. Gradient descent iterations are given by
-5959
+$$
  \theta_{k+1} = \theta_k - \eta_k \nabla L(\theta_k),
-5959
+$$
 where \(\eta_k > 0\) is a step size.
 
 Under standard conditions (Lipschitz gradient, suitable step-size schedule), gradient descent converges to a local minimum of \(L\).
@@ -51,12 +51,38 @@ For large data sets, one may approximate \(\nabla L(\theta)\) using mini-batches
 ### 3.1 Newton's Method
 
 Newton's method uses second-order information:
-5959
+$$
  \theta_{k+1} = \theta_k - H(\theta_k)^{-1} \nabla L(\theta_k),
-5959
+$$
 where \(H(\theta) = \nabla^2 L(\theta)\) is the Hessian.
 
 Under conditions of local strong convexity and smoothness, Newton's method converges quadratically to a local minimizer.
+
+::: {.theorem #thm-newton-quadratic}
+**Theorem 11.1 (Local Quadratic Convergence of Newton's Method).**
+
+Let \(L: \mathbb{R}^d \to \mathbb{R}\) be twice continuously differentiable, and suppose that:
+
+- there exists a minimizer \(\theta^*\) of \(L\) such that \(\nabla L(\theta^*) = 0\),
+- the Hessian \(H(\theta^*) = \nabla^2 L(\theta^*)\) is positive-definite,
+- \(\nabla^2 L(\theta)\) is Lipschitz continuous in a neighborhood of \(\theta^*\).
+
+Then there exists a neighborhood \(U\) of \(\theta^*\) such that for any initial point \(\theta_0 \in U\), the Newton iterates
+$$
+ \theta_{k+1} = \theta_k - H(\theta_k)^{-1} \nabla L(\theta_k)
+$$
+are well-defined, remain in \(U\), and converge quadratically to \(\theta^*\): there exists a constant \(C>0\) such that for all large \(k\),
+$$
+ \|\theta_{k+1} - \theta^*\| \le C \|\theta_k - \theta^*\|^2.
+$$
+
+*Proof sketch:* Expand \(\nabla L\) around \(\theta^*\) using a first-order Taylor expansion and use the Lipschitz continuity of \(\nabla^2 L\) to control the remainder term. In a sufficiently small neighborhood of \(\theta^*\), the Newton update can be written as
+$$
+ \theta_{k+1} - \theta^*
+  = -H(\theta_k)^{-1}\bigl( \nabla L(\theta_k) - \nabla L(\theta^*) \bigr),
+$$
+and a further expansion shows that this difference is approximately quadratic in \(\theta_k - \theta^*\). Bounding \(H(\theta_k)^{-1}\) uniformly using positive-definiteness of \(H(\theta^*)\) and its continuity yields the stated inequality. Standard references in numerical optimization give a detailed proof. \(\square\)
+:::
 
 ### 3.2 Quasi-Newton Methods
 
@@ -65,9 +91,9 @@ Quasi-Newton methods (e.g., BFGS, L-BFGS) construct approximations \(B_k \approx
 ### 3.3 Example: Logistic Regression Posterior
 
 For the logistic regression posterior with Gaussian prior, the negative log-posterior is convex, and the Hessian is given by
-5959
+$$
  H(\beta) = X^\top W(\beta) X + V_0^{-1},
-5959
+$$
 where \(W(\beta)\) is the diagonal matrix of Bernoulli variances. Newton's method converges rapidly to the MAP under mild conditions.
 
 ## 4. Convexity, Non-Convexity, and Multiple Modes
@@ -94,12 +120,12 @@ The two approaches can be combined:
 
 ## 5. Problem Set 11 (Representative Problems)
 
-1. **MAP vs MLE.** In an exponential family model with conjugate prior, derive conditions under which the MAP estimator equals the MLE. Provide explicit examples where they differ and analyze the influence of hyperparameters.
+1. **MAP vs MLE.** In an exponential family model with conjugate prior, derive conditions under which the MAP estimator equals the MLE (see Definition @def-map). Provide explicit examples where they differ and analyze the influence of hyperparameters.
 
-2. **Newton's Method for Logistic Regression.** Derive the Newton update for the logistic regression posterior with Gaussian prior. Prove local quadratic convergence under appropriate regularity conditions (e.g., strong convexity near the optimum).
+2. **Newton's Method for Logistic Regression.** Derive the Newton update for the logistic regression posterior with Gaussian prior (using the Hessian structure from Module 4). Prove local quadratic convergence under appropriate regularity conditions, following the pattern of Theorem @thm-newton-quadratic.
 
-3. **Quasi-Newton Convergence.** Outline a convergence proof for BFGS under assumptions of smooth, strongly convex objective functions. Discuss how these conditions relate to typical Bayesian posteriors.
+3. **Quasi-Newton Convergence.** Outline a convergence proof for BFGS under assumptions of smooth, strongly convex objective functions. Discuss how these conditions relate to typical Bayesian posteriors and compare them to those of Theorem @thm-newton-quadratic.
 
 4. **Non-Convex Posterior Example.** Consider a simple Gaussian mixture model with a symmetric prior over component labels. Show that the posterior has multiple symmetric modes and analyze how MAP estimation depends on initialization.
 
-5. **Optimization–Sampling Interaction.** Discuss how Laplace approximations around the MAP can be used to construct efficient proposals for MH (e.g., independence samplers), and analyze conditions under which such proposals lead to geometrically ergodic chains.
+5. **Optimization–Sampling Interaction.** Discuss how Laplace approximations around the MAP can be used to construct efficient proposals for MH (e.g., independence samplers), and analyze conditions under which such proposals lead to geometrically ergodic chains, relating your discussion to the geometric ergodicity results from Module 5.

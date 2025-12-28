@@ -332,19 +332,19 @@ window.Quarto = {
   <ul class="collapse">
   <li><a href="#gaussian-processes-as-distributions-over-functions" id="toc-gaussian-processes-as-distributions-over-functions" class="nav-link" data-scroll-target="#gaussian-processes-as-distributions-over-functions">1. Gaussian Processes as Distributions over Functions</a>
   <ul class="collapse">
-  <li><a href="#definition-10.1-gaussian-process" id="toc-definition-10.1-gaussian-process" class="nav-link" data-scroll-target="#definition-10.1-gaussian-process">Definition 10.1 (Gaussian Process)</a></li>
+  <li><a href="#def-gp" id="toc-def-gp" class="nav-link" data-scroll-target="#def-gp">Definition 10.1 (Gaussian Process)</a></li>
   </ul></li>
   <li><a href="#covariance-kernels-and-rkhs" id="toc-covariance-kernels-and-rkhs" class="nav-link" data-scroll-target="#covariance-kernels-and-rkhs">2. Covariance Kernels and RKHS</a>
   <ul class="collapse">
   <li><a href="#positive-definiteness" id="toc-positive-definiteness" class="nav-link" data-scroll-target="#positive-definiteness">2.1 Positive Definiteness</a></li>
-  <li><a href="#rkhs-associated-with-a-kernel" id="toc-rkhs-associated-with-a-kernel" class="nav-link" data-scroll-target="#rkhs-associated-with-a-kernel">2.2 RKHS Associated with a Kernel</a></li>
+  <li><a href="#sec-rkhs" id="toc-sec-rkhs" class="nav-link" data-scroll-target="#sec-rkhs">2.2 RKHS Associated with a Kernel</a></li>
   <li><a href="#gp-sample-paths-and-rkhs" id="toc-gp-sample-paths-and-rkhs" class="nav-link" data-scroll-target="#gp-sample-paths-and-rkhs">2.3 GP Sample Paths and RKHS</a></li>
   </ul></li>
   <li><a href="#gaussian-process-regression" id="toc-gaussian-process-regression" class="nav-link" data-scroll-target="#gaussian-process-regression">3. Gaussian Process Regression</a>
   <ul class="collapse">
   <li><a href="#model-setup" id="toc-model-setup" class="nav-link" data-scroll-target="#model-setup">3.1 Model Setup</a></li>
   <li><a href="#joint-prior-and-posterior" id="toc-joint-prior-and-posterior" class="nav-link" data-scroll-target="#joint-prior-and-posterior">3.2 Joint Prior and Posterior</a></li>
-  <li><a href="#theorem-10.2-gp-regression-posterior" id="toc-theorem-10.2-gp-regression-posterior" class="nav-link" data-scroll-target="#theorem-10.2-gp-regression-posterior">Theorem 10.2 (GP Regression Posterior)</a></li>
+  <li><a href="#thm-gp-regression" id="toc-thm-gp-regression" class="nav-link" data-scroll-target="#thm-gp-regression">Theorem 10.2 (GP Regression Posterior)</a></li>
   </ul></li>
   <li><a href="#hyperparameter-estimation" id="toc-hyperparameter-estimation" class="nav-link" data-scroll-target="#hyperparameter-estimation">4. Hyperparameter Estimation</a></li>
   <li><a href="#computational-complexity-and-approximations" id="toc-computational-complexity-and-approximations" class="nav-link" data-scroll-target="#computational-complexity-and-approximations">5. Computational Complexity and Approximations</a>
@@ -384,24 +384,32 @@ window.Quarto = {
 <p>This module introduces Gaussian processes (GPs) as distributions over functions, discusses covariance kernels and their connection to reproducing kernel Hilbert spaces (RKHS), and derives the exact posterior for GP regression. We also address hyperparameter estimation and computational complexity.</p>
 <section id="gaussian-processes-as-distributions-over-functions" class="level2">
 <h2 class="anchored" data-anchor-id="gaussian-processes-as-distributions-over-functions">1. Gaussian Processes as Distributions over Functions</h2>
-<section id="definition-10.1-gaussian-process" class="level3">
-<h3 class="anchored" data-anchor-id="definition-10.1-gaussian-process">Definition 10.1 (Gaussian Process)</h3>
+<section id="def-gp" class="level3">
+<h3 class="anchored" data-anchor-id="def-gp">Definition 10.1 (Gaussian Process)</h3>
 <p>Let () be an index set (e.g., (^d)). A stochastic process ({f(x) : x }) is a <strong>Gaussian process</strong> if for any finite collection of points (x_1, , x_n ), the random vector ((f(x_1), , f(x_n))) is multivariate Normal.</p>
-<p>A GP is characterized by its mean function (m: ) and covariance kernel (k: ): [ m(x) = [f(x)], k(x,x’) = (f(x), f(x’)). ] We write [ f (m, k). ]</p>
+<p>A GP is characterized by its mean function (m: ) and covariance kernel (k: ): <span class="math display">\[
+m(x) = \mathbb{E}[f(x)], \quad k(x,x') = \operatorname{Cov}(f(x), f(x')).
+\]</span> We write <span class="math display">\[
+f \sim \operatorname{GP}(m, k).
+\]</span></p>
 </section>
 </section>
 <section id="covariance-kernels-and-rkhs" class="level2">
 <h2 class="anchored" data-anchor-id="covariance-kernels-and-rkhs">2. Covariance Kernels and RKHS</h2>
 <section id="positive-definiteness" class="level3">
 <h3 class="anchored" data-anchor-id="positive-definiteness">2.1 Positive Definiteness</h3>
-<p>A function (k: ) is a <strong>positive-definite kernel</strong> if for any finite set (x_1, , x_n) and coefficients (c_1, , c_n), [ <em>{i=1}^n </em>{j=1}^n c_i c_j k(x_i, x_j) . ]</p>
+<p>A function (k: ) is a <strong>positive-definite kernel</strong> if for any finite set (x_1, , x_n) and coefficients (c_1, , c_n), <span class="math display">\[
+\sum_{i=1}^n \sum_{j=1}^n c_i c_j k(x_i, x_j) \ge 0.
+\]</span></p>
 </section>
-<section id="rkhs-associated-with-a-kernel" class="level3">
-<h3 class="anchored" data-anchor-id="rkhs-associated-with-a-kernel">2.2 RKHS Associated with a Kernel</h3>
+<section id="sec-rkhs" class="level3">
+<h3 class="anchored" data-anchor-id="sec-rkhs">2.2 RKHS Associated with a Kernel</h3>
 <p>Given a positive-definite kernel (k), there exists a unique Hilbert space (_k) of functions on () such that:</p>
 <ol type="1">
 <li>For each (x), the function (k(x, ) _k).</li>
-<li><strong>Reproducing property:</strong> For all (f <em>k) and (x ), [ f(x) = f, k(x, ) </em>{_k}. ]</li>
+<li><strong>Reproducing property:</strong> For all (f _k) and (x ), <span class="math display">\[
+f(x) = \langle f, k(x, \cdot) \rangle_{\mathcal{H}_k}.
+\]</span></li>
 </ol>
 <p><em>Proof idea:</em> Use the Moore–Aronszajn theorem to construct (_k) as the completion of finite linear combinations of kernel sections.</p>
 </section>
@@ -414,7 +422,9 @@ window.Quarto = {
 <h2 class="anchored" data-anchor-id="gaussian-process-regression">3. Gaussian Process Regression</h2>
 <section id="model-setup" class="level3">
 <h3 class="anchored" data-anchor-id="model-setup">3.1 Model Setup</h3>
-<p>Let (f (0, k)). Observations are [ y_i = f(x_i) + _i, <em>i N(0, ^2), ] independent noise. Collect (y = (y_1, , y_n)^) and define the Gram matrix (K ^{n n}) with entries (K</em>{ij} = k(x_i, x_j)).</p>
+<p>Let (f (0, k)). Observations are <span class="math display">\[
+y_i = f(x_i) + \varepsilon_i, \quad \varepsilon_i \sim N(0, \sigma^2),
+\]</span> independent noise. Collect (y = (y_1, , y_n)^) and define the Gram matrix (K ^{n n}) with entries (K_{ij} = k(x_i, x_j)).</p>
 <p>For a set of test inputs (X_* = (x_<em>^{(1)}, , x_</em>^{(m)})), define:</p>
 <ul>
 <li>(K_* ^{n m}) with entries ((K_<em>)<em>{i} = k(x_i, x</em></em>^{()})),</li>
@@ -423,23 +433,66 @@ window.Quarto = {
 </section>
 <section id="joint-prior-and-posterior" class="level3">
 <h3 class="anchored" data-anchor-id="joint-prior-and-posterior">3.2 Joint Prior and Posterior</h3>
-The joint prior for (f(X)) and (f(X_*)) is multivariate Normal: [
-<span class="math display">\[\begin{pmatrix}
+<p>The joint prior for (f(X)) and (f(X_*)) is multivariate Normal: <span class="math display">\[
+\begin{pmatrix}
   f(X) \\
   f(X_*)
-\end{pmatrix}\]</span>
-N( 0,
-<span class="math display">\[\begin{pmatrix}
+\end{pmatrix}
+\sim N\left( 0,
+\begin{pmatrix}
   K &amp; K_* \\
   K_*^\top &amp; K_{**}
-\end{pmatrix}\]</span>
-<p>). ]</p>
-<p>The observation model adds independent Gaussian noise to (f(X)), so [ y f(X) N(f(X), ^2 I_n). ]</p>
+\end{pmatrix}
+\right).
+\]</span></p>
+<p>The observation model adds independent Gaussian noise to (f(X)), so <span class="math display">\[
+y \mid f(X) \sim N(f(X), \sigma^2 I_n).
+\]</span></p>
 </section>
-<section id="theorem-10.2-gp-regression-posterior" class="level3">
-<h3 class="anchored" data-anchor-id="theorem-10.2-gp-regression-posterior">Theorem 10.2 (GP Regression Posterior)</h3>
-<p>The posterior distribution of (f_* := f(X_<em>)) given data (y) is multivariate Normal: [ f_</em> y N(m_<em>, <em><em>), ] where [ m_</em> = K</em></em>^(K + ^2 I_n)^{-1} y, ] [ <em>* = K</em>{**} - K_<em>^(K + ^2 I_n)^{-1} K_</em>. ]</p>
-<p><em>Proof:</em> Use the conditional distribution formulas for multivariate Normal distributions, treating (y) as (f(X) + ).</p>
+<section id="thm-gp-regression" class="level3">
+<h3 class="anchored" data-anchor-id="thm-gp-regression">Theorem 10.2 (GP Regression Posterior)</h3>
+<p>The posterior distribution of (f_* := f(X_*)) given data (y) is multivariate Normal: <span class="math display">\[
+f_* \mid y \sim N(m_*, \Sigma_*),
+\]</span> where <span class="math display">\[
+m_* = K_*^\top (K + \sigma^2 I_n)^{-1} y,
+\]</span> <span class="math display">\[
+\Sigma_* = K_{**} - K_*^\top (K + \sigma^2 I_n)^{-1} K_*.
+\]</span></p>
+<p><em>Proof:</em> Let (f = f(X)) and (f_* = f(X_<em>)). By the GP prior, <span class="math display">\[
+\begin{pmatrix}
+  f \\
+  f_*
+\end{pmatrix}
+\sim N\left(0,
+\begin{pmatrix}
+  K &amp; K_* \\
+  K_*^\top &amp; K_{**}
+\end{pmatrix}\right).
+\]</span> The observation model is <span class="math display">\[
+y = f + \varepsilon, \quad \varepsilon \sim N(0, \sigma^2 I_n), \; \varepsilon \text{ independent of } f_*.
+\]</span> Hence the joint distribution of ((y, f_</em>)) is Gaussian with mean zero and covariance <span class="math display">\[
+\operatorname{Cov}\bigl((y, f_*)\bigr)
+  = \begin{pmatrix}
+      K + \sigma^2 I_n &amp; K_* \\
+      K_*^\top &amp; K_{**}
+    \end{pmatrix}.
+\]</span> Using the conditional distribution formula for a jointly Gaussian vector <span class="math display">\[
+\begin{pmatrix}
+  Y \\
+  Z
+\end{pmatrix}
+\sim N\left(0,
+\begin{pmatrix}
+  \Sigma_{YY} &amp; \Sigma_{YZ} \\
+  \Sigma_{ZY} &amp; \Sigma_{ZZ}
+\end{pmatrix}\right),
+\]</span> we have <span class="math display">\[
+Z \mid Y = y \sim N\bigl( \Sigma_{ZY} \Sigma_{YY}^{-1} y,\; \Sigma_{ZZ} - \Sigma_{ZY} \Sigma_{YY}^{-1} \Sigma_{YZ} \bigr).
+\]</span> Identifying (Y = y), (Z = f_<em>), (<em>{YY} = K + ^2 I_n), (</em>{YZ} = K_</em>), we obtain <span class="math display">\[
+m_* = K_*^\top (K + \sigma^2 I_n)^{-1} y,
+\]</span> and <span class="math display">\[
+\Sigma_* = K_{**} - K_*^\top (K + \sigma^2 I_n)^{-1} K_*,
+\]</span> which proves the stated posterior distribution. ()</p>
 </section>
 </section>
 <section id="hyperparameter-estimation" class="level2">
@@ -449,7 +502,12 @@ N( 0,
 <li><strong>Empirical Bayes / Type II ML:</strong> Maximize the marginal likelihood (p(y _k, ^2)) with respect to (_k).</li>
 <li><strong>Fully Bayesian:</strong> Place priors on (_k) and use MCMC or other methods to sample from the joint posterior.</li>
 </ul>
-<p>The marginal likelihood in GP regression is [ p(y <em>k, ^2) = - y^(K</em>+ ^2 I_n)^{-1} y - |K_+ ^2 I_n| - (2). ]</p>
+<p>The marginal likelihood in GP regression is <span class="math display">\[
+\log p(y \mid \theta_k, \sigma^2)
+= -\tfrac12 y^\top (K_\theta + \sigma^2 I_n)^{-1} y
+   - \tfrac12 \log |K_\theta + \sigma^2 I_n|
+   - \tfrac{n}{2} \log (2\pi).
+\]</span></p>
 </section>
 <section id="computational-complexity-and-approximations" class="level2">
 <h2 class="anchored" data-anchor-id="computational-complexity-and-approximations">5. Computational Complexity and Approximations</h2>
@@ -474,8 +532,8 @@ N( 0,
 <section id="problem-set-10-representative-problems" class="level2">
 <h2 class="anchored" data-anchor-id="problem-set-10-representative-problems">6. Problem Set 10 (Representative Problems)</h2>
 <ol type="1">
-<li><p><strong>GP Regression Derivation.</strong> Derive Theorem 10.2 in full detail by starting from the joint Gaussian distribution of ((f(X), f(X_*))) and applying the conditional multivariate Normal formula.</p></li>
-<li><p><strong>RKHS Reproducing Property.</strong> Prove the reproducing property for the RKHS associated with a kernel (k), and discuss its implications for function evaluation and regularization.</p></li>
+<li><p><strong>GP Regression Derivation.</strong> Derive Theorem <strong>?@thm-gp-regression</strong> in full detail by starting from the joint Gaussian distribution of ((f(X), f(X_*))) and applying the conditional multivariate Normal formula.</p></li>
+<li><p><strong>RKHS Reproducing Property.</strong> Prove the reproducing property for the RKHS associated with a kernel (k) (see Section <a href="#sec-rkhs" class="quarto-xref">Section&nbsp;1.2.2</a>), and discuss its implications for function evaluation and regularization.</p></li>
 <li><p><strong>Marginal Likelihood Gradient.</strong> Derive the gradient of the GP marginal likelihood with respect to a kernel hyperparameter (<em>k), expressing the result in terms of (K</em>^{-1}) and derivatives of (K_).</p></li>
 <li><p><strong>Computational Scaling.</strong> For an inducing point approximation with (m) inducing points, show how the computational cost scales in terms of (n) and (m). Discuss trade-offs between accuracy and efficiency.</p></li>
 <li><p><strong>Sample Path Regularity.</strong> For the squared exponential kernel, discuss the almost-sure smoothness of GP sample paths and contrast this with the Sobolev regularity implied by Matérn kernels.</p></li>

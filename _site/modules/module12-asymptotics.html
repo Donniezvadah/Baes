@@ -69,6 +69,35 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <link rel="stylesheet" href="../styles.css">
 </head>
@@ -304,14 +333,14 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#posterior-consistency" id="toc-posterior-consistency" class="nav-link" data-scroll-target="#posterior-consistency">1. Posterior Consistency</a>
   <ul class="collapse">
   <li><a href="#setup" id="toc-setup" class="nav-link" data-scroll-target="#setup">1.1 Setup</a></li>
-  <li><a href="#definition-12.1-posterior-consistency" id="toc-definition-12.1-posterior-consistency" class="nav-link" data-scroll-target="#definition-12.1-posterior-consistency">Definition 12.1 (Posterior Consistency)</a></li>
+  <li><a href="#def-posterior-consistency" id="toc-def-posterior-consistency" class="nav-link" data-scroll-target="#def-posterior-consistency">Definition 12.1 (Posterior Consistency)</a></li>
   <li><a href="#kullbackleibler-support-and-schwartzs-theorem" id="toc-kullbackleibler-support-and-schwartzs-theorem" class="nav-link" data-scroll-target="#kullbackleibler-support-and-schwartzs-theorem">1.2 Kullback–Leibler Support and Schwartz’s Theorem</a></li>
-  <li><a href="#theorem-12.2-schwartzs-theorem-informal" id="toc-theorem-12.2-schwartzs-theorem-informal" class="nav-link" data-scroll-target="#theorem-12.2-schwartzs-theorem-informal">Theorem 12.2 (Schwartz’s Theorem, Informal)</a></li>
+  <li><a href="#thm-schwartz" id="toc-thm-schwartz" class="nav-link" data-scroll-target="#thm-schwartz">Theorem 12.2 (Schwartz’s Theorem, Informal)</a></li>
   </ul></li>
   <li><a href="#misspecified-models" id="toc-misspecified-models" class="nav-link" data-scroll-target="#misspecified-models">2. Misspecified Models</a>
   <ul class="collapse">
   <li><a href="#pseudo-true-parameter" id="toc-pseudo-true-parameter" class="nav-link" data-scroll-target="#pseudo-true-parameter">2.1 Pseudo-True Parameter</a></li>
-  <li><a href="#theorem-12.3-posterior-concentration-under-misspecification-informal" id="toc-theorem-12.3-posterior-concentration-under-misspecification-informal" class="nav-link" data-scroll-target="#theorem-12.3-posterior-concentration-under-misspecification-informal">Theorem 12.3 (Posterior Concentration under Misspecification, Informal)</a></li>
+  <li><a href="#thm-misspecification" id="toc-thm-misspecification" class="nav-link" data-scroll-target="#thm-misspecification">Theorem 12.3 (Posterior Concentration under Misspecification, Informal)</a></li>
   </ul></li>
   <li><a href="#posterior-contraction-rates" id="toc-posterior-contraction-rates" class="nav-link" data-scroll-target="#posterior-contraction-rates">3. Posterior Contraction Rates</a>
   <ul class="collapse">
@@ -359,38 +388,52 @@ ul.task-list li input[type="checkbox"] {
 <h3 class="anchored" data-anchor-id="setup">1.1 Setup</h3>
 <p>Let (X_1, X_2, ) be i.i.d. from a distribution (P_{<em>0}) in a model ({P</em>: }). Let () be a prior on (), and ((X_1, , X_n)) the posterior.</p>
 </section>
-<section id="definition-12.1-posterior-consistency" class="level3">
-<h3 class="anchored" data-anchor-id="definition-12.1-posterior-consistency">Definition 12.1 (Posterior Consistency)</h3>
-<p>The posterior is <strong>(weakly) consistent</strong> at (_0) if for every weak neighborhood (U) of (<em>0), [ (U^c X_1, , X_n) ] (P</em>{_0})-almost surely as (n ).</p>
+<section id="def-posterior-consistency" class="level3">
+<h3 class="anchored" data-anchor-id="def-posterior-consistency">Definition 12.1 (Posterior Consistency)</h3>
+<p>The posterior is <strong>(weakly) consistent</strong> at (_0) if for every weak neighborhood (U) of (<em>0), <span class="math display">\[
+\Pi(U^c \mid X_1, \dots, X_n) \to 0
+\]</span> (P</em>{_0})-almost surely as (n ).</p>
 <p>Stronger modes of consistency (e.g., in total variation or Hellinger distance) can also be defined.</p>
 </section>
 <section id="kullbackleibler-support-and-schwartzs-theorem" class="level3">
 <h3 class="anchored" data-anchor-id="kullbackleibler-support-and-schwartzs-theorem">1.2 Kullback–Leibler Support and Schwartz’s Theorem</h3>
-<p>Define the Kullback–Leibler divergence [ K(P_{<em>0}, P</em>) = , P_{_0}(dx). ]</p>
+<p>Define the Kullback–Leibler divergence <span class="math display">\[
+K(P_{\theta_0}, P_\theta) = \int \log \frac{p_{\theta_0}(x)}{p_\theta(x)} \, P_{\theta_0}(dx).
+\]</span></p>
 </section>
-<section id="theorem-12.2-schwartzs-theorem-informal" class="level3">
-<h3 class="anchored" data-anchor-id="theorem-12.2-schwartzs-theorem-informal">Theorem 12.2 (Schwartz’s Theorem, Informal)</h3>
-<p>If the prior () assigns positive mass to all Kullback–Leibler neighborhoods of (<em>0), i.e., [ ({: K(P</em>{<em>0}, P</em>) &lt; }) &gt; 0 &gt; 0, ] then the posterior is weakly consistent at (_0) under suitable measurability and separability conditions.</p>
-<p><em>Idea of proof:</em> Use tests separating (_0) from complement sets and control the posterior mass assigned to these sets via likelihood ratios and prior mass in Kullback–Leibler neighborhoods.</p>
+<section id="thm-schwartz" class="level3">
+<h3 class="anchored" data-anchor-id="thm-schwartz">Theorem 12.2 (Schwartz’s Theorem, Informal)</h3>
+<p>If the prior () assigns positive mass to all Kullback–Leibler neighborhoods of (_0), i.e., <span class="math display">\[
+\Pi\big(\{\theta : K(P_{\theta_0}, P_\theta) &lt; \varepsilon\}\big) &gt; 0 \quad \forall \varepsilon &gt; 0,
+\]</span> then the posterior is weakly consistent at (_0) under suitable measurability and separability conditions.</p>
+<p><em>Idea of proof:</em> Fix a neighborhood (U) of (_0) and consider its complement (U^c). For suitable subsets of (U^c), construct uniformly consistent hypothesis tests separating (_0) from those alternatives. The Kullback–Leibler support condition guarantees that the prior assigns positive mass to small KL-neighborhoods around (<em>0), which control likelihood ratios via the law of large numbers. Combining these ingredients, one shows that the posterior mass of (U^c) must vanish almost surely under (P</em>{_0}) as (n ). A rigorous proof uses coverings of (U^c), existence of tests with exponentially decaying type II error, and exponential bounds on marginal likelihood ratios.</p>
 </section>
 </section>
 <section id="misspecified-models" class="level2">
 <h2 class="anchored" data-anchor-id="misspecified-models">2. Misspecified Models</h2>
 <section id="pseudo-true-parameter" class="level3">
 <h3 class="anchored" data-anchor-id="pseudo-true-parameter">2.1 Pseudo-True Parameter</h3>
-<p>If the true distribution (P_0) is not in the model ({P_}), the posterior may still concentrate around a <strong>pseudo-true parameter</strong> (^<em>) defined as [ ^</em> <em>{} K(P_0, P</em>). ]</p>
+<p>If the true distribution (P_0) is not in the model ({P_}), the posterior may still concentrate around a <strong>pseudo-true parameter</strong> (^*) defined as <span class="math display">\[
+\theta^* \in \arg\min_{\theta \in \Theta} K(P_0, P_\theta).
+\]</span></p>
 </section>
-<section id="theorem-12.3-posterior-concentration-under-misspecification-informal" class="level3">
-<h3 class="anchored" data-anchor-id="theorem-12.3-posterior-concentration-under-misspecification-informal">Theorem 12.3 (Posterior Concentration under Misspecification, Informal)</h3>
-<p>Under regularity conditions, the posterior concentrates in neighborhoods of (^<em>), i.e., for any neighborhood (U) of (^</em>), [ (U^c X_1, , X_n) ] (P_0)-almost surely as (n ).</p>
-<p><em>Idea of proof:</em> Similar to Schwartz’s theorem but centered at (^*) instead of a true parameter in the model; use generalized likelihood ratio arguments.</p>
+<section id="thm-misspecification" class="level3">
+<h3 class="anchored" data-anchor-id="thm-misspecification">Theorem 12.3 (Posterior Concentration under Misspecification, Informal)</h3>
+<p>Under regularity conditions, the posterior concentrates in neighborhoods of (^<em>), i.e., for any neighborhood (U) of (^</em>), <span class="math display">\[
+\Pi(U^c \mid X_1, \dots, X_n) \to 0
+\]</span> (P_0)-almost surely as (n ).</p>
+<p><em>Idea of proof:</em> Replace (P_{_0}) by the true distribution (P_0) and work with the pseudo-true parameter (^<em>) minimizing (K(P_0, P_)). Under regularity conditions ensuring existence and local uniqueness of (^</em>), likelihood ratios still obey a law of large numbers with limit given by KL-divergence. One then constructs tests separating neighborhoods of (^<em>) from distant alternatives (in terms of KL or Hellinger distance) and shows, via generalized likelihood ratio bounds and prior mass conditions near (^</em>), that the posterior probability assigned to sets bounded away from (^*) tends to zero (P_0)-almost surely.</p>
 </section>
 </section>
 <section id="posterior-contraction-rates" class="level2">
 <h2 class="anchored" data-anchor-id="posterior-contraction-rates">3. Posterior Contraction Rates</h2>
 <section id="definition" class="level3">
 <h3 class="anchored" data-anchor-id="definition">3.1 Definition</h3>
-<p>Let (d) be a metric on () (e.g., Hellinger distance between (P_) and (P_{_0})). A sequence (<em>n ) is a <strong>contraction rate</strong> if there exists a sequence of sets (B_n) such that [ (B_n^c X_1, , X_n) ] (P</em>{_0})-almost surely and [ B_n {: d(, _0) M _n} ] for some constant (M).</p>
+<p>Let (d) be a metric on () (e.g., Hellinger distance between (P_) and (P_{_0})). A sequence (<em>n ) is a <strong>contraction rate</strong> if there exists a sequence of sets (B_n) such that <span class="math display">\[
+\Pi(B_n^c \mid X_1, \dots, X_n) \to 0
+\]</span> (P</em>{_0})-almost surely and <span class="math display">\[
+B_n \subseteq \{\theta : d(\theta, \theta_0) \le M \varepsilon_n\}
+\]</span> for some constant (M).</p>
 </section>
 <section id="sufficient-conditions" class="level3">
 <h3 class="anchored" data-anchor-id="sufficient-conditions">3.2 Sufficient Conditions</h3>
@@ -423,11 +466,11 @@ ul.task-list li input[type="checkbox"] {
 <section id="problem-set-12-representative-problems" class="level2">
 <h2 class="anchored" data-anchor-id="problem-set-12-representative-problems">5. Problem Set 12 (Representative Problems)</h2>
 <ol type="1">
-<li><p><strong>Schwartz’s Theorem Sketch.</strong> State Schwartz’s theorem rigorously (including topological and measurability conditions) and sketch its proof, emphasizing the construction of tests and the use of Kullback–Leibler neighborhoods.</p></li>
-<li><p><strong>Consistency in Exponential Families.</strong> For a regular exponential family, verify the Kullback–Leibler support condition for a prior with a continuous positive density on (), and conclude posterior consistency.</p></li>
-<li><p><strong>Misspecification Example.</strong> Consider data from a heavy-tailed distribution (e.g., Student-t) while the model assumes Normality. Identify the pseudo-true parameter and discuss posterior concentration around it.</p></li>
-<li><p><strong>Contraction Rate in Gaussian Sequence Model.</strong> In a Gaussian sequence model with appropriate priors (e.g., Gaussian with shrinking variances), derive the posterior contraction rate and compare it to minimax rates.</p></li>
-<li><p><strong>Coverage Analysis.</strong> Analyze the frequentist coverage of Bayesian credible intervals for a simple nonparametric problem (e.g., estimating a density with a Dirichlet process mixture prior), summarizing known results and highlighting phenomena such as undercoverage.</p></li>
+<li><p><strong>Schwartz’s Theorem Sketch.</strong> State Schwartz’s theorem (Theorem <strong>?@thm-schwartz</strong>) rigorously (including topological and measurability conditions) and sketch its proof, emphasizing the construction of tests and the use of Kullback–Leibler neighborhoods.</p></li>
+<li><p><strong>Consistency in Exponential Families.</strong> For a regular exponential family, verify the Kullback–Leibler support condition for a prior with a continuous positive density on (), and conclude posterior consistency via Definition <strong>?@def-posterior-consistency</strong> and Theorem <strong>?@thm-schwartz</strong>.</p></li>
+<li><p><strong>Misspecification Example.</strong> Consider data from a heavy-tailed distribution (e.g., Student-t) while the model assumes Normality. Identify the pseudo-true parameter and discuss posterior concentration around it, relating your conclusions to Theorem <strong>?@thm-misspecification</strong>.</p></li>
+<li><p><strong>Contraction Rate in Gaussian Sequence Model.</strong> In a Gaussian sequence model with appropriate priors (e.g., Gaussian with shrinking variances), derive the posterior contraction rate and compare it to minimax rates, making explicit use of the testing and prior mass conditions in Section 3.</p></li>
+<li><p><strong>Coverage Analysis.</strong> Analyze the frequentist coverage of Bayesian credible intervals for a simple nonparametric problem (e.g., estimating a density with a Dirichlet process mixture prior), summarizing known results and highlighting phenomena such as undercoverage in light of posterior contraction rates and deviations from Bernstein–von Mises behavior.</p></li>
 </ol>
 
 

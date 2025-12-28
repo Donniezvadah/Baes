@@ -69,6 +69,35 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <link rel="stylesheet" href="../styles.css">
 </head>
@@ -308,21 +337,21 @@ ul.task-list li input[type="checkbox"] {
   </ul></li>
   <li><a href="#invariant-distributions-and-detailed-balance" id="toc-invariant-distributions-and-detailed-balance" class="nav-link" data-scroll-target="#invariant-distributions-and-detailed-balance">2. Invariant Distributions and Detailed Balance</a>
   <ul class="collapse">
-  <li><a href="#definition-5.1-invariant-distribution" id="toc-definition-5.1-invariant-distribution" class="nav-link" data-scroll-target="#definition-5.1-invariant-distribution">Definition 5.1 (Invariant Distribution)</a></li>
-  <li><a href="#definition-5.2-detailed-balance-and-reversibility" id="toc-definition-5.2-detailed-balance-and-reversibility" class="nav-link" data-scroll-target="#definition-5.2-detailed-balance-and-reversibility">Definition 5.2 (Detailed Balance and Reversibility)</a></li>
-  <li><a href="#lemma-5.3-detailed-balance-implies-invariance" id="toc-lemma-5.3-detailed-balance-implies-invariance" class="nav-link" data-scroll-target="#lemma-5.3-detailed-balance-implies-invariance">Lemma 5.3 (Detailed Balance Implies Invariance)</a></li>
+  <li><a href="#def-invariant-distribution" id="toc-def-invariant-distribution" class="nav-link" data-scroll-target="#def-invariant-distribution">Definition 5.1 (Invariant Distribution)</a></li>
+  <li><a href="#def-detailed-balance" id="toc-def-detailed-balance" class="nav-link" data-scroll-target="#def-detailed-balance">Definition 5.2 (Detailed Balance and Reversibility)</a></li>
+  <li><a href="#lem-detailed-balance-invariance" id="toc-lem-detailed-balance-invariance" class="nav-link" data-scroll-target="#lem-detailed-balance-invariance">Lemma 5.3 (Detailed Balance Implies Invariance)</a></li>
   <li><a href="#reversibility" id="toc-reversibility" class="nav-link" data-scroll-target="#reversibility">2.1 Reversibility</a></li>
   </ul></li>
   <li><a href="#ergodicity-and-convergence" id="toc-ergodicity-and-convergence" class="nav-link" data-scroll-target="#ergodicity-and-convergence">3. Ergodicity and Convergence</a>
   <ul class="collapse">
   <li><a href="#irreducibility-and-recurrence" id="toc-irreducibility-and-recurrence" class="nav-link" data-scroll-target="#irreducibility-and-recurrence">3.1 Irreducibility and Recurrence</a></li>
-  <li><a href="#theorem-5.4-ergodic-theorem-for-markov-chains" id="toc-theorem-5.4-ergodic-theorem-for-markov-chains" class="nav-link" data-scroll-target="#theorem-5.4-ergodic-theorem-for-markov-chains">Theorem 5.4 (Ergodic Theorem for Markov Chains)</a></li>
+  <li><a href="#thm-ergodic-theorem" id="toc-thm-ergodic-theorem" class="nav-link" data-scroll-target="#thm-ergodic-theorem">Theorem 5.4 (Ergodic Theorem for Markov Chains)</a></li>
   <li><a href="#drift-and-minorization-conditions" id="toc-drift-and-minorization-conditions" class="nav-link" data-scroll-target="#drift-and-minorization-conditions">3.2 Drift and Minorization Conditions</a></li>
-  <li><a href="#theorem-5.5-geometric-ergodicity-via-drift-and-minorization" id="toc-theorem-5.5-geometric-ergodicity-via-drift-and-minorization" class="nav-link" data-scroll-target="#theorem-5.5-geometric-ergodicity-via-drift-and-minorization">Theorem 5.5 (Geometric Ergodicity via Drift and Minorization)</a></li>
+  <li><a href="#thm-geom-ergodicity-drift-minorization" id="toc-thm-geom-ergodicity-drift-minorization" class="nav-link" data-scroll-target="#thm-geom-ergodicity-drift-minorization">Theorem 5.5 (Geometric Ergodicity via Drift and Minorization)</a></li>
   </ul></li>
   <li><a href="#central-limit-theorems-for-markov-chains" id="toc-central-limit-theorems-for-markov-chains" class="nav-link" data-scroll-target="#central-limit-theorems-for-markov-chains">4. Central Limit Theorems for Markov Chains</a>
   <ul class="collapse">
-  <li><a href="#theorem-5.6-clt-for-markov-chains" id="toc-theorem-5.6-clt-for-markov-chains" class="nav-link" data-scroll-target="#theorem-5.6-clt-for-markov-chains">Theorem 5.6 (CLT for Markov Chains)</a></li>
+  <li><a href="#thm-mcmc-clt" id="toc-thm-mcmc-clt" class="nav-link" data-scroll-target="#thm-mcmc-clt">Theorem 5.6 (CLT for Markov Chains)</a></li>
   <li><a href="#asymptotic-variance-and-monte-carlo-error" id="toc-asymptotic-variance-and-monte-carlo-error" class="nav-link" data-scroll-target="#asymptotic-variance-and-monte-carlo-error">4.1 Asymptotic Variance and Monte Carlo Error</a></li>
   </ul></li>
   <li><a href="#relevance-to-bayesian-computation" id="toc-relevance-to-bayesian-computation" class="nav-link" data-scroll-target="#relevance-to-bayesian-computation">5. Relevance to Bayesian Computation</a></li>
@@ -360,7 +389,9 @@ ul.task-list li input[type="checkbox"] {
 <h2 class="anchored" data-anchor-id="markov-chains-on-general-state-spaces">1. Markov Chains on General State Spaces</h2>
 <section id="transition-kernels" class="level3">
 <h3 class="anchored" data-anchor-id="transition-kernels">1.1 Transition Kernels</h3>
-<p>Let ((, )) be a measurable space. A <strong>Markov transition kernel</strong> is a map [ K: ] such that:</p>
+<p>Let ((, )) be a measurable space. A <strong>Markov transition kernel</strong> is a map <span class="math display">\[
+K: \mathsf{X} \times \mathcal{X} \to [0,1]
+\]</span> such that:</p>
 <ol type="1">
 <li>For each fixed (x ), the map (A K(x, A)) is a probability measure on ((, )).</li>
 <li>For each fixed (A ), the map (x K(x, A)) is ()-measurable.</li>
@@ -368,23 +399,35 @@ ul.task-list li input[type="checkbox"] {
 </section>
 <section id="markov-chain-definition" class="level3">
 <h3 class="anchored" data-anchor-id="markov-chain-definition">1.2 Markov Chain Definition</h3>
-<p>A sequence of random variables ((X_n)<em>{n }) taking values in () is a <strong>Markov chain</strong> with kernel (K) if [ (X</em>{n+1} A X_0, , X_n) = K(X_n, A) ] for all (n) and (A ), almost surely.</p>
+<p>A sequence of random variables ((X_n)_{n }) taking values in () is a <strong>Markov chain</strong> with kernel (K) if <span class="math display">\[
+\mathbb{P}(X_{n+1} \in A \mid X_0, \dots, X_n) = K(X_n, A)
+\]</span> for all (n) and (A ), almost surely.</p>
 </section>
 </section>
 <section id="invariant-distributions-and-detailed-balance" class="level2">
 <h2 class="anchored" data-anchor-id="invariant-distributions-and-detailed-balance">2. Invariant Distributions and Detailed Balance</h2>
-<section id="definition-5.1-invariant-distribution" class="level3">
-<h3 class="anchored" data-anchor-id="definition-5.1-invariant-distribution">Definition 5.1 (Invariant Distribution)</h3>
-<p>A probability measure () on ((, )) is <strong>invariant</strong> for (K) if [ (A) = _ K(x, A), (dx), A . ]</p>
+<section id="def-invariant-distribution" class="level3">
+<h3 class="anchored" data-anchor-id="def-invariant-distribution">Definition 5.1 (Invariant Distribution)</h3>
+<p>A probability measure () on ((, )) is <strong>invariant</strong> for (K) if <span class="math display">\[
+\pi(A) = \int_\mathsf{X} K(x, A)\, \pi(dx), \quad \forall A \in \mathcal{X}.
+\]</span></p>
 </section>
-<section id="definition-5.2-detailed-balance-and-reversibility" class="level3">
-<h3 class="anchored" data-anchor-id="definition-5.2-detailed-balance-and-reversibility">Definition 5.2 (Detailed Balance and Reversibility)</h3>
-<p>We say (K) satisfies <strong>detailed balance</strong> with respect to () if, for all measurable sets (A, B ), [ _A (dx) K(x, B) = _B (dx) K(x, A). ] Equivalently, in kernel form, [ (dx) K(x, dy) = (dy) K(y, dx). ]</p>
+<section id="def-detailed-balance" class="level3">
+<h3 class="anchored" data-anchor-id="def-detailed-balance">Definition 5.2 (Detailed Balance and Reversibility)</h3>
+<p>We say (K) satisfies <strong>detailed balance</strong> with respect to () if, for all measurable sets (A, B ), <span class="math display">\[
+\int_A \pi(dx) K(x, B) = \int_B \pi(dx) K(x, A).
+\]</span> Equivalently, in kernel form, <span class="math display">\[
+\pi(dx) K(x, dy) = \pi(dy) K(y, dx).
+\]</span></p>
 </section>
-<section id="lemma-5.3-detailed-balance-implies-invariance" class="level3">
-<h3 class="anchored" data-anchor-id="lemma-5.3-detailed-balance-implies-invariance">Lemma 5.3 (Detailed Balance Implies Invariance)</h3>
+<section id="lem-detailed-balance-invariance" class="level3">
+<h3 class="anchored" data-anchor-id="lem-detailed-balance-invariance">Lemma 5.3 (Detailed Balance Implies Invariance)</h3>
 <p>If (K) satisfies detailed balance with respect to (), then () is invariant for (K).</p>
-<p><em>Proof:</em> For any (A ), [ _ (dx) K(x, A) = _A (dx) K(x, ) = _A (dx) = (A), ] using detailed balance with (B = ) and the fact that (K(x, ) = 1).</p>
+<p><em>Proof:</em> By detailed balance, <span class="math display">\[
+\int_A \pi(dx) = \int_A \pi(dx) K(x, \mathsf{X}) = \int_\mathsf{X} \pi(dx) K(x, A)
+\]</span> for all measurable (A ), where we used that (K(x, ) = 1) for all (x). This is exactly the invariance condition <span class="math display">\[
+\pi(A) = \int_\mathsf{X} K(x, A) \, \pi(dx), \quad \forall A \in \mathcal{X},
+\]</span> as in Definition <strong>?@def-invariant-distribution</strong>. Hence () is invariant for (K). ()</p>
 </section>
 <section id="reversibility" class="level3">
 <h3 class="anchored" data-anchor-id="reversibility">2.1 Reversibility</h3>
@@ -401,31 +444,50 @@ ul.task-list li input[type="checkbox"] {
 <li><strong>Harris recurrence:</strong> The chain visits every set of positive ()-measure infinitely often with probability 1.</li>
 </ul>
 </section>
-<section id="theorem-5.4-ergodic-theorem-for-markov-chains" class="level3">
-<h3 class="anchored" data-anchor-id="theorem-5.4-ergodic-theorem-for-markov-chains">Theorem 5.4 (Ergodic Theorem for Markov Chains)</h3>
-<p>Let ((X_n)) be an irreducible, aperiodic, positive Harris recurrent Markov chain with invariant distribution (). For any integrable function (f: ), [ _{k=1}^n f(X_k) f, d n . ]</p>
-<p><em>Proof idea:</em> Use the theory of Harris recurrent chains and ergodic theorems on general state spaces (see, e.g., Meyn &amp; Tweedie). The invariant distribution () is unique under these conditions.</p>
+<section id="thm-ergodic-theorem" class="level3">
+<h3 class="anchored" data-anchor-id="thm-ergodic-theorem">Theorem 5.4 (Ergodic Theorem for Markov Chains)</h3>
+<p>Let ((X_n)) be an irreducible, aperiodic, positive Harris recurrent Markov chain with invariant distribution (). For any integrable function (f: ), <span class="math display">\[
+\frac{1}{n} \sum_{k=1}^n f(X_k) \to \int f\, d\pi \quad \text{almost surely as } n \to \infty.
+\]</span></p>
+<p><em>Proof sketch:</em> Under irreducibility, aperiodicity, and positive Harris recurrence, there exists a unique invariant distribution (), and the chain can be represented in terms of <strong>regeneration times</strong> (e.g., via Nummelin splitting). One constructs i.i.d. regeneration cycles whose lengths have finite mean and shows that <span class="math display">\[
+\frac{1}{n} \sum_{k=1}^n f(X_k)
+\]</span> can be decomposed into an average over cycles plus a negligible boundary term. The strong law of large numbers for i.i.d. cycles then implies convergence of the time average to the space average (f d). See, for example, Meyn &amp; Tweedie for a full proof in the general state-space setting. ()</p>
 </section>
 <section id="drift-and-minorization-conditions" class="level3">
 <h3 class="anchored" data-anchor-id="drift-and-minorization-conditions">3.2 Drift and Minorization Conditions</h3>
 <p>To obtain quantitative convergence rates, we use drift and minorization.</p>
 <ul>
-<li><p><strong>Drift condition:</strong> There exist a function (V: [1, )), constants (&lt; 1), (b &lt; ), and a small set (C) such that [ K V(x) := V(y) K(x, dy) V(x) + b _C(x) x. ]</p></li>
-<li><p><strong>Minorization condition:</strong> There exist (&gt;0), a probability measure (), and a small set (C) such that for all (x C) and (A ), [ K(x, A) (A). ]</p></li>
+<li><p><strong>Drift condition:</strong> There exist a function (V: [1, )), constants (&lt; 1), (b &lt; ), and a small set (C) such that <span class="math display">\[
+K V(x) := \int V(y) K(x, dy) \le \lambda V(x) + b \mathbf{1}_C(x) \quad \forall x.
+\]</span></p></li>
+<li><p><strong>Minorization condition:</strong> There exist (&gt;0), a probability measure (), and a small set (C) such that for all (x C) and (A ), <span class="math display">\[
+K(x, A) \ge \varepsilon \nu(A).
+\]</span></p></li>
 </ul>
 </section>
-<section id="theorem-5.5-geometric-ergodicity-via-drift-and-minorization" class="level3">
-<h3 class="anchored" data-anchor-id="theorem-5.5-geometric-ergodicity-via-drift-and-minorization">Theorem 5.5 (Geometric Ergodicity via Drift and Minorization)</h3>
-<p>If a Markov chain satisfies a suitable drift condition and minorization condition, then it is geometrically ergodic: there exist constants (M &lt; ) and ((0,1)) such that [ | K^n(x, ) - () |_{} M V(x) ^n, n, x. ]</p>
-<p><em>Proof idea:</em> Use Foster–Lyapunov criteria and coupling or regeneration methods.</p>
+<section id="thm-geom-ergodicity-drift-minorization" class="level3">
+<h3 class="anchored" data-anchor-id="thm-geom-ergodicity-drift-minorization">Theorem 5.5 (Geometric Ergodicity via Drift and Minorization)</h3>
+<p>If a Markov chain satisfies a suitable drift condition and minorization condition, then it is geometrically ergodic: there exist constants (M &lt; ) and ((0,1)) such that <span class="math display">\[
+\| K^n(x, \cdot) - \pi(\cdot) \|_{\text{TV}} \le M V(x) \rho^n, \quad \forall n, x.
+\]</span></p>
+<p><em>Proof sketch:</em> The drift condition implies that, away from a small set (C), the chain tends to move towards regions where (V) is smaller on average, preventing escape to infinity. The minorization condition on (C) ensures that whenever the chain enters (C), it has a uniform chance (bounded away from zero) to “forget” its past by coupling to a fixed reference measure (). Combining these, one constructs regeneration times with geometrically decaying tails and shows that the total variation distance between (K^n(x, )) and () contracts at a geometric rate controlled by (). This is formalized using Foster–Lyapunov criteria and renewal theory; see standard references on geometric ergodicity for details. ()</p>
 </section>
 </section>
 <section id="central-limit-theorems-for-markov-chains" class="level2">
 <h2 class="anchored" data-anchor-id="central-limit-theorems-for-markov-chains">4. Central Limit Theorems for Markov Chains</h2>
-<section id="theorem-5.6-clt-for-markov-chains" class="level3">
-<h3 class="anchored" data-anchor-id="theorem-5.6-clt-for-markov-chains">Theorem 5.6 (CLT for Markov Chains)</h3>
-<p>Let ((X_n)) be a geometrically ergodic Markov chain with invariant distribution (), and let (f: ) satisfy suitable moment and regularity conditions (e.g., (f L^{2+}()) and a drift condition). Then [ ( <em>{k=1}^n f(X_k) - f ) N(0, <em>f^2), ] where [ <em>f^2 = </em>(f(X_0)) + 2 </em>{k=1}^</em>(f(X_0), f(X_k)). ]</p>
-<p><em>Proof idea:</em> Apply martingale approximation techniques or use spectral theory for reversible chains.</p>
+<section id="thm-mcmc-clt" class="level3">
+<h3 class="anchored" data-anchor-id="thm-mcmc-clt">Theorem 5.6 (CLT for Markov Chains)</h3>
+<p>Let ((X_n)) be a geometrically ergodic Markov chain with invariant distribution (), and let (f: ) satisfy suitable moment and regularity conditions (e.g., (f L^{2+}()) and a drift condition). Then <span class="math display">\[
+\sqrt{n}\Big( \frac{1}{n} \sum_{k=1}^n f(X_k) - \pi f \Big) \overset{d}{\to} N(0, \sigma_f^2),
+\]</span> where <span class="math display">\[
+\sigma_f^2 = \operatorname{Var}_\pi(f(X_0)) + 2 \sum_{k=1}^\infty \operatorname{Cov}_\pi(f(X_0), f(X_k)).
+\]</span></p>
+<p><em>Proof sketch:</em> One classical route (Gordin’s method) writes the centered function (f - f) as a <strong>coboundary plus a remainder</strong>, <span class="math display">\[
+f(X_k) - \pi f
+  = M_k - M_{k-1} + R_k,
+\]</span> where ((M_k)) is a martingale adapted to the Markov chain filtration and the remainder (R_k) is negligible in the sense that its contribution to the normalized sum vanishes. Geometric ergodicity and moment conditions ensure that the remainder term is small and that the martingale increments have finite second moments. Applying the martingale central limit theorem to the partial sums of (M_k - M_{k-1}) yields the stated CLT with asymptotic variance <span class="math display">\[
+\sigma_f^2 = \operatorname{Var}_\pi(f(X_0)) + 2 \sum_{k=1}^\infty \operatorname{Cov}_\pi(f(X_0), f(X_k)),
+\]</span> which is finite under the assumed conditions. Alternative proofs use spectral theory when the chain is reversible.</p>
 </section>
 <section id="asymptotic-variance-and-monte-carlo-error" class="level3">
 <h3 class="anchored" data-anchor-id="asymptotic-variance-and-monte-carlo-error">4.1 Asymptotic Variance and Monte Carlo Error</h3>
@@ -444,11 +506,11 @@ ul.task-list li input[type="checkbox"] {
 <section id="problem-set-5-representative-problems" class="level2">
 <h2 class="anchored" data-anchor-id="problem-set-5-representative-problems">6. Problem Set 5 (Representative Problems)</h2>
 <ol type="1">
-<li><p><strong>Detailed Balance and Invariance.</strong> Prove Lemma 5.3 in full measure-theoretic generality, carefully handling ()-algebras and integrals.</p></li>
-<li><p><strong>Simple Geometric Ergodicity Check.</strong> Consider a random-walk Metropolis chain on () with Gaussian proposal and Gaussian target. Show that it satisfies a drift condition and deduce geometric ergodicity.</p></li>
-<li><p><strong>Non-Geometric Ergodicity Example.</strong> Construct or study a heavy-tailed target distribution for which the corresponding random-walk Metropolis chain is not geometrically ergodic. Use drift condition failure as justification.</p></li>
-<li><p><strong>CLT Verification.</strong> For a reversible Markov chain with compact state space and continuous transition density, outline a proof of Theorem 5.6 using spectral decomposition.</p></li>
-<li><p><strong>Asymptotic Variance Estimation.</strong> Describe how to estimate (_f^2) from a finite MCMC sample using batch means or spectral variance estimators, and discuss consistency of these estimators.</p></li>
+<li><p><strong>Detailed Balance and Invariance.</strong> Prove Lemma <strong>?@lem-detailed-balance-invariance</strong> in full measure-theoretic generality, carefully handling ()-algebras and integrals.</p></li>
+<li><p><strong>Simple Geometric Ergodicity Check.</strong> Consider a random-walk Metropolis chain on () with Gaussian proposal and Gaussian target. Show that it satisfies a drift condition and deduce geometric ergodicity using Theorem <strong>?@thm-geom-ergodicity-drift-minorization</strong>.</p></li>
+<li><p><strong>Non-Geometric Ergodicity Example.</strong> Construct or study a heavy-tailed target distribution for which the corresponding random-walk Metropolis chain is not geometrically ergodic. Explain how failure of the assumptions of Theorem <strong>?@thm-geom-ergodicity-drift-minorization</strong> manifests in this example.</p></li>
+<li><p><strong>CLT Verification.</strong> For a reversible Markov chain with compact state space and continuous transition density, outline a proof of Theorem <strong>?@thm-mcmc-clt</strong> using spectral decomposition.</p></li>
+<li><p><strong>Asymptotic Variance Estimation.</strong> Describe how to estimate (_f^2) from a finite MCMC sample using batch means or spectral variance estimators, and discuss consistency of these estimators in light of Theorem <strong>?@thm-mcmc-clt</strong>.</p></li>
 </ol>
 
 

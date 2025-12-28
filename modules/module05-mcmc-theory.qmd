@@ -12,9 +12,9 @@ This module develops the theory of Markov chains on general state spaces, focusi
 ### 1.1 Transition Kernels
 
 Let \((\mathsf{X}, \mathcal{X})\) be a measurable space. A **Markov transition kernel** is a map
-5959
+$$
  K: \mathsf{X} \times \mathcal{X} \to [0,1]
-5959
+$$
 such that:
 
 1. For each fixed \(x \in \mathsf{X}\), the map \(A \mapsto K(x, A)\) is a probability measure on \((\mathsf{X}, \mathcal{X})\).
@@ -23,40 +23,44 @@ such that:
 ### 1.2 Markov Chain Definition
 
 A sequence of random variables \((X_n)_{n \ge 0}\) taking values in \(\mathsf{X}\) is a **Markov chain** with kernel \(K\) if
-5959
+$$
  \mathbb{P}(X_{n+1} \in A \mid X_0, \dots, X_n) = K(X_n, A)
-5959
+$$
 for all \(n\) and \(A \in \mathcal{X}\), almost surely.
 
 ## 2. Invariant Distributions and Detailed Balance
 
-### Definition 5.1 (Invariant Distribution)
+### Definition 5.1 (Invariant Distribution) {#def-invariant-distribution}
 
 A probability measure \(\pi\) on \((\mathsf{X}, \mathcal{X})\) is **invariant** for \(K\) if
-5959
+$$
  \pi(A) = \int_\mathsf{X} K(x, A)\, \pi(dx), \quad \forall A \in \mathcal{X}.
-5959
+$$
 
-### Definition 5.2 (Detailed Balance and Reversibility)
+### Definition 5.2 (Detailed Balance and Reversibility) {#def-detailed-balance}
 
 We say \(K\) satisfies **detailed balance** with respect to \(\pi\) if, for all measurable sets \(A, B \in \mathcal{X}\),
-5959
+$$
  \int_A \pi(dx) K(x, B) = \int_B \pi(dx) K(x, A).
-5959
+$$
 Equivalently, in kernel form,
-5959
+$$
  \pi(dx) K(x, dy) = \pi(dy) K(y, dx).
-5959
+$$
 
-### Lemma 5.3 (Detailed Balance Implies Invariance)
+### Lemma 5.3 (Detailed Balance Implies Invariance) {#lem-detailed-balance-invariance}
 
 If \(K\) satisfies detailed balance with respect to \(\pi\), then \(\pi\) is invariant for \(K\).
 
-*Proof:* For any \(A \in \mathcal{X}\),
-5959
- \int_\mathsf{X} \pi(dx) K(x, A) = \int_A \pi(dx) K(x, \mathsf{X}) = \int_A \pi(dx) = \pi(A),
-5959
-using detailed balance with \(B = \mathsf{X}\) and the fact that \(K(x, \mathsf{X}) = 1\).
+*Proof:* By detailed balance,
+$$
+ \int_A \pi(dx) = \int_A \pi(dx) K(x, \mathsf{X}) = \int_\mathsf{X} \pi(dx) K(x, A)
+$$
+for all measurable \(A \in \mathcal{X}\), where we used that \(K(x, \mathsf{X}) = 1\) for all \(x\). This is exactly the invariance condition
+$$
+ \pi(A) = \int_\mathsf{X} K(x, A) \, \pi(dx), \quad \forall A \in \mathcal{X},
+$$
+as in Definition @def-invariant-distribution. Hence \(\pi\) is invariant for \(K\). \(\square\)
 
 ### 2.1 Reversibility
 
@@ -71,52 +75,65 @@ We adopt the standard framework of Harris chains.
 - **Irreducibility:** There exists a nontrivial measure \(\varphi\) on \((\mathsf{X}, \mathcal{X})\) such that for each \(A \in \mathcal{X}\) with \(\varphi(A) > 0\) and each \(x \in \mathsf{X}\), there exists \(n\) with \(K^n(x, A) > 0\).
 - **Harris recurrence:** The chain visits every set of positive \(\varphi\)-measure infinitely often with probability 1.
 
-### Theorem 5.4 (Ergodic Theorem for Markov Chains)
+### Theorem 5.4 (Ergodic Theorem for Markov Chains) {#thm-ergodic-theorem}
 
 Let \((X_n)\) be an irreducible, aperiodic, positive Harris recurrent Markov chain with invariant distribution \(\pi\). For any integrable function \(f: \mathsf{X} \to \mathbb{R}\),
-5959
+$$
  \frac{1}{n} \sum_{k=1}^n f(X_k) \to \int f\, d\pi \quad \text{almost surely as } n \to \infty.
-5959
+$$
 
-*Proof idea:* Use the theory of Harris recurrent chains and ergodic theorems on general state spaces (see, e.g., Meyn & Tweedie). The invariant distribution \(\pi\) is unique under these conditions.
+*Proof sketch:* Under irreducibility, aperiodicity, and positive Harris recurrence, there exists a unique invariant distribution \(\pi\), and the chain can be represented in terms of **regeneration times** (e.g., via Nummelin splitting). One constructs i.i.d. regeneration cycles whose lengths have finite mean and shows that
+$$
+ \frac{1}{n} \sum_{k=1}^n f(X_k)
+$$
+can be decomposed into an average over cycles plus a negligible boundary term. The strong law of large numbers for i.i.d. cycles then implies convergence of the time average to the space average \(\int f d\pi\). See, for example, Meyn & Tweedie for a full proof in the general state-space setting. \(\square\)
 
 ### 3.2 Drift and Minorization Conditions
 
 To obtain quantitative convergence rates, we use drift and minorization.
 
 - **Drift condition:** There exist a function \(V: \mathsf{X} \to [1, \infty)\), constants \(\lambda < 1\), \(b < \infty\), and a small set \(C\) such that
-  5959
+  $$
    K V(x) := \int V(y) K(x, dy) \le \lambda V(x) + b \mathbf{1}_C(x) \quad \forall x.
-  5959
+  $$
 
 - **Minorization condition:** There exist \(\varepsilon>0\), a probability measure \(\nu\), and a small set \(C\) such that for all \(x \in C\) and \(A \in \mathcal{X}\),
-  5959
+  $$
    K(x, A) \ge \varepsilon \nu(A).
-  5959
+  $$
 
-### Theorem 5.5 (Geometric Ergodicity via Drift and Minorization)
+### Theorem 5.5 (Geometric Ergodicity via Drift and Minorization) {#thm-geom-ergodicity-drift-minorization}
 
 If a Markov chain satisfies a suitable drift condition and minorization condition, then it is geometrically ergodic: there exist constants \(M < \infty\) and \(\rho \in (0,1)\) such that
-5959
+$$
  \| K^n(x, \cdot) - \pi(\cdot) \|_{\text{TV}} \le M V(x) \rho^n, \quad \forall n, x.
-5959
+$$
 
-*Proof idea:* Use Foster–Lyapunov criteria and coupling or regeneration methods.
+*Proof sketch:* The drift condition implies that, away from a small set \(C\), the chain tends to move towards regions where \(V\) is smaller on average, preventing escape to infinity. The minorization condition on \(C\) ensures that whenever the chain enters \(C\), it has a uniform chance (bounded away from zero) to "forget" its past by coupling to a fixed reference measure \(\nu\). Combining these, one constructs regeneration times with geometrically decaying tails and shows that the total variation distance between \(K^n(x, \cdot)\) and \(\pi\) contracts at a geometric rate controlled by \(\rho\). This is formalized using Foster–Lyapunov criteria and renewal theory; see standard references on geometric ergodicity for details. \(\square\)
 
 ## 4. Central Limit Theorems for Markov Chains
 
-### Theorem 5.6 (CLT for Markov Chains)
+### Theorem 5.6 (CLT for Markov Chains) {#thm-mcmc-clt}
 
 Let \((X_n)\) be a geometrically ergodic Markov chain with invariant distribution \(\pi\), and let \(f: \mathsf{X} \to \mathbb{R}\) satisfy suitable moment and regularity conditions (e.g., \(f \in L^{2+\delta}(\pi)\) and a drift condition). Then
-5959
+$$
  \sqrt{n}\Big( \frac{1}{n} \sum_{k=1}^n f(X_k) - \pi f \Big) \overset{d}{\to} N(0, \sigma_f^2),
-5959
+$$
 where
-5959
+$$
  \sigma_f^2 = \operatorname{Var}_\pi(f(X_0)) + 2 \sum_{k=1}^\infty \operatorname{Cov}_\pi(f(X_0), f(X_k)).
-5959
+$$
 
-*Proof idea:* Apply martingale approximation techniques or use spectral theory for reversible chains.
+*Proof sketch:* One classical route (Gordin's method) writes the centered function \(f - \pi f\) as a **coboundary plus a remainder**,
+$$
+ f(X_k) - \pi f
+  = M_k - M_{k-1} + R_k,
+$$
+where \((M_k)\) is a martingale adapted to the Markov chain filtration and the remainder \(R_k\) is negligible in the sense that its contribution to the normalized sum vanishes. Geometric ergodicity and moment conditions ensure that the remainder term is small and that the martingale increments have finite second moments. Applying the martingale central limit theorem to the partial sums of \(M_k - M_{k-1}\) yields the stated CLT with asymptotic variance
+$$
+ \sigma_f^2 = \operatorname{Var}_\pi(f(X_0)) + 2 \sum_{k=1}^\infty \operatorname{Cov}_\pi(f(X_0), f(X_k)),
+$$
+which is finite under the assumed conditions. Alternative proofs use spectral theory when the chain is reversible.
 
 ### 4.1 Asymptotic Variance and Monte Carlo Error
 
@@ -132,12 +149,12 @@ In Bayesian computation, we typically design \(K\) to have invariant distributio
 
 ## 6. Problem Set 5 (Representative Problems)
 
-1. **Detailed Balance and Invariance.** Prove Lemma 5.3 in full measure-theoretic generality, carefully handling \(\sigma\)-algebras and integrals.
+1. **Detailed Balance and Invariance.** Prove Lemma @lem-detailed-balance-invariance in full measure-theoretic generality, carefully handling \(\sigma\)-algebras and integrals.
 
-2. **Simple Geometric Ergodicity Check.** Consider a random-walk Metropolis chain on \(\mathbb{R}\) with Gaussian proposal and Gaussian target. Show that it satisfies a drift condition and deduce geometric ergodicity.
+2. **Simple Geometric Ergodicity Check.** Consider a random-walk Metropolis chain on \(\mathbb{R}\) with Gaussian proposal and Gaussian target. Show that it satisfies a drift condition and deduce geometric ergodicity using Theorem @thm-geom-ergodicity-drift-minorization.
 
-3. **Non-Geometric Ergodicity Example.** Construct or study a heavy-tailed target distribution for which the corresponding random-walk Metropolis chain is not geometrically ergodic. Use drift condition failure as justification.
+3. **Non-Geometric Ergodicity Example.** Construct or study a heavy-tailed target distribution for which the corresponding random-walk Metropolis chain is not geometrically ergodic. Explain how failure of the assumptions of Theorem @thm-geom-ergodicity-drift-minorization manifests in this example.
 
-4. **CLT Verification.** For a reversible Markov chain with compact state space and continuous transition density, outline a proof of Theorem 5.6 using spectral decomposition.
+4. **CLT Verification.** For a reversible Markov chain with compact state space and continuous transition density, outline a proof of Theorem @thm-mcmc-clt using spectral decomposition.
 
-5. **Asymptotic Variance Estimation.** Describe how to estimate \(\sigma_f^2\) from a finite MCMC sample using batch means or spectral variance estimators, and discuss consistency of these estimators.
+5. **Asymptotic Variance Estimation.** Describe how to estimate \(\sigma_f^2\) from a finite MCMC sample using batch means or spectral variance estimators, and discuss consistency of these estimators in light of Theorem @thm-mcmc-clt.

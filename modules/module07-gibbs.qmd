@@ -14,9 +14,9 @@ Let \(X = (X_1, \dots, X_d)\) take values in a product space \(\mathsf{X} = \mat
 ### Definition 7.1 (Full Conditional Distribution) {#def-gibbs-full-conditional}
 
 The **full conditional distribution** of component \(X_j\) given the others is
-5959
+$$
  \pi(x_j \mid x_{-j}) = \frac{\pi(x_j, x_{-j})}{\int_{\mathsf{X}_j} \pi(x_j', x_{-j})\, dx_j'},
-5959
+$$
 whenever the denominator is finite and nonzero.
 
 ## 2. Gibbs Sampler Construction
@@ -99,9 +99,9 @@ Data augmentation introduces latent variables to simplify the full conditional d
 ### Example 7.3 (Probit Regression with Latent Gaussian Variables) {#ex-probit-da}
 
 Consider the probit model
-5959
+$$
  Y_i = \mathbf{1}\{ Z_i > 0 \}, \quad Z_i = x_i^\top \beta + \varepsilon_i, \quad \varepsilon_i \sim N(0,1),
-5959
+$$
 with prior \(\beta \sim N_p(m_0, V_0)\).
 
 Introduce latent variables \(Z_i\). The full conditionals are:

@@ -69,6 +69,35 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <link rel="stylesheet" href="../styles.css">
 </head>
@@ -303,7 +332,7 @@ ul.task-list li input[type="checkbox"] {
   <ul class="collapse">
   <li><a href="#map-estimation" id="toc-map-estimation" class="nav-link" data-scroll-target="#map-estimation">1. MAP Estimation</a>
   <ul class="collapse">
-  <li><a href="#definition" id="toc-definition" class="nav-link" data-scroll-target="#definition">1.1 Definition</a></li>
+  <li><a href="#def-map" id="toc-def-map" class="nav-link" data-scroll-target="#def-map">Definition 11.1 (MAP Estimator)</a></li>
   <li><a href="#relation-to-mle" id="toc-relation-to-mle" class="nav-link" data-scroll-target="#relation-to-mle">1.2 Relation to MLE</a></li>
   </ul></li>
   <li><a href="#gradient-based-optimization" id="toc-gradient-based-optimization" class="nav-link" data-scroll-target="#gradient-based-optimization">2. Gradient-Based Optimization</a>
@@ -355,9 +384,13 @@ ul.task-list li input[type="checkbox"] {
 <p>This module focuses on optimization problems arising in Bayesian inference, especially Maximum A Posteriori (MAP) estimation. We study gradient-based optimization methods, Newton and quasi-Newton methods, convexity vs non-convexity of posteriors, and relationships between optimization and sampling.</p>
 <section id="map-estimation" class="level2">
 <h2 class="anchored" data-anchor-id="map-estimation">1. MAP Estimation</h2>
-<section id="definition" class="level3">
-<h3 class="anchored" data-anchor-id="definition">1.1 Definition</h3>
-<p>Let ((x)) denote the posterior density of () given data (x). A <strong>MAP estimator</strong> is [ <em>{} </em>{} (x). ] Equivalently, it minimizes the negative log-posterior: [ <em>{} </em>{} {-(x)}. ]</p>
+<section id="def-map" class="level3">
+<h3 class="anchored" data-anchor-id="def-map">Definition 11.1 (MAP Estimator)</h3>
+<p>Let ((x)) denote the posterior density of () given data (x). A <strong>MAP estimator</strong> is <span class="math display">\[
+\hat{\theta}_{\text{MAP}} \in \arg\max_{\theta} \pi(\theta \mid x).
+\]</span> Equivalently, it minimizes the negative log-posterior: <span class="math display">\[
+\hat{\theta}_{\text{MAP}} \in \arg\min_{\theta} \{-\log \pi(\theta \mid x)\}.
+\]</span></p>
 </section>
 <section id="relation-to-mle" class="level3">
 <h3 class="anchored" data-anchor-id="relation-to-mle">1.2 Relation to MLE</h3>
@@ -369,7 +402,11 @@ ul.task-list li input[type="checkbox"] {
 <h2 class="anchored" data-anchor-id="gradient-based-optimization">2. Gradient-Based Optimization</h2>
 <section id="first-order-methods" class="level3">
 <h3 class="anchored" data-anchor-id="first-order-methods">2.1 First-Order Methods</h3>
-<p>Let [ L() = -(x) ] be the objective function. Gradient descent iterations are given by [ _{k+1} = _k - _k L(_k), ] where (_k &gt; 0) is a step size.</p>
+<p>Let <span class="math display">\[
+L(\theta) = -\log \pi(\theta \mid x)
+\]</span> be the objective function. Gradient descent iterations are given by <span class="math display">\[
+\theta_{k+1} = \theta_k - \eta_k \nabla L(\theta_k),
+\]</span> where (_k &gt; 0) is a step size.</p>
 <p>Under standard conditions (Lipschitz gradient, suitable step-size schedule), gradient descent converges to a local minimum of (L).</p>
 </section>
 <section id="stochastic-optimization" class="level3">
@@ -381,8 +418,28 @@ ul.task-list li input[type="checkbox"] {
 <h2 class="anchored" data-anchor-id="newton-and-quasi-newton-methods">3. Newton and Quasi-Newton Methods</h2>
 <section id="newtons-method" class="level3">
 <h3 class="anchored" data-anchor-id="newtons-method">3.1 Newton’s Method</h3>
-<p>Newton’s method uses second-order information: [ _{k+1} = _k - H(_k)^{-1} L(_k), ] where (H() = ^2 L()) is the Hessian.</p>
+<p>Newton’s method uses second-order information: <span class="math display">\[
+\theta_{k+1} = \theta_k - H(\theta_k)^{-1} \nabla L(\theta_k),
+\]</span> where (H() = ^2 L()) is the Hessian.</p>
 <p>Under conditions of local strong convexity and smoothness, Newton’s method converges quadratically to a local minimizer.</p>
+<div id="thm-newton-quadratic" class="theorem">
+<p><span class="theorem-title"><strong>Theorem 1</strong></span> <strong>Theorem 11.1 (Local Quadratic Convergence of Newton’s Method).</strong></p>
+<p>Let (L: ^d ) be twice continuously differentiable, and suppose that:</p>
+<ul>
+<li>there exists a minimizer (^<em>) of (L) such that (L(^</em>) = 0),</li>
+<li>the Hessian (H(^<em>) = ^2 L(^</em>)) is positive-definite,</li>
+<li>(^2 L()) is Lipschitz continuous in a neighborhood of (^*).</li>
+</ul>
+<p>Then there exists a neighborhood (U) of (^*) such that for any initial point (_0 U), the Newton iterates <span class="math display">\[
+\theta_{k+1} = \theta_k - H(\theta_k)^{-1} \nabla L(\theta_k)
+\]</span> are well-defined, remain in (U), and converge quadratically to (^*): there exists a constant (C&gt;0) such that for all large (k), <span class="math display">\[
+\|\theta_{k+1} - \theta^*\| \le C \|\theta_k - \theta^*\|^2.
+\]</span></p>
+<p><em>Proof sketch:</em> Expand (L) around (^<em>) using a first-order Taylor expansion and use the Lipschitz continuity of (^2 L) to control the remainder term. In a sufficiently small neighborhood of (^</em>), the Newton update can be written as <span class="math display">\[
+\theta_{k+1} - \theta^*
+  = -H(\theta_k)^{-1}\bigl( \nabla L(\theta_k) - \nabla L(\theta^*) \bigr),
+\]</span> and a further expansion shows that this difference is approximately quadratic in (_k - ^*). Bounding (H(_k)^{-1}) uniformly using positive-definiteness of (H(^*)) and its continuity yields the stated inequality. Standard references in numerical optimization give a detailed proof. ()</p>
+</div>
 </section>
 <section id="quasi-newton-methods" class="level3">
 <h3 class="anchored" data-anchor-id="quasi-newton-methods">3.2 Quasi-Newton Methods</h3>
@@ -390,7 +447,9 @@ ul.task-list li input[type="checkbox"] {
 </section>
 <section id="example-logistic-regression-posterior" class="level3">
 <h3 class="anchored" data-anchor-id="example-logistic-regression-posterior">3.3 Example: Logistic Regression Posterior</h3>
-<p>For the logistic regression posterior with Gaussian prior, the negative log-posterior is convex, and the Hessian is given by [ H() = X^W() X + V_0^{-1}, ] where (W()) is the diagonal matrix of Bernoulli variances. Newton’s method converges rapidly to the MAP under mild conditions.</p>
+<p>For the logistic regression posterior with Gaussian prior, the negative log-posterior is convex, and the Hessian is given by <span class="math display">\[
+H(\beta) = X^\top W(\beta) X + V_0^{-1},
+\]</span> where (W()) is the diagonal matrix of Bernoulli variances. Newton’s method converges rapidly to the MAP under mild conditions.</p>
 </section>
 </section>
 <section id="convexity-non-convexity-and-multiple-modes" class="level2">
@@ -420,11 +479,11 @@ ul.task-list li input[type="checkbox"] {
 <section id="problem-set-11-representative-problems" class="level2">
 <h2 class="anchored" data-anchor-id="problem-set-11-representative-problems">5. Problem Set 11 (Representative Problems)</h2>
 <ol type="1">
-<li><p><strong>MAP vs MLE.</strong> In an exponential family model with conjugate prior, derive conditions under which the MAP estimator equals the MLE. Provide explicit examples where they differ and analyze the influence of hyperparameters.</p></li>
-<li><p><strong>Newton’s Method for Logistic Regression.</strong> Derive the Newton update for the logistic regression posterior with Gaussian prior. Prove local quadratic convergence under appropriate regularity conditions (e.g., strong convexity near the optimum).</p></li>
-<li><p><strong>Quasi-Newton Convergence.</strong> Outline a convergence proof for BFGS under assumptions of smooth, strongly convex objective functions. Discuss how these conditions relate to typical Bayesian posteriors.</p></li>
+<li><p><strong>MAP vs MLE.</strong> In an exponential family model with conjugate prior, derive conditions under which the MAP estimator equals the MLE (see Definition <strong>?@def-map</strong>). Provide explicit examples where they differ and analyze the influence of hyperparameters.</p></li>
+<li><p><strong>Newton’s Method for Logistic Regression.</strong> Derive the Newton update for the logistic regression posterior with Gaussian prior (using the Hessian structure from Module 4). Prove local quadratic convergence under appropriate regularity conditions, following the pattern of Theorem <a href="#thm-newton-quadratic" class="quarto-xref">Theorem&nbsp;1</a>.</p></li>
+<li><p><strong>Quasi-Newton Convergence.</strong> Outline a convergence proof for BFGS under assumptions of smooth, strongly convex objective functions. Discuss how these conditions relate to typical Bayesian posteriors and compare them to those of Theorem <a href="#thm-newton-quadratic" class="quarto-xref">Theorem&nbsp;1</a>.</p></li>
 <li><p><strong>Non-Convex Posterior Example.</strong> Consider a simple Gaussian mixture model with a symmetric prior over component labels. Show that the posterior has multiple symmetric modes and analyze how MAP estimation depends on initialization.</p></li>
-<li><p><strong>Optimization–Sampling Interaction.</strong> Discuss how Laplace approximations around the MAP can be used to construct efficient proposals for MH (e.g., independence samplers), and analyze conditions under which such proposals lead to geometrically ergodic chains.</p></li>
+<li><p><strong>Optimization–Sampling Interaction.</strong> Discuss how Laplace approximations around the MAP can be used to construct efficient proposals for MH (e.g., independence samplers), and analyze conditions under which such proposals lead to geometrically ergodic chains, relating your discussion to the geometric ergodicity results from Module 5.</p></li>
 </ol>
 
 
