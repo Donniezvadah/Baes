@@ -1,0 +1,1181 @@
+[
+  {
+    "objectID": "modules/module03-regression.html",
+    "href": "modules/module03-regression.html",
+    "title": "Module 3: Bayesian Regression",
+    "section": "",
+    "text": "This module develops Bayesian linear regression in a measure-theoretic framework, with Gaussian priors on regression coefficients and (optionally) on the variance. We derive posterior and predictive distributions in closed form and relate ridge regression to MAP estimation.\n\n\nLet \\(Y \\in \\mathbb{R}^n\\) be the response vector, \\(X \\in \\mathbb{R}^{n \\times p}\\) the design matrix, and \\(\\beta \\in \\mathbb{R}^p\\) the regression coefficients.\n\n\nAssume\n\\[\nY \\mid X, \\beta, \\sigma^2 \\sim N_n(X \\beta, \\sigma^2 I_n).\n\\]\nThe corresponding density with respect to Lebesgue measure on \\(\\mathbb{R}^n\\) is\n\\[\np(y \\mid \\beta, \\sigma^2)\n   = (2\\pi \\sigma^2)^{-n/2}\n     \\exp\\left\\{-\\frac{1}{2\\sigma^2} \\lVert y - X\\beta \\rVert^2 \\right\\}.\n\\]\n\n\n\nAssume initially that \\(\\sigma^2\\) is known and fixed. Place a multivariate normal prior on \\(\\beta\\):\n\\[\n\\beta \\sim N_p(m_0, V_0),\n\\]\nwith \\(V_0\\) symmetric positive-definite.\n\n\n\n\n\n\nUnder the model above, the posterior distribution of \\(\\beta\\) given \\(y\\) is\n\\[\n\\beta \\mid y, X, \\sigma^2 \\sim N_p(m_n, V_n),\n\\]\nwhere\n\\[\nV_n^{-1} = V_0^{-1} + \\frac{1}{\\sigma^2} X^\\top X, \\qquad\nm_n = V_n \\left( V_0^{-1} m_0 + \\frac{1}{\\sigma^2} X^\\top y \\right).\n\\]\nProof. We derive the posterior kernel step by step. Write the prior density as\n\\[\n\\pi(\\beta)\n   = (2\\pi)^{-p/2} |V_0|^{-1/2}\n     \\exp\\Bigl\\{-\\tfrac12 (\\beta - m_0)^\\top V_0^{-1} (\\beta - m_0)\\Bigr\\}.\n\\]\nThe likelihood is\n\\[\np(y \\mid \\beta, \\sigma^2)\n   = (2\\pi \\sigma^2)^{-n/2}\n     \\exp\\Bigl\\{-\\tfrac{1}{2\\sigma^2} (y - X\\beta)^\\top (y - X\\beta)\\Bigr\\}.\n\\]\nIgnoring normalizing constants that do not depend on \\(\\beta\\), the joint density of \\((\\beta, y)\\) is proportional to\n\\[\n\\begin{aligned}\n\\pi(\\beta) p(y \\mid \\beta, \\sigma^2)\n&\\propto \\exp\\Bigl\\{-\\tfrac12 (\\beta - m_0)^\\top V_0^{-1} (\\beta - m_0)\n                    - \\tfrac{1}{2\\sigma^2} (y - X\\beta)^\\top (y - X\\beta)\\Bigr\\} \\\\\n&:= \\exp\\bigl\\{-\\tfrac12 Q(\\beta)\\bigr\\}.\n\\end{aligned}\n\\]\nWe now expand the quadratic form \\(Q(\\beta)\\). First term:\n\\[\n(\\beta - m_0)^\\top V_0^{-1} (\\beta - m_0)\n  = \\beta^\\top V_0^{-1} \\beta - 2 m_0^\\top V_0^{-1} \\beta + m_0^\\top V_0^{-1} m_0.\n\\]\nSecond term:\n\\[\n(y - X\\beta)^\\top (y - X\\beta)\n  = y^\\top y - 2 y^\\top X\\beta + \\beta^\\top X^\\top X \\beta.\n\\]\nHence\n\\[\n\\begin{aligned}\nQ(\\beta)\n&= (\\beta - m_0)^\\top V_0^{-1} (\\beta - m_0)\n    + \\frac{1}{\\sigma^2}(y - X\\beta)^\\top (y - X\\beta) \\\\\n&= \\beta^\\top\\bigl(V_0^{-1} + \\sigma^{-2} X^\\top X\\bigr)\\beta\n    - 2\\beta^\\top\\bigl(V_0^{-1} m_0 + \\sigma^{-2} X^\\top y\\bigr)\n    + \\text{const},\n\\end{aligned}\n\\]\nwhere “const” collects all terms not depending on \\(\\beta\\). Define\n\\[\nV_n^{-1} := V_0^{-1} + \\sigma^{-2} X^\\top X, \\qquad\nb_n := V_0^{-1} m_0 + \\sigma^{-2} X^\\top y.\n\\]\nThen\n\\[\nQ(\\beta) = \\beta^\\top V_n^{-1} \\beta - 2 \\beta^\\top b_n + \\text{const}.\n\\]\nComplete the square in \\(\\beta\\) by writing \\(\\beta^\\top V_n^{-1} \\beta - 2\\beta^\\top b_n\\) as\n\\[\n\\begin{aligned}\n\\beta^\\top V_n^{-1} \\beta - 2\\beta^\\top b_n\n&= (\\beta - m_n)^\\top V_n^{-1} (\\beta - m_n) - m_n^\\top V_n^{-1} m_n,\n\\end{aligned}\n\\]\nwhere we define\n\\[\nm_n := V_n b_n = V_n\\bigl(V_0^{-1} m_0 + \\sigma^{-2} X^\\top y\\bigr).\n\\]\nSubstituting back,\n\\[\nQ(\\beta) = (\\beta - m_n)^\\top V_n^{-1}(\\beta - m_n) + \\text{new const}.\n\\]\nTherefore\n\\[\n\\pi(\\beta) p(y \\mid \\beta, \\sigma^2)\n  \\propto \\exp\\Bigl\\{-\\tfrac12 (\\beta - m_n)^\\top V_n^{-1}(\\beta - m_n)\\Bigr\\},\n\\]\nwhich is precisely the kernel of a multivariate Normal density with mean \\(m_n\\) and covariance \\(V_n\\). This identifies the posterior \\(\\beta \\mid y, X, \\sigma^2\\) as \\(N_p(m_n, V_n)\\), as claimed. \\(\\square\\)\n\n\n\n\nIf \\(X^\\top X\\) is invertible (full column rank), then the likelihood is identifiable for \\(\\beta\\).\nIf \\(X^\\top X\\) is singular, the prior regularizes the posterior and ensures \\(V_n\\) is positive-definite provided \\(V_0\\) is.\n\n\n\n\n\nPlace a conjugate prior on \\((\\beta,\\sigma^2)\\):\n\n\\(\\sigma^2 \\sim \\operatorname{Inverse\\text{-}Gamma}(a_0, b_0)\\),\n\\(\\beta \\mid \\sigma^2 \\sim N_p(m_0, \\sigma^2 V_0)\\).\n\n\n\nUnder this prior and Gaussian likelihood, the posterior is\n\\[\n\\sigma^2 \\mid y \\sim \\operatorname{Inverse\\text{-}Gamma}(a_n, b_n),\n\\]\n\\[\n\\beta \\mid \\sigma^2, y \\sim N_p(m_n, \\sigma^2 V_n),\n\\]\nwhere\n\\[\nV_n^{-1} = V_0^{-1} + X^\\top X,\n\\]\n\\[\nm_n = V_n (V_0^{-1} m_0 + X^\\top y),\n\\]\n\\[\na_n = a_0 + \\frac{n}{2},\n\\]\n\\[\nb_n = b_0 + \\tfrac12 \\bigl( y^\\top y + m_0^\\top V_0^{-1} m_0 - m_n^\\top V_n^{-1} m_n \\bigr).\n\\]\nProof. The joint prior density of \\((\\beta, \\sigma^2)\\) (up to normalization) is\n\\[\n\\pi(\\beta, \\sigma^2)\n  \\propto (\\sigma^2)^{-(a_0+1)} \\exp\\Bigl\\{-\\frac{b_0}{\\sigma^2}\\Bigr\\}\n          \\cdot (\\sigma^2)^{-p/2}\n              \\exp\\Bigl\\{-\\frac{1}{2\\sigma^2} (\\beta - m_0)^\\top V_0^{-1}(\\beta - m_0)\\Bigr\\}.\n\\]\nThe likelihood is\n\\[\np(y \\mid \\beta, \\sigma^2)\n  \\propto (\\sigma^2)^{-n/2}\n          \\exp\\Bigl\\{-\\frac{1}{2\\sigma^2}(y - X\\beta)^\\top (y - X\\beta)\\Bigr\\}.\n\\]\nMultiplying prior and likelihood, the joint posterior kernel is\n\\[\n\\begin{aligned}\n\\pi(\\beta, \\sigma^2 \\mid y)\n&\\propto (\\sigma^2)^{-(a_0 + 1 + p/2 + n/2)} \\\\\n&\\quad \\times \\exp\\Bigl\\{-\\frac{1}{2\\sigma^2}\\Bigl[(\\beta - m_0)^\\top V_0^{-1}(\\beta - m_0)\n                                   + (y - X\\beta)^\\top (y - X\\beta)\n                                   + 2 b_0\\Bigr]\\Bigr\\}.\n\\end{aligned}\n\\]\nExpanding the quadratic forms as in the proof of ?@thm-reg-posterior and collecting terms in \\(\\beta\\), we obtain\n\\[\n(\\beta - m_0)^\\top V_0^{-1}(\\beta - m_0) + (y - X\\beta)^\\top (y - X\\beta)\n= (\\beta - m_n)^\\top V_n^{-1} (\\beta - m_n)\n   + y^\\top y + m_0^\\top V_0^{-1} m_0 - m_n^\\top V_n^{-1} m_n,\n\\]\nwith \\(V_n\\) and \\(m_n\\) as defined above. Thus the joint posterior kernel factors as\n\\[\n\\pi(\\beta, \\sigma^2 \\mid y)\n\\propto (\\sigma^2)^{-(a_n+1)}\n          \\exp\\Bigl\\{-\\frac{b_n}{\\sigma^2}\\Bigr\\}\n          \\cdot (\\sigma^2)^{-p/2}\n          \\exp\\Bigl\\{-\\frac{1}{2\\sigma^2} (\\beta - m_n)^\\top V_n^{-1}(\\beta - m_n)\\Bigr\\},\n\\]\nwhere \\(a_n\\) and \\(b_n\\) are as in the statement. Conditioned on \\(\\sigma^2\\), the kernel in \\(\\beta\\) is that of \\(N_p(m_n, \\sigma^2 V_n)\\). Integrating out \\(\\beta\\) contributes only a factor proportional to \\((\\sigma^2)^{p/2}|V_n|^{1/2}\\), which is absorbed into the normalization of the Inverse-Gamma kernel in \\(\\sigma^2\\), yielding the stated marginals. \\(\\square\\)\n\n\n\nIntegrating out \\(\\sigma^2\\) yields a multivariate Student-t distribution for \\(\\beta \\mid y\\), with center \\(m_n\\) and scale related to \\(V_n\\) and \\(b_n / a_n\\).\n\n\n\n\n\n\nThe ridge regression estimator is defined as\n\\[\n\\hat{\\beta}_{\\text{ridge}}\n= \\arg\\min_{\\beta} \\bigl\\{ \\lVert y - X\\beta \\rVert^2 + \\lambda \\lVert \\beta \\rVert^2 \\bigr\\},\n\\]\nfor \\(\\lambda &gt; 0\\).\n\n\n\nConsider the likelihood with known \\(\\sigma^2\\) and prior \\(\\beta \\sim N_p(0, \\tau^2 I_p)\\). The MAP estimator of \\(\\beta\\) is\n\\[\n\\hat{\\beta}_{\\text{MAP}} = (X^\\top X + \\lambda I_p)^{-1} X^\\top y,\n\\]\nwith \\(\\lambda = \\sigma^2/\\tau^2\\), i.e. the ridge estimator with penalty parameter \\(\\lambda\\).\nProof. The log-posterior (up to an additive constant) is\n\\[\n\\log \\pi(\\beta \\mid y)\n  = -\\frac{1}{2\\sigma^2} \\lVert y - X\\beta \\rVert^2\n    -\\frac{1}{2\\tau^2} \\lVert \\beta \\rVert^2.\n\\]\nMaximizing this is equivalent to minimizing\n\\[\nJ(\\beta)\n   := \\lVert y - X\\beta \\rVert^2 + \\lambda \\lVert \\beta \\rVert^2,\n   \\qquad \\lambda = \\sigma^2/\\tau^2.\n\\]\nThe gradient of \\(J\\) with respect to \\(\\beta\\) is\n\\[\n\\nabla_\\beta J(\\beta)\n   = -2 X^\\top (y - X\\beta) + 2\\lambda \\beta\n   = 2(X^\\top X + \\lambda I_p)\\beta - 2X^\\top y.\n\\]\nSetting \\(\\nabla_\\beta J(\\beta) = 0\\) yields the normal equations\n\\[\n(X^\\top X + \\lambda I_p) \\hat{\\beta}_{\\text{MAP}} = X^\\top y,\n\\]\nwhich (since \\(X^\\top X + \\lambda I_p\\) is positive-definite) has the unique solution\n\\[\n\\hat{\\beta}_{\\text{MAP}} = (X^\\top X + \\lambda I_p)^{-1} X^\\top y.\n\\]\nThis is exactly the ridge estimator. \\(\\square\\)\n\n\n\n\n\n\nFor a new design matrix \\(X_{\\text{new}} \\in \\mathbb{R}^{m \\times p}\\), define \\(Y_{\\text{new}} \\mid \\beta, \\sigma^2 \\sim N_m(X_{\\text{new}}\\beta, \\sigma^2 I_m)\\). Under the posterior \\(\\beta \\mid y \\sim N(m_n, V_n)\\),\n\\[\nY_{\\text{new}} \\mid y \\sim N_m\\bigl( X_{\\text{new}} m_n,\n\\; X_{\\text{new}} V_n X_{\\text{new}}^\\top + \\sigma^2 I_m \\bigr).\n\\]\n\n\n\nWith the Normal–Inverse-Gamma prior, the predictive distribution of a single new observation \\(Y_{\\text{new}}\\) is a Student-t distribution, reflecting both parameter and noise uncertainty.\n\n\n\n\nUnder the Normal posterior for \\(\\beta\\) (with known \\(\\sigma^2\\)), component-wise credible intervals are obtained from the marginal Normal distributions of each coefficient:\n\\[\n\\beta_j \\mid y \\sim N(m_{n,j}, (V_n)_{jj}).\n\\]\nUnder the Normal–Inverse-Gamma model, the marginal posterior of each \\(\\beta_j\\) is Student-t, and credible intervals are derived accordingly.\n\n\n\n\nPosterior Derivation. Prove Theorem ?@thm-reg-posterior in full detail by completing the square and carefully justifying all matrix manipulations (you may follow, but should not merely copy, the derivation in the text).\nNormal–Inverse-Gamma Posterior. Derive Theorem ?@thm-reg-joint by starting from the joint prior and likelihood, and show explicitly how the sufficient statistics enter the posterior hyperparameters.\nRidge = MAP. For arbitrary \\(X\\), derive the ridge estimator and show rigorously that it equals the MAP estimator under a spherical Gaussian prior (cf. Proposition @prop-ridge-map). Discuss what happens when \\(X^\\top X\\) is singular.\nPosterior Predictive Variance Decomposition. For the known-variance case, explicitly separate the predictive variance into a term due to noise ((^2)) and a term due to parameter uncertainty (involving (V_n)).\nMisspecification. Suppose the true errors are heavy-tailed (e.g., Student-t) while the model assumes Normal errors. Discuss qualitatively and, where possible, quantitatively how the posterior for () behaves and whether it still concentrates around a meaningful target.",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 3: Bayesian Regression"
+    ]
+  },
+  {
+    "objectID": "modules/module03-regression.html#model-specification",
+    "href": "modules/module03-regression.html#model-specification",
+    "title": "Module 3: Bayesian Regression",
+    "section": "",
+    "text": "Let \\(Y \\in \\mathbb{R}^n\\) be the response vector, \\(X \\in \\mathbb{R}^{n \\times p}\\) the design matrix, and \\(\\beta \\in \\mathbb{R}^p\\) the regression coefficients.\n\n\nAssume\n\\[\nY \\mid X, \\beta, \\sigma^2 \\sim N_n(X \\beta, \\sigma^2 I_n).\n\\]\nThe corresponding density with respect to Lebesgue measure on \\(\\mathbb{R}^n\\) is\n\\[\np(y \\mid \\beta, \\sigma^2)\n   = (2\\pi \\sigma^2)^{-n/2}\n     \\exp\\left\\{-\\frac{1}{2\\sigma^2} \\lVert y - X\\beta \\rVert^2 \\right\\}.\n\\]\n\n\n\nAssume initially that \\(\\sigma^2\\) is known and fixed. Place a multivariate normal prior on \\(\\beta\\):\n\\[\n\\beta \\sim N_p(m_0, V_0),\n\\]\nwith \\(V_0\\) symmetric positive-definite.",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 3: Bayesian Regression"
+    ]
+  },
+  {
+    "objectID": "modules/module03-regression.html#posterior-for-with-known-variance",
+    "href": "modules/module03-regression.html#posterior-for-with-known-variance",
+    "title": "Module 3: Bayesian Regression",
+    "section": "",
+    "text": "Under the model above, the posterior distribution of () given (y) is [ y, X, ^2 N_p(m_n, V_n), ] where [ V_n^{-1} = V_0^{-1} + X^X, m_n = V_n ( V_0^{-1} m_0 + X^y ). ]\nProof: The joint density of () and (y) (up to normalization) is [ () p(y , ^2) { - (- m_0)V_0{-1} (- m_0) - |y - X|^2 }. ] Complete the square in () to identify the posterior kernel as a multivariate normal density with mean (m_n) and covariance (V_n).\n\n\n\n\nIf (X^X) is invertible (full column rank), then the likelihood is identifiable for ().\nIf (X^X) is singular, the prior regularizes the posterior and ensures (V_n) is positive-definite provided (V_0) is.",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 3: Bayesian Regression"
+    ]
+  },
+  {
+    "objectID": "modules/module03-regression.html#unknown-variance-normalinverse-gamma-prior",
+    "href": "modules/module03-regression.html#unknown-variance-normalinverse-gamma-prior",
+    "title": "Module 3: Bayesian Regression",
+    "section": "",
+    "text": "Place a conjugate prior on \\((\\beta,\\sigma^2)\\):\n\n\\(\\sigma^2 \\sim \\operatorname{Inverse\\text{-}Gamma}(a_0, b_0)\\),\n\\(\\beta \\mid \\sigma^2 \\sim N_p(m_0, \\sigma^2 V_0)\\).\n\n\n\nUnder this prior and Gaussian likelihood, the posterior is\n\\[\n\\sigma^2 \\mid y \\sim \\operatorname{Inverse\\text{-}Gamma}(a_n, b_n),\n\\]\n\\[\n\\beta \\mid \\sigma^2, y \\sim N_p(m_n, \\sigma^2 V_n),\n\\]\nwhere\n\\[\nV_n^{-1} = V_0^{-1} + X^\\top X,\n\\]\n\\[\nm_n = V_n (V_0^{-1} m_0 + X^\\top y),\n\\]\n\\[\na_n = a_0 + \\frac{n}{2},\n\\]\n\\[\nb_n = b_0 + \\tfrac12 \\bigl( y^\\top y + m_0^\\top V_0^{-1} m_0 - m_n^\\top V_n^{-1} m_n \\bigr).\n\\]\nProof. The joint prior density of \\((\\beta, \\sigma^2)\\) (up to normalization) is\n\\[\n\\pi(\\beta, \\sigma^2)\n  \\propto (\\sigma^2)^{-(a_0+1)} \\exp\\Bigl\\{-\\frac{b_0}{\\sigma^2}\\Bigr\\}\n          \\cdot (\\sigma^2)^{-p/2}\n              \\exp\\Bigl\\{-\\frac{1}{2\\sigma^2} (\\beta - m_0)^\\top V_0^{-1}(\\beta - m_0)\\Bigr\\}.\n\\]\nThe likelihood is\n\\[\np(y \\mid \\beta, \\sigma^2)\n  \\propto (\\sigma^2)^{-n/2}\n          \\exp\\Bigl\\{-\\frac{1}{2\\sigma^2}(y - X\\beta)^\\top (y - X\\beta)\\Bigr\\}.\n\\]\nMultiplying prior and likelihood, the joint posterior kernel is\n\\[\n\\begin{aligned}\n\\pi(\\beta, \\sigma^2 \\mid y)\n&\\propto (\\sigma^2)^{-(a_0 + 1 + p/2 + n/2)} \\\\\n&\\quad \\times \\exp\\Bigl\\{-\\frac{1}{2\\sigma^2}\\Bigl[(\\beta - m_0)^\\top V_0^{-1}(\\beta - m_0)\n                                   + (y - X\\beta)^\\top (y - X\\beta)\n                                   + 2 b_0\\Bigr]\\Bigr\\}.\n\\end{aligned}\n\\]\nExpanding the quadratic forms as in the proof of ?@thm-reg-posterior and collecting terms in \\(\\beta\\), we obtain\n\\[\n(\\beta - m_0)^\\top V_0^{-1}(\\beta - m_0) + (y - X\\beta)^\\top (y - X\\beta)\n= (\\beta - m_n)^\\top V_n^{-1} (\\beta - m_n)\n   + y^\\top y + m_0^\\top V_0^{-1} m_0 - m_n^\\top V_n^{-1} m_n,\n\\]\nwith \\(V_n\\) and \\(m_n\\) as defined above. Thus the joint posterior kernel factors as\n\\[\n\\pi(\\beta, \\sigma^2 \\mid y)\n\\propto (\\sigma^2)^{-(a_n+1)}\n          \\exp\\Bigl\\{-\\frac{b_n}{\\sigma^2}\\Bigr\\}\n          \\cdot (\\sigma^2)^{-p/2}\n          \\exp\\Bigl\\{-\\frac{1}{2\\sigma^2} (\\beta - m_n)^\\top V_n^{-1}(\\beta - m_n)\\Bigr\\},\n\\]\nwhere \\(a_n\\) and \\(b_n\\) are as in the statement. Conditioned on \\(\\sigma^2\\), the kernel in \\(\\beta\\) is that of \\(N_p(m_n, \\sigma^2 V_n)\\). Integrating out \\(\\beta\\) contributes only a factor proportional to \\((\\sigma^2)^{p/2}|V_n|^{1/2}\\), which is absorbed into the normalization of the Inverse-Gamma kernel in \\(\\sigma^2\\), yielding the stated marginals. \\(\\square\\)\n\n\n\nIntegrating out \\(\\sigma^2\\) yields a multivariate Student-t distribution for \\(\\beta \\mid y\\), with center \\(m_n\\) and scale related to \\(V_n\\) and \\(b_n / a_n\\).",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 3: Bayesian Regression"
+    ]
+  },
+  {
+    "objectID": "modules/module03-regression.html#ridge-regression-as-map-estimation",
+    "href": "modules/module03-regression.html#ridge-regression-as-map-estimation",
+    "title": "Module 3: Bayesian Regression",
+    "section": "",
+    "text": "The ridge regression estimator is defined as\n\\[\n\\hat{\\beta}_{\\text{ridge}}\n= \\arg\\min_{\\beta} \\bigl\\{ \\lVert y - X\\beta \\rVert^2 + \\lambda \\lVert \\beta \\rVert^2 \\bigr\\},\n\\]\nfor \\(\\lambda &gt; 0\\).\n\n\n\nConsider the likelihood with known \\(\\sigma^2\\) and prior \\(\\beta \\sim N_p(0, \\tau^2 I_p)\\). The MAP estimator of \\(\\beta\\) is\n\\[\n\\hat{\\beta}_{\\text{MAP}} = (X^\\top X + \\lambda I_p)^{-1} X^\\top y,\n\\]\nwith \\(\\lambda = \\sigma^2/\\tau^2\\), i.e. the ridge estimator with penalty parameter \\(\\lambda\\).\nProof. The log-posterior (up to an additive constant) is\n\\[\n\\log \\pi(\\beta \\mid y)\n  = -\\frac{1}{2\\sigma^2} \\lVert y - X\\beta \\rVert^2\n    -\\frac{1}{2\\tau^2} \\lVert \\beta \\rVert^2.\n\\]\nMaximizing this is equivalent to minimizing\n\\[\nJ(\\beta)\n   := \\lVert y - X\\beta \\rVert^2 + \\lambda \\lVert \\beta \\rVert^2,\n   \\qquad \\lambda = \\sigma^2/\\tau^2.\n\\]\nThe gradient of \\(J\\) with respect to \\(\\beta\\) is\n\\[\n\\nabla_\\beta J(\\beta)\n   = -2 X^\\top (y - X\\beta) + 2\\lambda \\beta\n   = 2(X^\\top X + \\lambda I_p)\\beta - 2X^\\top y.\n\\]\nSetting \\(\\nabla_\\beta J(\\beta) = 0\\) yields the normal equations\n\\[\n(X^\\top X + \\lambda I_p) \\hat{\\beta}_{\\text{MAP}} = X^\\top y,\n\\]\nwhich (since \\(X^\\top X + \\lambda I_p\\) is positive-definite) has the unique solution\n\\[\n\\hat{\\beta}_{\\text{MAP}} = (X^\\top X + \\lambda I_p)^{-1} X^\\top y.\n\\]\nThis is exactly the ridge estimator. \\(\\square\\)",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 3: Bayesian Regression"
+    ]
+  },
+  {
+    "objectID": "modules/module03-regression.html#posterior-predictive-distributions",
+    "href": "modules/module03-regression.html#posterior-predictive-distributions",
+    "title": "Module 3: Bayesian Regression",
+    "section": "",
+    "text": "For a new design matrix \\(X_{\\text{new}} \\in \\mathbb{R}^{m \\times p}\\), define \\(Y_{\\text{new}} \\mid \\beta, \\sigma^2 \\sim N_m(X_{\\text{new}}\\beta, \\sigma^2 I_m)\\). Under the posterior \\(\\beta \\mid y \\sim N(m_n, V_n)\\),\n\\[\nY_{\\text{new}} \\mid y \\sim N_m\\bigl( X_{\\text{new}} m_n,\n\\; X_{\\text{new}} V_n X_{\\text{new}}^\\top + \\sigma^2 I_m \\bigr).\n\\]\n\n\n\nWith the Normal–Inverse-Gamma prior, the predictive distribution of a single new observation \\(Y_{\\text{new}}\\) is a Student-t distribution, reflecting both parameter and noise uncertainty.",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 3: Bayesian Regression"
+    ]
+  },
+  {
+    "objectID": "modules/module03-regression.html#credible-intervals-for-regression-coefficients",
+    "href": "modules/module03-regression.html#credible-intervals-for-regression-coefficients",
+    "title": "Module 3: Bayesian Regression",
+    "section": "",
+    "text": "Under the Normal posterior for \\(\\beta\\) (with known \\(\\sigma^2\\)), component-wise credible intervals are obtained from the marginal Normal distributions of each coefficient:\n\\[\n\\beta_j \\mid y \\sim N(m_{n,j}, (V_n)_{jj}).\n\\]\nUnder the Normal–Inverse-Gamma model, the marginal posterior of each \\(\\beta_j\\) is Student-t, and credible intervals are derived accordingly.",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 3: Bayesian Regression"
+    ]
+  },
+  {
+    "objectID": "modules/module03-regression.html#problem-set-3-representative-problems",
+    "href": "modules/module03-regression.html#problem-set-3-representative-problems",
+    "title": "Module 3: Bayesian Regression",
+    "section": "",
+    "text": "Posterior Derivation. Prove Theorem ?@thm-reg-posterior in full detail by completing the square and carefully justifying all matrix manipulations (you may follow, but should not merely copy, the derivation in the text).\nNormal–Inverse-Gamma Posterior. Derive Theorem ?@thm-reg-joint by starting from the joint prior and likelihood, and show explicitly how the sufficient statistics enter the posterior hyperparameters.\nRidge = MAP. For arbitrary \\(X\\), derive the ridge estimator and show rigorously that it equals the MAP estimator under a spherical Gaussian prior (cf. Proposition @prop-ridge-map). Discuss what happens when \\(X^\\top X\\) is singular.\nPosterior Predictive Variance Decomposition. For the known-variance case, explicitly separate the predictive variance into a term due to noise ((^2)) and a term due to parameter uncertainty (involving (V_n)).\nMisspecification. Suppose the true errors are heavy-tailed (e.g., Student-t) while the model assumes Normal errors. Discuss qualitatively and, where possible, quantitatively how the posterior for () behaves and whether it still concentrates around a meaningful target.",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 3: Bayesian Regression"
+    ]
+  },
+  {
+    "objectID": "modules/module13-checking.html",
+    "href": "modules/module13-checking.html",
+    "title": "Module 13: Model Checking and Criticism",
+    "section": "",
+    "text": "This module focuses on tools for assessing the adequacy of Bayesian models: posterior predictive checks, sensitivity to priors, prior elicitation, and robustness analyses.\n\n\n\n\nGiven data (x), prior (), and likelihood (p(x )), the posterior predictive distribution for replicated data (X_{}) is [ p(x_{} x) = p(x_{} ) , (dx). ]\n\n\n\nChoose a test statistic or discrepancy function (T(x, )) capturing aspects of the data or model of interest (e.g., tail behavior, dispersion).\nThe posterior predictive p-value is [ p_{} = ( T(X_{}, ) T(x, ) x ), ] where the probability is with respect to the joint posterior predictive distribution of ((X_{}, )).\n\n\n\nPosterior predictive p-values close to 0 or 1 indicate potential model misfit along the chosen dimension. They are not uniform under the null and tend to be conservative.\n\n\n\n\n\n\nConsider posterior expectations (_) as functions of prior hyperparameters (). Local sensitivity analysis studies derivatives [ [g() x; ]. ]\nThese derivatives can be expressed in terms of posterior covariances between (g()) and score functions of the prior.\n\n\n\n\n()-contamination priors: [ _= (1-) _0 + Q, ] where (Q) represents a contaminating distribution.\nStudy the range of posterior summaries as () varies, assessing robustness to prior perturbations.\n\n\n\n\nRobustness can be assessed via:\n\nBounded influence of prior tails on posterior summaries,\nStability of posterior in Kullback–Leibler neighborhood of the prior,\nExistence of worst-case priors within specified classes.\n\n\n\n\n\n\n\nPrior elicitation aims to translate substantive knowledge or beliefs into a prior distribution. Strategies include:\n\nMatching prior moments or quantiles to expert judgments,\nUsing conjugate priors with interpretable hyperparameters (e.g., pseudo-count interpretations),\nEnsuring that elicited priors place reasonable mass on plausible parameter regions.\n\n\n\n\nIn Beta–Binomial, interpret ((, )) as prior success and failure counts. In Normal–Normal models, interpret prior mean and variance as prior guess and uncertainty about the parameter.\n\n\n\n\nConsider (X_i ()) with Gamma prior on ().\n\nUse posterior predictive checks to assess whether data are overdispersed relative to the Poisson assumption.\nCompare observed variance to posterior predictive variance.\nIf overdispersion is detected, consider alternative models (e.g., Negative Binomial) or hierarchical extensions.\n\n\n\n\n\nPosterior Predictive Check for Poisson. For a Poisson–Gamma model, derive the posterior predictive distribution and construct a test statistic sensitive to overdispersion. Analyze how the posterior predictive p-value behaves when data are generated from an overdispersed process.\nLocal Sensitivity Derivative. Let the prior density be (()). Derive an expression for (/, [g() x; ]) in terms of posterior expectations and derivatives of (()).\n()-Contamination Analysis. Implement an ()-contamination analysis in a simple Normal model with unknown mean and known variance. Study how posterior means and credible intervals change as () varies.\nRobust Prior Construction. Propose a heavy-tailed prior for a location parameter (e.g., Cauchy) and analyze its robustness properties compared to a Normal prior, particularly in the presence of outliers.\nPrior Elicitation Exercise. In a Beta–Binomial context, suppose an expert believes the success probability lies between 0.3 and 0.7 with high probability and that 10 pseudo-observations are appropriate. Derive hyperparameters ((, )) consistent with these beliefs and discuss the resulting prior density.",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 13: Model Checking and Criticism"
+    ]
+  },
+  {
+    "objectID": "modules/module13-checking.html#posterior-predictive-checks",
+    "href": "modules/module13-checking.html#posterior-predictive-checks",
+    "title": "Module 13: Model Checking and Criticism",
+    "section": "",
+    "text": "Given data (x), prior (), and likelihood (p(x )), the posterior predictive distribution for replicated data (X_{}) is [ p(x_{} x) = p(x_{} ) , (dx). ]\n\n\n\nChoose a test statistic or discrepancy function (T(x, )) capturing aspects of the data or model of interest (e.g., tail behavior, dispersion).\nThe posterior predictive p-value is [ p_{} = ( T(X_{}, ) T(x, ) x ), ] where the probability is with respect to the joint posterior predictive distribution of ((X_{}, )).\n\n\n\nPosterior predictive p-values close to 0 or 1 indicate potential model misfit along the chosen dimension. They are not uniform under the null and tend to be conservative.",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 13: Model Checking and Criticism"
+    ]
+  },
+  {
+    "objectID": "modules/module13-checking.html#sensitivity-to-priors-and-bayesian-robustness",
+    "href": "modules/module13-checking.html#sensitivity-to-priors-and-bayesian-robustness",
+    "title": "Module 13: Model Checking and Criticism",
+    "section": "",
+    "text": "Consider posterior expectations (_) as functions of prior hyperparameters (). Local sensitivity analysis studies derivatives [ [g() x; ]. ]\nThese derivatives can be expressed in terms of posterior covariances between (g()) and score functions of the prior.\n\n\n\n\n()-contamination priors: [ _= (1-) _0 + Q, ] where (Q) represents a contaminating distribution.\nStudy the range of posterior summaries as () varies, assessing robustness to prior perturbations.\n\n\n\n\nRobustness can be assessed via:\n\nBounded influence of prior tails on posterior summaries,\nStability of posterior in Kullback–Leibler neighborhood of the prior,\nExistence of worst-case priors within specified classes.",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 13: Model Checking and Criticism"
+    ]
+  },
+  {
+    "objectID": "modules/module13-checking.html#prior-elicitation",
+    "href": "modules/module13-checking.html#prior-elicitation",
+    "title": "Module 13: Model Checking and Criticism",
+    "section": "",
+    "text": "Prior elicitation aims to translate substantive knowledge or beliefs into a prior distribution. Strategies include:\n\nMatching prior moments or quantiles to expert judgments,\nUsing conjugate priors with interpretable hyperparameters (e.g., pseudo-count interpretations),\nEnsuring that elicited priors place reasonable mass on plausible parameter regions.\n\n\n\n\nIn Beta–Binomial, interpret ((, )) as prior success and failure counts. In Normal–Normal models, interpret prior mean and variance as prior guess and uncertainty about the parameter.",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 13: Model Checking and Criticism"
+    ]
+  },
+  {
+    "objectID": "modules/module13-checking.html#example-overdispersion-in-poisson-models",
+    "href": "modules/module13-checking.html#example-overdispersion-in-poisson-models",
+    "title": "Module 13: Model Checking and Criticism",
+    "section": "",
+    "text": "Consider (X_i ()) with Gamma prior on ().\n\nUse posterior predictive checks to assess whether data are overdispersed relative to the Poisson assumption.\nCompare observed variance to posterior predictive variance.\nIf overdispersion is detected, consider alternative models (e.g., Negative Binomial) or hierarchical extensions.",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 13: Model Checking and Criticism"
+    ]
+  },
+  {
+    "objectID": "modules/module13-checking.html#problem-set-13-representative-problems",
+    "href": "modules/module13-checking.html#problem-set-13-representative-problems",
+    "title": "Module 13: Model Checking and Criticism",
+    "section": "",
+    "text": "Posterior Predictive Check for Poisson. For a Poisson–Gamma model, derive the posterior predictive distribution and construct a test statistic sensitive to overdispersion. Analyze how the posterior predictive p-value behaves when data are generated from an overdispersed process.\nLocal Sensitivity Derivative. Let the prior density be (()). Derive an expression for (/, [g() x; ]) in terms of posterior expectations and derivatives of (()).\n()-Contamination Analysis. Implement an ()-contamination analysis in a simple Normal model with unknown mean and known variance. Study how posterior means and credible intervals change as () varies.\nRobust Prior Construction. Propose a heavy-tailed prior for a location parameter (e.g., Cauchy) and analyze its robustness properties compared to a Normal prior, particularly in the presence of outliers.\nPrior Elicitation Exercise. In a Beta–Binomial context, suppose an expert believes the success probability lies between 0.3 and 0.7 with high probability and that 10 pseudo-observations are appropriate. Derive hyperparameters ((, )) consistent with these beliefs and discuss the resulting prior density.",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 13: Model Checking and Criticism"
+    ]
+  },
+  {
+    "objectID": "modules/module02-conjugate.html",
+    "href": "modules/module02-conjugate.html",
+    "title": "Module 2: Conjugate Models and Exact Inference",
+    "section": "",
+    "text": "This module develops the theory of conjugate priors, with a focus on exponential family models and exact posterior calculations. We treat conjugacy as a structural property of prior–likelihood pairs and derive posterior and predictive distributions, as well as marginal likelihoods and Bayes factors.\n\n\n\n\nLet ((, , )) be a measure space. A family of densities ({p_: }) with respect to () is a (canonical) exponential family if there exist:\n\na measurable statistic (T: ^k),\na natural parameter space (^k),\na log-partition function (A: ),\na base density (h: [0,)),\n\nsuch that [ p_(x) = h(x) { ^T(x) - A() }, , ; x . ]\nWe assume (A() &lt; ) for () and that () is open.\n\n\n\nAssume differentiability of (A). Then [ A() = , ^2 A() = (T(X)). ]\nProof idea: Differentiate the normalizing identity (p_(x),(dx) = 1) with respect to ().\n\n\n\n\n\n\nLet ({P_: }) be a parametric family of distributions on ((, )). A family of priors ({{}: H}) on ((, )) is conjugate for ({P}) if for any prior ({}) and observed data (x), the posterior ((x)) is again in the same family, i.e. equals ({‘}) for some updated hyperparameter (’).\n\n\n\nConsider an exponential family (p_(x) = h(x){^T(x) - A()}). For hyperparameters (_0 ^k) and (_0 &gt; 0), define a prior density on () with respect to some reference measure () by [ (_0, _0) { _0^- _0 A() }. ]\nLet (X_1, , X_n) be conditionally i.i.d. given () from (p_). Then the posterior density is [ (x_{1:n}) { (0 + {i=1}^n T(x_i))^- (_0 + n) A() }, ] i.e. the same functional form with updated hyperparameters [ _n = 0 + {i=1}^n T(x_i), _n = _0 + n. ]\nProof: Compute the joint density of ((, x_{1:n})) up to normalizing constants: [ (0, 0) {i=1}^n p(x_i) { _0^- 0 A() + {i=1}^n (^T(x_i) - A()) }. ] Group terms in () and (A()) to obtain the posterior kernel.\n\n\n\n\n() open and (A) finite on ().\nPrior normalizing constant finite (posterior propriety requires further integrability conditions).\nIdentifiability of the parameter () from (P_) for interpretability of posterior updates.\n\n\n\n\n\n\n\n\nLikelihood: (X p (n,p)), [ (X=x p) = px(1-p){n-x}, x=0,1,,n. ]\nPrior: (p (, )), density [ (p) = p{}(1-p){}, &lt;p&lt;1. ]\n\nTheorem 2.5 (Beta–Binomial Conjugacy). The posterior is [ p x (+ x, + n - x). ]\nProof: Combine likelihood and prior, collect exponents of (p) and (1-p), and read off the Beta kernel.\nPosterior Predictive Distribution. For a new count (X_{} p (m,p)), the posterior predictive mass function is [ (X_{} = k x) = _0^1 pk(1-p){m-k} , (p +x, + n - x), dp. ] This integral evaluates to a Beta–Binomial distribution; compute explicitly using Beta function identities.\n\n\n\n\nLikelihood: (X_i ()) i.i.d., ((X_i=k ) = e^{-} ^k / k!).\nPrior: ((, )) (shape–rate), density [ () = ^{} e^{-}, &gt;0. ]\n\nTheorem 2.6 (Gamma–Poisson Conjugacy). If (X_1,,X_n ) i.i.d. Poisson, the posterior is [ x_{1:n} (+ _{i=1}^n x_i,; + n). ]\nPosterior Predictive. For future count (X_{} ()), derive the Negative Binomial predictive distribution by integrating out ().\n\n\n\nWe treat two cases:\n\nKnown variance (^2).\nUnknown variance with inverse-gamma prior.\n\n\n\n\nLikelihood: (Y_i N(, ^2)) i.i.d.\nPrior: (N(m_0, v_0)).\n\nTheorem 2.7 (Normal–Normal Conjugacy, Known Variance). The posterior for () is [ y_{1:n} N(m_n, v_n), ] where [ v_n^{-1} = v_0^{-1} + , m_n = v_n ( v_0^{-1} m_0 + ). ]\nProof: Complete the square in the exponent of the joint density of () and (y_{1:n}).\n\n\n\n\n\n\n\nGiven prior () and likelihood (p(x )), the marginal likelihood (or evidence) is [ m(x) = _p(x ), (d). ]\nThis normalizing constant appears in Bayes’ theorem and is central to model comparison.\n\n\n\nFor two models (M_1, M_2) with priors (_1, 2) and marginal likelihoods (m_1(x), m_2(x)), the Bayes factor in favor of (M_1) over (M_2) is [ BF{12}(x) = . ]\n\n\n\nConsider two Beta priors on the same Binomial likelihood, ((_1, _1)) and ((_2, _2)). Compute the Bayes factor between the corresponding models by integrating the Binomial likelihood under each prior, using Beta function identities.\n\n\n\n\n\nProper priors and propriety of posteriors: Conjugate forms give closed-form kernels, but proper posteriors require integrability conditions on hyperparameters (e.g., (,&gt;0) in Beta–Binomial).\nIdentifiability: Exponential family structure typically yields identifiability, but degenerate designs or constraints can break it.\nInterpretability of hyperparameters: Conjugate priors often admit clear interpretations (e.g., Beta parameters as pseudo-counts), useful for elicitation and sensitivity analysis.\n\n\n\n\n\nGeneral Conjugacy in Exponential Families. Prove Theorem 2.4 in full detail, including the case of multiple observations and verifying all measurability conditions.\nBeta–Binomial Predictive Distribution. Derive the Beta–Binomial posterior predictive distribution explicitly and compute its mean and variance. Compare these to the plug-in predictive distribution using the posterior mean of (p).\nGamma–Poisson Predictive and Overdispersion. Show that the Gamma–Poisson predictive distribution is Negative Binomial and analyze its overdispersion relative to a Poisson with parameter equal to the posterior mean of ().\nNormal–Normal with Unknown Variance. For the Normal model with unknown variance and conjugate Normal–Inverse-Gamma prior, derive the joint posterior of ((,^2)) and the marginal posterior of (). Identify the Student-t predictive distribution for future observations.\nBayes Factors with Conjugate Priors. In a normal mean testing problem with known variance, compute analytically the Bayes factor for testing (H_0: ) vs (H_1: ) using a Normal prior under (H_1). Compare the resulting evidence measure to the classical z-test p-value.",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 2: Conjugate Models and Exact Inference"
+    ]
+  },
+  {
+    "objectID": "modules/module02-conjugate.html#exponential-family-models",
+    "href": "modules/module02-conjugate.html#exponential-family-models",
+    "title": "Module 2: Conjugate Models and Exact Inference",
+    "section": "",
+    "text": "Let ((, , )) be a measure space. A family of densities ({p_: }) with respect to () is a (canonical) exponential family if there exist:\n\na measurable statistic (T: ^k),\na natural parameter space (^k),\na log-partition function (A: ),\na base density (h: [0,)),\n\nsuch that [ p_(x) = h(x) { ^T(x) - A() }, , ; x . ]\nWe assume (A() &lt; ) for () and that () is open.\n\n\n\nAssume differentiability of (A). Then [ A() = , ^2 A() = (T(X)). ]\nProof idea: Differentiate the normalizing identity (p_(x),(dx) = 1) with respect to ().",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 2: Conjugate Models and Exact Inference"
+    ]
+  },
+  {
+    "objectID": "modules/module02-conjugate.html#conjugate-priors-in-exponential-families",
+    "href": "modules/module02-conjugate.html#conjugate-priors-in-exponential-families",
+    "title": "Module 2: Conjugate Models and Exact Inference",
+    "section": "",
+    "text": "Let ({P_: }) be a parametric family of distributions on ((, )). A family of priors ({{}: H}) on ((, )) is conjugate for ({P}) if for any prior ({}) and observed data (x), the posterior ((x)) is again in the same family, i.e. equals ({‘}) for some updated hyperparameter (’).\n\n\n\nConsider an exponential family (p_(x) = h(x){^T(x) - A()}). For hyperparameters (_0 ^k) and (_0 &gt; 0), define a prior density on () with respect to some reference measure () by [ (_0, _0) { _0^- _0 A() }. ]\nLet (X_1, , X_n) be conditionally i.i.d. given () from (p_). Then the posterior density is [ (x_{1:n}) { (0 + {i=1}^n T(x_i))^- (_0 + n) A() }, ] i.e. the same functional form with updated hyperparameters [ _n = 0 + {i=1}^n T(x_i), _n = _0 + n. ]\nProof: Compute the joint density of ((, x_{1:n})) up to normalizing constants: [ (0, 0) {i=1}^n p(x_i) { _0^- 0 A() + {i=1}^n (^T(x_i) - A()) }. ] Group terms in () and (A()) to obtain the posterior kernel.\n\n\n\n\n() open and (A) finite on ().\nPrior normalizing constant finite (posterior propriety requires further integrability conditions).\nIdentifiability of the parameter () from (P_) for interpretability of posterior updates.",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 2: Conjugate Models and Exact Inference"
+    ]
+  },
+  {
+    "objectID": "modules/module02-conjugate.html#classical-conjugate-pairs",
+    "href": "modules/module02-conjugate.html#classical-conjugate-pairs",
+    "title": "Module 2: Conjugate Models and Exact Inference",
+    "section": "",
+    "text": "Likelihood: (X p (n,p)), [ (X=x p) = px(1-p){n-x}, x=0,1,,n. ]\nPrior: (p (, )), density [ (p) = p{}(1-p){}, &lt;p&lt;1. ]\n\nTheorem 2.5 (Beta–Binomial Conjugacy). The posterior is [ p x (+ x, + n - x). ]\nProof: Combine likelihood and prior, collect exponents of (p) and (1-p), and read off the Beta kernel.\nPosterior Predictive Distribution. For a new count (X_{} p (m,p)), the posterior predictive mass function is [ (X_{} = k x) = _0^1 pk(1-p){m-k} , (p +x, + n - x), dp. ] This integral evaluates to a Beta–Binomial distribution; compute explicitly using Beta function identities.\n\n\n\n\nLikelihood: (X_i ()) i.i.d., ((X_i=k ) = e^{-} ^k / k!).\nPrior: ((, )) (shape–rate), density [ () = ^{} e^{-}, &gt;0. ]\n\nTheorem 2.6 (Gamma–Poisson Conjugacy). If (X_1,,X_n ) i.i.d. Poisson, the posterior is [ x_{1:n} (+ _{i=1}^n x_i,; + n). ]\nPosterior Predictive. For future count (X_{} ()), derive the Negative Binomial predictive distribution by integrating out ().\n\n\n\nWe treat two cases:\n\nKnown variance (^2).\nUnknown variance with inverse-gamma prior.\n\n\n\n\nLikelihood: (Y_i N(, ^2)) i.i.d.\nPrior: (N(m_0, v_0)).\n\nTheorem 2.7 (Normal–Normal Conjugacy, Known Variance). The posterior for () is [ y_{1:n} N(m_n, v_n), ] where [ v_n^{-1} = v_0^{-1} + , m_n = v_n ( v_0^{-1} m_0 + ). ]\nProof: Complete the square in the exponent of the joint density of () and (y_{1:n}).",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 2: Conjugate Models and Exact Inference"
+    ]
+  },
+  {
+    "objectID": "modules/module02-conjugate.html#marginal-likelihood-and-bayes-factors",
+    "href": "modules/module02-conjugate.html#marginal-likelihood-and-bayes-factors",
+    "title": "Module 2: Conjugate Models and Exact Inference",
+    "section": "",
+    "text": "Given prior () and likelihood (p(x )), the marginal likelihood (or evidence) is [ m(x) = _p(x ), (d). ]\nThis normalizing constant appears in Bayes’ theorem and is central to model comparison.\n\n\n\nFor two models (M_1, M_2) with priors (_1, 2) and marginal likelihoods (m_1(x), m_2(x)), the Bayes factor in favor of (M_1) over (M_2) is [ BF{12}(x) = . ]\n\n\n\nConsider two Beta priors on the same Binomial likelihood, ((_1, _1)) and ((_2, _2)). Compute the Bayes factor between the corresponding models by integrating the Binomial likelihood under each prior, using Beta function identities.",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 2: Conjugate Models and Exact Inference"
+    ]
+  },
+  {
+    "objectID": "modules/module02-conjugate.html#assumptions-and-discussion",
+    "href": "modules/module02-conjugate.html#assumptions-and-discussion",
+    "title": "Module 2: Conjugate Models and Exact Inference",
+    "section": "",
+    "text": "Proper priors and propriety of posteriors: Conjugate forms give closed-form kernels, but proper posteriors require integrability conditions on hyperparameters (e.g., (,&gt;0) in Beta–Binomial).\nIdentifiability: Exponential family structure typically yields identifiability, but degenerate designs or constraints can break it.\nInterpretability of hyperparameters: Conjugate priors often admit clear interpretations (e.g., Beta parameters as pseudo-counts), useful for elicitation and sensitivity analysis.",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 2: Conjugate Models and Exact Inference"
+    ]
+  },
+  {
+    "objectID": "modules/module02-conjugate.html#problem-set-2-representative-problems",
+    "href": "modules/module02-conjugate.html#problem-set-2-representative-problems",
+    "title": "Module 2: Conjugate Models and Exact Inference",
+    "section": "",
+    "text": "General Conjugacy in Exponential Families. Prove Theorem 2.4 in full detail, including the case of multiple observations and verifying all measurability conditions.\nBeta–Binomial Predictive Distribution. Derive the Beta–Binomial posterior predictive distribution explicitly and compute its mean and variance. Compare these to the plug-in predictive distribution using the posterior mean of (p).\nGamma–Poisson Predictive and Overdispersion. Show that the Gamma–Poisson predictive distribution is Negative Binomial and analyze its overdispersion relative to a Poisson with parameter equal to the posterior mean of ().\nNormal–Normal with Unknown Variance. For the Normal model with unknown variance and conjugate Normal–Inverse-Gamma prior, derive the joint posterior of ((,^2)) and the marginal posterior of (). Identify the Student-t predictive distribution for future observations.\nBayes Factors with Conjugate Priors. In a normal mean testing problem with known variance, compute analytically the Bayes factor for testing (H_0: ) vs (H_1: ) using a Normal prior under (H_1). Compare the resulting evidence measure to the classical z-test p-value.",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 2: Conjugate Models and Exact Inference"
+    ]
+  },
+  {
+    "objectID": "modules/module04-glm.html",
+    "href": "modules/module04-glm.html",
+    "title": "Module 4: Bayesian Generalized Linear Models",
+    "section": "",
+    "text": "This module introduces Bayesian generalized linear models (GLMs), focusing on logistic regression as a canonical example. We study non-conjugacy, Laplace approximations, identifiability and separation, and the geometry of the posterior.\n\n\nLet (Y_i {0,1}) and covariates (x_i ^p), collected in design matrix (X ^{n p}).\n\n\nAssume conditionally independent responses with [ (Y_i = 1 x_i, ) = (x_i^) := , ] [ (Y_i = 0 x_i, ) = 1 - (x_i^). ]\nThe log-likelihood is [ () = _{i=1}^n ( y_i x_i^- (1 + e{x_i}) ). ]\n\n\n\nConsider a Gaussian prior [ N_p(m_0, V_0). ]\nThe posterior has density [ (y) { () } { - (- m_0)V_0{-1} (- m_0) }. ]\n\n\n\n\nUnlike Gaussian linear regression, no finite-dimensional parametric family of priors on () is conjugate to the logistic likelihood.\n\n\nThere is no finite-dimensional parametric family of priors ({}) on (^p) such that for all data (y), the posterior ((y)) remains in ({}).\nIdea of proof: The logistic likelihood yields a log-posterior that is not quadratic in (), and its functional form changes with the data in ways that cannot be represented by a fixed-dimensional parameterization (outside of trivial degenerate cases).\nThis non-conjugacy motivates approximation methods such as Laplace approximations, variational inference, or MCMC.\n\n\n\n\n\n\nLet [ (y) = f() + C, ] where [ f() = () - (- m_0)V_0{-1} (- m_0) ] and (C) is a constant independent of ().\nLet () denote a maximizer of (f()) (the MAP estimator). Let [ H() = -^2 f() ] be the negative Hessian at the mode.\n\n\n\nUnder regularity conditions (twice differentiability of (f), strict local maximum at (), positive-definite Hessian), the posterior can be approximated by [ (y) (y) := N_p(, H()^{-1}). ]\nMoreover, the marginal likelihood admits the approximation [ m(y) f() + C + (2) - |H()|. ]\nProof idea: Apply Laplace’s method to the integral defining the normalizing constant of the posterior and to the marginal likelihood integral, expanding (f) to second order around ().\n\n\n\nFor logistic regression, the negative Hessian of the log-likelihood is [ -^2 () = X^W() X, ] where (W()) is the diagonal matrix with entries (w_i() = (x_i^) (1 - (x_i^))). Including the Gaussian prior, the posterior negative Hessian is [ H() = X^W() X + V_0^{-1}. ]\n\n\n\n\n\n\nThe logistic regression model is identifiable under standard conditions when the design matrix (X) has full column rank and the covariates span a sufficiently rich subspace.\n\n\n\n\nComplete separation: There exists () such that [ x_i^&gt; 0 i y_i=1, x_i^&lt; 0 i y_i=0. ]\nQuasi-complete separation: Inequalities hold with () and (), with at least one equality.\n\n\n\n\nIn the presence of complete or quasi-complete separation, the logistic regression MLE does not exist as a finite vector; some components diverge to ().\nProof idea: Show that the log-likelihood can be increased without bound along certain directions in parameter space.\n\n\n\nWith a proper prior (e.g., Gaussian), the posterior remains proper even under separation, but may place most mass on large-magnitude coefficients, reflecting near-deterministic classification.\n\n\n\n\nThe geometry of the posterior in logistic regression is governed by the curvature of (f()):\n\nThe Hessian (H()) reflects local certainty about ().\nNear separation, (W()) becomes nearly singular, leading to flat directions and heavy posterior tails.\nLaplace approximations may be inaccurate in such regimes, motivating MCMC or more robust approximations.\n\n\n\n\n\nNon-Conjugacy. Provide a rigorous argument that no finite-dimensional parametric family of priors on () is conjugate to the logistic likelihood, except in trivial degeneracies.\nLaplace Approximation Derivation. Derive the Laplace approximation for the posterior of () in logistic regression, starting from the second-order Taylor expansion of (f()), and write down the approximate marginal likelihood.\nHessian and Curvature. Derive the explicit form of (H()) for logistic regression with Gaussian prior and discuss how it depends on the data and prior. Show that (H()) is positive-definite when (V_0) is.\nSeparation Example. Construct a small dataset exhibiting complete separation. Show that the MLE does not exist, and analyze the form of the posterior under a Gaussian prior. Comment on the accuracy of Laplace approximations in this regime.\nPosterior Geometry and Identifiability. Give an example where collinearity in the covariates leads to near non-identifiability of certain directions in (). Analyze the posterior covariance structure and discuss how prior information can restore effective identifiability.",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 4: Bayesian Generalized Linear Models"
+    ]
+  },
+  {
+    "objectID": "modules/module04-glm.html#logistic-regression-model",
+    "href": "modules/module04-glm.html#logistic-regression-model",
+    "title": "Module 4: Bayesian Generalized Linear Models",
+    "section": "",
+    "text": "Let (Y_i {0,1}) and covariates (x_i ^p), collected in design matrix (X ^{n p}).\n\n\nAssume conditionally independent responses with [ (Y_i = 1 x_i, ) = (x_i^) := , ] [ (Y_i = 0 x_i, ) = 1 - (x_i^). ]\nThe log-likelihood is [ () = _{i=1}^n ( y_i x_i^- (1 + e{x_i}) ). ]\n\n\n\nConsider a Gaussian prior [ N_p(m_0, V_0). ]\nThe posterior has density [ (y) { () } { - (- m_0)V_0{-1} (- m_0) }. ]",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 4: Bayesian Generalized Linear Models"
+    ]
+  },
+  {
+    "objectID": "modules/module04-glm.html#non-conjugacy",
+    "href": "modules/module04-glm.html#non-conjugacy",
+    "title": "Module 4: Bayesian Generalized Linear Models",
+    "section": "",
+    "text": "Unlike Gaussian linear regression, no finite-dimensional parametric family of priors on () is conjugate to the logistic likelihood.\n\n\nThere is no finite-dimensional parametric family of priors ({}) on (^p) such that for all data (y), the posterior ((y)) remains in ({}).\nIdea of proof: The logistic likelihood yields a log-posterior that is not quadratic in (), and its functional form changes with the data in ways that cannot be represented by a fixed-dimensional parameterization (outside of trivial degenerate cases).\nThis non-conjugacy motivates approximation methods such as Laplace approximations, variational inference, or MCMC.",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 4: Bayesian Generalized Linear Models"
+    ]
+  },
+  {
+    "objectID": "modules/module04-glm.html#laplace-approximation-for-the-posterior",
+    "href": "modules/module04-glm.html#laplace-approximation-for-the-posterior",
+    "title": "Module 4: Bayesian Generalized Linear Models",
+    "section": "",
+    "text": "Let [ (y) = f() + C, ] where [ f() = () - (- m_0)V_0{-1} (- m_0) ] and (C) is a constant independent of ().\nLet () denote a maximizer of (f()) (the MAP estimator). Let [ H() = -^2 f() ] be the negative Hessian at the mode.\n\n\n\nUnder regularity conditions (twice differentiability of (f), strict local maximum at (), positive-definite Hessian), the posterior can be approximated by [ (y) (y) := N_p(, H()^{-1}). ]\nMoreover, the marginal likelihood admits the approximation [ m(y) f() + C + (2) - |H()|. ]\nProof idea: Apply Laplace’s method to the integral defining the normalizing constant of the posterior and to the marginal likelihood integral, expanding (f) to second order around ().\n\n\n\nFor logistic regression, the negative Hessian of the log-likelihood is [ -^2 () = X^W() X, ] where (W()) is the diagonal matrix with entries (w_i() = (x_i^) (1 - (x_i^))). Including the Gaussian prior, the posterior negative Hessian is [ H() = X^W() X + V_0^{-1}. ]",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 4: Bayesian Generalized Linear Models"
+    ]
+  },
+  {
+    "objectID": "modules/module04-glm.html#identifiability-and-separation",
+    "href": "modules/module04-glm.html#identifiability-and-separation",
+    "title": "Module 4: Bayesian Generalized Linear Models",
+    "section": "",
+    "text": "The logistic regression model is identifiable under standard conditions when the design matrix (X) has full column rank and the covariates span a sufficiently rich subspace.\n\n\n\n\nComplete separation: There exists () such that [ x_i^&gt; 0 i y_i=1, x_i^&lt; 0 i y_i=0. ]\nQuasi-complete separation: Inequalities hold with () and (), with at least one equality.\n\n\n\n\nIn the presence of complete or quasi-complete separation, the logistic regression MLE does not exist as a finite vector; some components diverge to ().\nProof idea: Show that the log-likelihood can be increased without bound along certain directions in parameter space.\n\n\n\nWith a proper prior (e.g., Gaussian), the posterior remains proper even under separation, but may place most mass on large-magnitude coefficients, reflecting near-deterministic classification.",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 4: Bayesian Generalized Linear Models"
+    ]
+  },
+  {
+    "objectID": "modules/module04-glm.html#posterior-geometry-and-curvature",
+    "href": "modules/module04-glm.html#posterior-geometry-and-curvature",
+    "title": "Module 4: Bayesian Generalized Linear Models",
+    "section": "",
+    "text": "The geometry of the posterior in logistic regression is governed by the curvature of (f()):\n\nThe Hessian (H()) reflects local certainty about ().\nNear separation, (W()) becomes nearly singular, leading to flat directions and heavy posterior tails.\nLaplace approximations may be inaccurate in such regimes, motivating MCMC or more robust approximations.",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 4: Bayesian Generalized Linear Models"
+    ]
+  },
+  {
+    "objectID": "modules/module04-glm.html#problem-set-4-representative-problems",
+    "href": "modules/module04-glm.html#problem-set-4-representative-problems",
+    "title": "Module 4: Bayesian Generalized Linear Models",
+    "section": "",
+    "text": "Non-Conjugacy. Provide a rigorous argument that no finite-dimensional parametric family of priors on () is conjugate to the logistic likelihood, except in trivial degeneracies.\nLaplace Approximation Derivation. Derive the Laplace approximation for the posterior of () in logistic regression, starting from the second-order Taylor expansion of (f()), and write down the approximate marginal likelihood.\nHessian and Curvature. Derive the explicit form of (H()) for logistic regression with Gaussian prior and discuss how it depends on the data and prior. Show that (H()) is positive-definite when (V_0) is.\nSeparation Example. Construct a small dataset exhibiting complete separation. Show that the MLE does not exist, and analyze the form of the posterior under a Gaussian prior. Comment on the accuracy of Laplace approximations in this regime.\nPosterior Geometry and Identifiability. Give an example where collinearity in the covariates leads to near non-identifiability of certain directions in (). Analyze the posterior covariance structure and discuss how prior information can restore effective identifiability.",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 4: Bayesian Generalized Linear Models"
+    ]
+  },
+  {
+    "objectID": "modules/module01-foundations.html",
+    "href": "modules/module01-foundations.html",
+    "title": "Module 1: Foundations of Bayesian Inference",
+    "section": "",
+    "text": "This module develops the measure-theoretic foundations of Bayesian inference.\nWe treat priors, likelihoods, and posteriors as measures, and formulate Bayes’ theorem as a Radon–Nikodym identity. We then introduce Bayesian decision theory, Bayes estimators, and the Bernstein–von Mises theorem.\n\n\n\n\nA probability space is a triple ((, , )) where:\n\n() is a sample space,\n() is a ()-algebra of subsets of (),\n(: ) is a probability measure with (()=1).\n\n\n\n\nLet ((, , )) be a probability space and ((S, )) a measurable space. A map [ X: (, ) (S, ) ] is a random variable if it is measurable: for all (A ), (X^{-1}(A) ).\n\n\n\nLet (X L^1(, , )) and ( ) be a sub-()-algebra. A random variable (Y) is called the conditional expectation of (X) given (), written (Y = [X ]), if:\n\n(Y) is ()-measurable, and\nFor all (G ), [ _G Y , d = _G X , d. ]\n\n\n\n\nLet (X L^1(, , )) and () a sub-()-algebra. Then there exists a ()-measurable random variable (Y) satisfying the defining property of conditional expectation. Moreover, (Y) is unique up to ()-almost sure equality.\nProof sketch: Use the Radon–Nikodym theorem applied to the finite signed measure ((G) = _G X , d) on ().\n\n\n\n\n\n\nLet (X: S), (Y: T) be random variables with (S, T) standard Borel spaces. A regular conditional distribution of (Y) given (X) is a Markov kernel [ K: S ] such that for all (B ), [ (Y B X)() = K(X(), B) ]\n\n\n\nIf (S) and (T) are standard Borel spaces, there exists a regular conditional distribution (K(, )) of (Y) given (X).\nProof idea: Use disintegration of measures on product spaces and the existence of regular conditional probabilities on standard Borel spaces.\n\n\n\n\n\n\n\nParameter space: ((, )), data space: ((, )), both standard Borel.\nPrior: a probability measure () on ((, )).\nLikelihood: a Markov kernel (P()) from () to ((, )).\n\nDefine the joint measure on () by [ (A B) = _A P(B ), (d), A , B . ]\nThe marginal law of (X) is (_X(B) = (B)).\n\n\n\nA posterior is a Markov kernel ((x)) from () to ((, )) such that for all (A ) and (B ), [ (A B) = _B (A x), _X(dx). ]\n\n\n\nAssume that for each (), (P()) is absolutely continuous with respect to a ()-finite measure () on ((, )): [ P(B ) = _B p(x ), (dx), ] for some nonnegative measurable density (p(x )).\nDefine the marginal density [ m(x) = _p(x ), (d). ]\n\n\n\nAssume (0 &lt; m(x) &lt; ) for ()-almost all (x). Then the posterior measure ((x)) exists and is given for ()-a.e. (x) by [ (A x) = , A . ]\nProof sketch: Consider the joint density (f(,x) = p(x )) with respect to (). The marginal of (X) has density (m(x)). For fixed (x), define a finite measure (_x(A) = _A f(,x), (d)). Then (_x) is absolutely continuous with respect to (), with total mass (m(x)). The Radon–Nikodym derivative (d_x/d) yields the posterior kernel.\n\n\n\nThe posterior ((x)) is proper if, for (_X)-almost all (x), ((x)) is a probability measure (total mass 1). This requires (0 &lt; m(x) &lt; ) almost everywhere.\n\n\n\n\n\n\n\nParameter space: ().\nAction (decision) space: ().\nLoss function: (L: [0, )).\nDecision rule: measurable map (: ).\n\n\n\n\nGiven prior (), the Bayes risk of () is [ r(, ) =  L(, (x)), P(dx ), (d). ]\nA decision rule (^) is a Bayes estimator (w.r.t. ()) if [ r(, ^) = _r(, ). ]\n\n\n\nUnder integrability conditions permitting Fubini’s theorem, [ r(, ) =  ( L(, (x)), (dx) ) _X(dx). ]\nIn particular, any Bayes rule (^) satisfies [ ^(x) {a } L(, a), (dx) _X x. ]\nProof: Express (r(,)) using the joint measure on (), then condition on (X) using the posterior kernel.\n\n\n\nFor scalar () and quadratic loss (L(,a)=(-a)^2), any Bayes estimator satisfies [ ^*(x) = [x], ] provided the posterior mean exists.\n\n\n\n\n\n\n\nA ((1-))-credible set (C_(x)) satisfies [ (C_(x) x) - . ]\nA ((1-))-confidence set (C_(X)) satisfies [ {} (C_(X)) - . ]\n\nThese notions generally differ for finite samples; they are connected asymptotically by the Bernstein–von Mises theorem.\n\n\n\nConsider i.i.d. data (X_1, , X_n) from a parametric family ({P_: ^d}) with true parameter (_0). Under standard regularity conditions (identifiability, smoothness, non-degenerate Fisher information, prior density positive and continuous near (_0)), the posterior distribution of [ (- _n) ] converges in total variation to a multivariate normal distribution (N(0, I(_0)^{-1})), where (_n) is the MLE and (I(_0)) is the Fisher information.\nConsequence: Bayesian credible sets asymptotically coincide with frequentist confidence sets and have asymptotically correct coverage.\nProof sketch: Use local asymptotic normality of the log-likelihood (LAN) and Laplace approximation for the posterior, combining the likelihood expansion with the prior density near (_0).\n\n\n\n\n\nSubjective Bayes: Priors represent personal or expert beliefs about parameters; coherence arguments (e.g. de Finetti) justify Bayesian updating as the unique coherent updating rule.\nObjective Bayes: Priors chosen to satisfy formal criteria (invariance, reference priors, Jeffreys priors), aiming to reduce subjectivity while retaining Bayesian coherence.\n\nThe course emphasizes the formal measure-theoretic and decision-theoretic structure, applicable in both interpretations.\n\n\n\n\nBayes via Radon–Nikodym. Prove Theorem 1.3 under the given assumptions, explicitly invoking the Radon–Nikodym theorem and checking all measurability requirements.\nPosterior Propriety Counterexample. Construct an example of an improper prior such that the resulting posterior is improper. Show that the marginal density (m(x)) is infinite on a set of positive ()-measure.\nBayes Estimators under General Loss. For a general convex loss function (L(,a)), prove that any Bayes estimator must minimize the posterior expected loss and analyze conditions for uniqueness.\nCredible vs Confidence Intervals in Normal–Normal Model. In the normal–normal model with known variance, show that the 95% equal-tailed credible interval coincides with the classical 95% confidence interval. Explain why this equivalence is special to the conjugate Gaussian setting.\nLAN and BvM in Exponential Families. For a regular exponential family, verify the LAN expansion and outline how it leads to the Bernstein–von Mises conclusion.",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 1: Foundations of Bayesian Inference"
+    ]
+  },
+  {
+    "objectID": "modules/module01-foundations.html#probability-spaces-and-conditional-expectation",
+    "href": "modules/module01-foundations.html#probability-spaces-and-conditional-expectation",
+    "title": "Module 1: Foundations of Bayesian Inference",
+    "section": "",
+    "text": "A probability space is a triple ((, , )) where:\n\n() is a sample space,\n() is a ()-algebra of subsets of (),\n(: ) is a probability measure with (()=1).\n\n\n\n\nLet ((, , )) be a probability space and ((S, )) a measurable space. A map [ X: (, ) (S, ) ] is a random variable if it is measurable: for all (A ), (X^{-1}(A) ).\n\n\n\nLet (X L^1(, , )) and ( ) be a sub-()-algebra. A random variable (Y) is called the conditional expectation of (X) given (), written (Y = [X ]), if:\n\n(Y) is ()-measurable, and\nFor all (G ), [ _G Y , d = _G X , d. ]\n\n\n\n\nLet (X L^1(, , )) and () a sub-()-algebra. Then there exists a ()-measurable random variable (Y) satisfying the defining property of conditional expectation. Moreover, (Y) is unique up to ()-almost sure equality.\nProof sketch: Use the Radon–Nikodym theorem applied to the finite signed measure ((G) = _G X , d) on ().",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 1: Foundations of Bayesian Inference"
+    ]
+  },
+  {
+    "objectID": "modules/module01-foundations.html#conditional-probabilities-and-regular-conditional-distributions",
+    "href": "modules/module01-foundations.html#conditional-probabilities-and-regular-conditional-distributions",
+    "title": "Module 1: Foundations of Bayesian Inference",
+    "section": "",
+    "text": "Let (X: S), (Y: T) be random variables with (S, T) standard Borel spaces. A regular conditional distribution of (Y) given (X) is a Markov kernel [ K: S ] such that for all (B ), [ (Y B X)() = K(X(), B) ]\n\n\n\nIf (S) and (T) are standard Borel spaces, there exists a regular conditional distribution (K(, )) of (Y) given (X).\nProof idea: Use disintegration of measures on product spaces and the existence of regular conditional probabilities on standard Borel spaces.",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 1: Foundations of Bayesian Inference"
+    ]
+  },
+  {
+    "objectID": "modules/module01-foundations.html#bayes-theorem-as-radonnikodym-identity",
+    "href": "modules/module01-foundations.html#bayes-theorem-as-radonnikodym-identity",
+    "title": "Module 1: Foundations of Bayesian Inference",
+    "section": "",
+    "text": "Parameter space: ((, )), data space: ((, )), both standard Borel.\nPrior: a probability measure () on ((, )).\nLikelihood: a Markov kernel (P()) from () to ((, )).\n\nDefine the joint measure on () by [ (A B) = _A P(B ), (d), A , B . ]\nThe marginal law of (X) is (_X(B) = (B)).\n\n\n\nA posterior is a Markov kernel ((x)) from () to ((, )) such that for all (A ) and (B ), [ (A B) = _B (A x), _X(dx). ]\n\n\n\nAssume that for each (), (P()) is absolutely continuous with respect to a ()-finite measure () on ((, )): [ P(B ) = _B p(x ), (dx), ] for some nonnegative measurable density (p(x )).\nDefine the marginal density [ m(x) = _p(x ), (d). ]\n\n\n\nAssume (0 &lt; m(x) &lt; ) for ()-almost all (x). Then the posterior measure ((x)) exists and is given for ()-a.e. (x) by [ (A x) = , A . ]\nProof sketch: Consider the joint density (f(,x) = p(x )) with respect to (). The marginal of (X) has density (m(x)). For fixed (x), define a finite measure (_x(A) = _A f(,x), (d)). Then (_x) is absolutely continuous with respect to (), with total mass (m(x)). The Radon–Nikodym derivative (d_x/d) yields the posterior kernel.\n\n\n\nThe posterior ((x)) is proper if, for (_X)-almost all (x), ((x)) is a probability measure (total mass 1). This requires (0 &lt; m(x) &lt; ) almost everywhere.",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 1: Foundations of Bayesian Inference"
+    ]
+  },
+  {
+    "objectID": "modules/module01-foundations.html#bayesian-decision-theory",
+    "href": "modules/module01-foundations.html#bayesian-decision-theory",
+    "title": "Module 1: Foundations of Bayesian Inference",
+    "section": "",
+    "text": "Parameter space: ().\nAction (decision) space: ().\nLoss function: (L: [0, )).\nDecision rule: measurable map (: ).\n\n\n\n\nGiven prior (), the Bayes risk of () is [ r(, ) =  L(, (x)), P(dx ), (d). ]\nA decision rule (^) is a Bayes estimator (w.r.t. ()) if [ r(, ^) = _r(, ). ]\n\n\n\nUnder integrability conditions permitting Fubini’s theorem, [ r(, ) =  ( L(, (x)), (dx) ) _X(dx). ]\nIn particular, any Bayes rule (^) satisfies [ ^(x) {a } L(, a), (dx) _X x. ]\nProof: Express (r(,)) using the joint measure on (), then condition on (X) using the posterior kernel.\n\n\n\nFor scalar () and quadratic loss (L(,a)=(-a)^2), any Bayes estimator satisfies [ ^*(x) = [x], ] provided the posterior mean exists.",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 1: Foundations of Bayesian Inference"
+    ]
+  },
+  {
+    "objectID": "modules/module01-foundations.html#credible-intervals-confidence-intervals-and-bernsteinvon-mises",
+    "href": "modules/module01-foundations.html#credible-intervals-confidence-intervals-and-bernsteinvon-mises",
+    "title": "Module 1: Foundations of Bayesian Inference",
+    "section": "",
+    "text": "A ((1-))-credible set (C_(x)) satisfies [ (C_(x) x) - . ]\nA ((1-))-confidence set (C_(X)) satisfies [ {} (C_(X)) - . ]\n\nThese notions generally differ for finite samples; they are connected asymptotically by the Bernstein–von Mises theorem.\n\n\n\nConsider i.i.d. data (X_1, , X_n) from a parametric family ({P_: ^d}) with true parameter (_0). Under standard regularity conditions (identifiability, smoothness, non-degenerate Fisher information, prior density positive and continuous near (_0)), the posterior distribution of [ (- _n) ] converges in total variation to a multivariate normal distribution (N(0, I(_0)^{-1})), where (_n) is the MLE and (I(_0)) is the Fisher information.\nConsequence: Bayesian credible sets asymptotically coincide with frequentist confidence sets and have asymptotically correct coverage.\nProof sketch: Use local asymptotic normality of the log-likelihood (LAN) and Laplace approximation for the posterior, combining the likelihood expansion with the prior density near (_0).",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 1: Foundations of Bayesian Inference"
+    ]
+  },
+  {
+    "objectID": "modules/module01-foundations.html#subjective-vs-objective-bayes",
+    "href": "modules/module01-foundations.html#subjective-vs-objective-bayes",
+    "title": "Module 1: Foundations of Bayesian Inference",
+    "section": "",
+    "text": "Subjective Bayes: Priors represent personal or expert beliefs about parameters; coherence arguments (e.g. de Finetti) justify Bayesian updating as the unique coherent updating rule.\nObjective Bayes: Priors chosen to satisfy formal criteria (invariance, reference priors, Jeffreys priors), aiming to reduce subjectivity while retaining Bayesian coherence.\n\nThe course emphasizes the formal measure-theoretic and decision-theoretic structure, applicable in both interpretations.",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 1: Foundations of Bayesian Inference"
+    ]
+  },
+  {
+    "objectID": "modules/module01-foundations.html#problem-set-1-representative-problems",
+    "href": "modules/module01-foundations.html#problem-set-1-representative-problems",
+    "title": "Module 1: Foundations of Bayesian Inference",
+    "section": "",
+    "text": "Bayes via Radon–Nikodym. Prove Theorem 1.3 under the given assumptions, explicitly invoking the Radon–Nikodym theorem and checking all measurability requirements.\nPosterior Propriety Counterexample. Construct an example of an improper prior such that the resulting posterior is improper. Show that the marginal density (m(x)) is infinite on a set of positive ()-measure.\nBayes Estimators under General Loss. For a general convex loss function (L(,a)), prove that any Bayes estimator must minimize the posterior expected loss and analyze conditions for uniqueness.\nCredible vs Confidence Intervals in Normal–Normal Model. In the normal–normal model with known variance, show that the 95% equal-tailed credible interval coincides with the classical 95% confidence interval. Explain why this equivalence is special to the conjugate Gaussian setting.\nLAN and BvM in Exponential Families. For a regular exponential family, verify the LAN expansion and outline how it leads to the Bernstein–von Mises conclusion.",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 1: Foundations of Bayesian Inference"
+    ]
+  },
+  {
+    "objectID": "modules/module07-gibbs.html",
+    "href": "modules/module07-gibbs.html",
+    "title": "Module 7: Gibbs Sampling",
+    "section": "",
+    "text": "This module presents Gibbs sampling as a special case of Metropolis–Hastings, based on sampling from full conditional distributions. We study correctness, convergence properties, irreducibility, and data augmentation.\n\n\nLet (X = (X_1, , X_d)) take values in a product space ( = _1 _d) with joint density ((x)) with respect to a product reference measure.\n\n\nThe full conditional distribution of component (X_j) given the others is 5574 (x_j x_{-j}) = , 5574 whenever the denominator is finite and nonzero.\n\n\n\n\n\n\nGiven current state (x^{(t)} = (x_1^{(t)}, , x_d^{(t)})), a single sweep of the Gibbs sampler updates components sequentially:\n\nSample (X_1^{(t+1)} (X_{-1}^{(t)})).\nSample (X_2^{(t+1)} (X_1^{(t+1)}, X_{3:d}^{(t)})).\nContinue updating each component in turn until (X_d^{(t+1)}).\n\nThe resulting Markov kernel is the composition of the kernels corresponding to each full conditional update.\n\n\n\nMore generally, we may partition the components into blocks and sample each block from its joint full conditional distribution.\n\n\n\n\n\n\nConsider updating (X_j) given (X_{-j}) by proposing (Y_j (x_{-j})) and setting the new state to ((Y_j, x_{-j})). This is a Metropolis–Hastings step with acceptance probability equal to 1.\nProof. The MH acceptance ratio for moving from (x=(x_j,x_{-j})) to (y=(y_j,x_{-j})) is\n\\[\n\\alpha(x,y) = \\min\\left\\{1, \\frac{\\pi(y) \\, q(y,x)}{\\pi(x) \\, q(x,y)} \\right\\}.\n\\]\nHere, the proposal kernel updates only the (j)-th coordinate while keeping the others fixed, so with respect to the underlying product reference measure we may write\n\\[\nq(x,y) = \\pi(y_j \\mid x_{-j}), \\qquad\nq(y,x) = \\pi(x_j \\mid x_{-j}).\n\\]\nBy the definition of the full conditionals,\n\\[\n\\pi(y_j \\mid x_{-j})\n   = \\frac{\\pi(y_j, x_{-j})}{\\int_{\\mathsf{X}_j} \\pi(z_j, x_{-j}) \\, dz_j},\n\\qquad\n\\pi(x_j \\mid x_{-j})\n   = \\frac{\\pi(x_j, x_{-j})}{\\int_{\\mathsf{X}_j} \\pi(z_j, x_{-j}) \\, dz_j}.\n\\]\nThe common normalizing denominator cancels in the ratio\n\\[\n\\frac{\\pi(y) \\, q(y,x)}{\\pi(x) \\, q(x,y)}\n   = \\frac{\\pi(y_j, x_{-j}) \\, \\pi(x_j \\mid x_{-j})}\n          {\\pi(x_j, x_{-j}) \\, \\pi(y_j \\mid x_{-j})}\n   = 1.\n\\]\nThus the acceptance probability is ((x,y) = 1) for all pairs with positive joint density, and the Gibbs update is an MH step with automatic acceptance. \n\n\n\n\n\n\nThe Gibbs sampler is irreducible if the full conditional distributions allow movement throughout the support of the joint distribution. Sufficient conditions include:\n\nThe joint density () is strictly positive on a connected subset of ().\nFull conditionals have full support on their respective coordinate spaces, given typical conditioning values.\n\n\n\n\nUnder appropriate irreducibility and aperiodicity conditions, the Gibbs sampler converges to () in total variation. The convergence rate depends on the dependence structure among components and the blocking scheme.\n\n\n\nIt is possible to construct examples where the Gibbs sampler is reducible even though the target () is not—for instance, if certain conditional distributions restrict movement to submanifolds.\n\n\n\n\nData augmentation introduces latent variables to simplify the full conditional distributions.\n\n\nConsider the probit model 5574 Y_i = { Z_i &gt; 0 }, Z_i = x_i^+ _i, _i N(0,1), 5574 with prior (N_p(m_0, V_0)).\nIntroduce latent variables (Z_i). The full conditionals are:\n\n(Z_i Y_i, N(x_i^, 1)) truncated above or below 0 depending on (Y_i).\n(Z N_p(m_n, V_n)) with updated parameters as in linear regression.\n\nGibbs sampling alternates between sampling (Z) and (), both from tractable distributions.\n\n\n\n\n\nGibbs as MH. Prove Proposition @prop-gibbs-mh carefully, including measurability considerations, and generalize to block Gibbs updates.\nIrreducibility Conditions. For a bivariate normal target with correlation, analyze the Gibbs sampler that alternately samples from the full conditionals of each component. Show that the chain is irreducible and converges to the target.\nReducible Gibbs Example. Construct an example of a joint density ((x_1,x_2)) for which the Gibbs sampler that alternately samples full conditionals is reducible, even though () has connected support.\nData Augmentation for Probit. Derive the full conditional distributions in the probit example (Example @ex-probit-da), including the truncated Normal distribution for (Z_i). Show how the Gibbs sampler simplifies Bayesian computation compared to directly sampling () from its non-conjugate posterior.\nBlocking Strategies. Discuss how blocking correlated components in a multivariate Normal target can improve Gibbs sampler convergence, and provide a simple two-block example illustrating the effect on autocorrelations.",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 7: Gibbs Sampling"
+    ]
+  },
+  {
+    "objectID": "modules/module07-gibbs.html#full-conditional-distributions",
+    "href": "modules/module07-gibbs.html#full-conditional-distributions",
+    "title": "Module 7: Gibbs Sampling",
+    "section": "",
+    "text": "Let (X = (X_1, , X_d)) take values in a product space ( = _1 _d) with joint density ((x)) with respect to a product reference measure.\n\n\nThe full conditional distribution of component (X_j) given the others is 5574 (x_j x_{-j}) = , 5574 whenever the denominator is finite and nonzero.",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 7: Gibbs Sampling"
+    ]
+  },
+  {
+    "objectID": "modules/module07-gibbs.html#gibbs-sampler-construction",
+    "href": "modules/module07-gibbs.html#gibbs-sampler-construction",
+    "title": "Module 7: Gibbs Sampling",
+    "section": "",
+    "text": "Given current state (x^{(t)} = (x_1^{(t)}, , x_d^{(t)})), a single sweep of the Gibbs sampler updates components sequentially:\n\nSample (X_1^{(t+1)} (X_{-1}^{(t)})).\nSample (X_2^{(t+1)} (X_1^{(t+1)}, X_{3:d}^{(t)})).\nContinue updating each component in turn until (X_d^{(t+1)}).\n\nThe resulting Markov kernel is the composition of the kernels corresponding to each full conditional update.\n\n\n\nMore generally, we may partition the components into blocks and sample each block from its joint full conditional distribution.",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 7: Gibbs Sampling"
+    ]
+  },
+  {
+    "objectID": "modules/module07-gibbs.html#gibbs-as-metropolishastings",
+    "href": "modules/module07-gibbs.html#gibbs-as-metropolishastings",
+    "title": "Module 7: Gibbs Sampling",
+    "section": "",
+    "text": "Consider updating (X_j) given (X_{-j}) by proposing (Y_j (x_{-j})) and setting the new state to ((Y_j, x_{-j})). This is a Metropolis–Hastings step with acceptance probability equal to 1.\nProof. The MH acceptance ratio for moving from (x=(x_j,x_{-j})) to (y=(y_j,x_{-j})) is\n\\[\n\\alpha(x,y) = \\min\\left\\{1, \\frac{\\pi(y) \\, q(y,x)}{\\pi(x) \\, q(x,y)} \\right\\}.\n\\]\nHere, the proposal kernel updates only the (j)-th coordinate while keeping the others fixed, so with respect to the underlying product reference measure we may write\n\\[\nq(x,y) = \\pi(y_j \\mid x_{-j}), \\qquad\nq(y,x) = \\pi(x_j \\mid x_{-j}).\n\\]\nBy the definition of the full conditionals,\n\\[\n\\pi(y_j \\mid x_{-j})\n   = \\frac{\\pi(y_j, x_{-j})}{\\int_{\\mathsf{X}_j} \\pi(z_j, x_{-j}) \\, dz_j},\n\\qquad\n\\pi(x_j \\mid x_{-j})\n   = \\frac{\\pi(x_j, x_{-j})}{\\int_{\\mathsf{X}_j} \\pi(z_j, x_{-j}) \\, dz_j}.\n\\]\nThe common normalizing denominator cancels in the ratio\n\\[\n\\frac{\\pi(y) \\, q(y,x)}{\\pi(x) \\, q(x,y)}\n   = \\frac{\\pi(y_j, x_{-j}) \\, \\pi(x_j \\mid x_{-j})}\n          {\\pi(x_j, x_{-j}) \\, \\pi(y_j \\mid x_{-j})}\n   = 1.\n\\]\nThus the acceptance probability is ((x,y) = 1) for all pairs with positive joint density, and the Gibbs update is an MH step with automatic acceptance.",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 7: Gibbs Sampling"
+    ]
+  },
+  {
+    "objectID": "modules/module07-gibbs.html#convergence-and-irreducibility",
+    "href": "modules/module07-gibbs.html#convergence-and-irreducibility",
+    "title": "Module 7: Gibbs Sampling",
+    "section": "",
+    "text": "The Gibbs sampler is irreducible if the full conditional distributions allow movement throughout the support of the joint distribution. Sufficient conditions include:\n\nThe joint density () is strictly positive on a connected subset of ().\nFull conditionals have full support on their respective coordinate spaces, given typical conditioning values.\n\n\n\n\nUnder appropriate irreducibility and aperiodicity conditions, the Gibbs sampler converges to () in total variation. The convergence rate depends on the dependence structure among components and the blocking scheme.\n\n\n\nIt is possible to construct examples where the Gibbs sampler is reducible even though the target () is not—for instance, if certain conditional distributions restrict movement to submanifolds.",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 7: Gibbs Sampling"
+    ]
+  },
+  {
+    "objectID": "modules/module07-gibbs.html#data-augmentation",
+    "href": "modules/module07-gibbs.html#data-augmentation",
+    "title": "Module 7: Gibbs Sampling",
+    "section": "",
+    "text": "Data augmentation introduces latent variables to simplify the full conditional distributions.\n\n\nConsider the probit model 5574 Y_i = { Z_i &gt; 0 }, Z_i = x_i^+ _i, _i N(0,1), 5574 with prior (N_p(m_0, V_0)).\nIntroduce latent variables (Z_i). The full conditionals are:\n\n(Z_i Y_i, N(x_i^, 1)) truncated above or below 0 depending on (Y_i).\n(Z N_p(m_n, V_n)) with updated parameters as in linear regression.\n\nGibbs sampling alternates between sampling (Z) and (), both from tractable distributions.",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 7: Gibbs Sampling"
+    ]
+  },
+  {
+    "objectID": "modules/module07-gibbs.html#problem-set-7-representative-problems",
+    "href": "modules/module07-gibbs.html#problem-set-7-representative-problems",
+    "title": "Module 7: Gibbs Sampling",
+    "section": "",
+    "text": "Gibbs as MH. Prove Proposition @prop-gibbs-mh carefully, including measurability considerations, and generalize to block Gibbs updates.\nIrreducibility Conditions. For a bivariate normal target with correlation, analyze the Gibbs sampler that alternately samples from the full conditionals of each component. Show that the chain is irreducible and converges to the target.\nReducible Gibbs Example. Construct an example of a joint density ((x_1,x_2)) for which the Gibbs sampler that alternately samples full conditionals is reducible, even though () has connected support.\nData Augmentation for Probit. Derive the full conditional distributions in the probit example (Example @ex-probit-da), including the truncated Normal distribution for (Z_i). Show how the Gibbs sampler simplifies Bayesian computation compared to directly sampling () from its non-conjugate posterior.\nBlocking Strategies. Discuss how blocking correlated components in a multivariate Normal target can improve Gibbs sampler convergence, and provide a simple two-block example illustrating the effect on autocorrelations.",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 7: Gibbs Sampling"
+    ]
+  },
+  {
+    "objectID": "modules/module09-vi.html",
+    "href": "modules/module09-vi.html",
+    "title": "Module 9: Variational Inference",
+    "section": "",
+    "text": "This module develops variational inference (VI) as an optimization-based approximation to Bayesian inference. We treat VI as a problem of projecting the posterior distribution onto a restricted family of distributions by minimizing a divergence functional. The exposition is measure-theoretic and emphasizes:\n\nthe functional-analytic properties of the Kullback–Leibler divergence,\nthe ELBO (evidence lower bound) as a variational characterization of the marginal likelihood,\nthe structure of mean-field families and coordinate ascent variational inference (CAVI), and\nthe relationship between VI and MCMC in terms of bias, variance, and asymptotics.\n\n\n\nWe work on a measurable parameter space \\(\\bigl(\\Theta, \\mathcal{T}\\bigr)\\) with a \\(\\sigma\\)-finite reference measure \\(\\nu\\) (typically Lebesgue measure on \\(\\mathbb{R}^d\\)). All densities below are understood with respect to \\(\\nu\\).\n\n\nLet \\(P\\) and \\(Q\\) be probability measures on \\(\\bigl(\\Theta, \\mathcal{T}\\bigr)\\). Assume that\n\\[\nQ \\ll P,\n\\]\nso that the Radon–Nikodym derivative \\(\\frac{dQ}{dP}\\) exists. The Kullback–Leibler divergence from \\(Q\\) to \\(P\\) is\n\\[\n\\operatorname{KL}(Q \\Vert P)\n  := \\int_\\Theta \\log\\Bigl( \\frac{dQ}{dP}(\\theta) \\Bigr) \\, Q(d\\theta)\n  = \\int_\\Theta \\frac{dQ}{dP}(\\theta) \\log\\Bigl( \\frac{dQ}{dP}(\\theta) \\Bigr) \\, P(d\\theta),\n\\]\nwith the convention that \\(a \\log a = 0\\) at \\(a=0\\) and that \\(\\operatorname{KL}(Q \\Vert P) = +\\infty\\) if \\(Q \\not\\ll P\\).\nIn the common case where \\(P\\) and \\(Q\\) admit densities \\(p\\) and \\(q\\) with respect to \\(\\nu\\), we write\n\\[\n\\operatorname{KL}(q \\Vert p)\n  = \\int_\\Theta q(\\theta) \\log \\frac{q(\\theta)}{p(\\theta)} \\, \\nu(d\\theta).\n\\]\nBasic properties. Under mild integrability assumptions:\n\n\\(\\operatorname{KL}(Q \\Vert P) \\ge 0\\),\n\\(\\operatorname{KL}(Q \\Vert P) = 0\\) if and only if \\(Q = P\\) (as measures),\n\\(Q \\mapsto \\operatorname{KL}(Q \\Vert P)\\) is convex.\n\nThese follow from Jensen’s inequality applied to the convex function \\(x \\mapsto x \\log x\\).\n\n\n\nLet \\(x\\) denote observed data. Write the joint density\n\\[\np(\\theta, x) = p(x \\mid \\theta)\\, p(\\theta),\n\\]\nand suppose the posterior density exists,\n\\[\np(\\theta \\mid x) = \\frac{p(\\theta, x)}{p(x)}, \\quad\np(x) = \\int p(\\theta, x)\\, d\\theta.\n\\]\nLet \\(\\mathcal{Q}\\) be a family of candidate densities \\(q(\\theta)\\) (with respect to the same reference measure). Variational inference chooses\n\\[\nq^* \\in \\arg\\min_{q \\in \\mathcal{Q}} \\operatorname{KL}\\bigl(q \\Vert p(\\cdot \\mid x)\\bigr).\n\\]\nDirect optimization of \\(\\operatorname{KL}(q \\Vert p(\\cdot \\mid x))\\) is often inconvenient because it involves the (intractable) posterior density. We therefore introduce the evidence lower bound (ELBO),\n\\[\n\\mathcal{L}(q) := \\int q(\\theta) \\log \\frac{p(\\theta, x)}{q(\\theta)} \\, d\\theta\n                = \\mathbb{E}_q\\bigl[ \\log p(\\theta, x) \\bigr]\n                  - \\mathbb{E}_q\\bigl[ \\log q(\\theta) \\bigr].\n\\]\nWe will show that maximizing \\(\\mathcal{L}(q)\\) is equivalent to minimizing \\(\\operatorname{KL}\\bigl(q \\Vert p(\\cdot \\mid x)\\bigr)\\).\n\nTheorem 9.1 (ELBO–KL Decomposition).\nFor any density \\(q\\) such that \\(\\operatorname{KL}\\bigl(q \\Vert p(\\cdot \\mid x)\\bigr) &lt; \\infty\\), we have\n\\[\n\\log p(x) = \\mathcal{L}(q)\n             + \\operatorname{KL}\\bigl(q \\Vert p(\\cdot \\mid x)\\bigr).\n\\]\nIn particular, \\(\\mathcal{L}(q) \\le \\log p(x)\\), with equality if and only if \\(q = p(\\cdot \\mid x)\\) almost everywhere.\nProof. By definition of KL divergence between \\(q\\) and the posterior, \\[\n\\operatorname{KL}\\bigl(q \\Vert p(\\cdot \\mid x)\\bigr)\n  = \\int q(\\theta)\n       \\log \\frac{q(\\theta)}{p(\\theta \\mid x)}\\, d\\theta.\n\\] Using Bayes’ rule \\(p(\\theta \\mid x) = p(\\theta, x)/p(x)\\), \\[\n\\log \\frac{q(\\theta)}{p(\\theta \\mid x)}\n  = \\log q(\\theta)\n    - \\log p(\\theta,x)\n    + \\log p(x).\n\\] Substitute into the KL expression and integrate termwise: \\[\n\\begin{aligned}\n\\operatorname{KL}\\bigl(q \\Vert p(\\cdot \\mid x)\\bigr)\n&= \\int q(\\theta) \\log q(\\theta)\\, d\\theta\n    - \\int q(\\theta) \\log p(\\theta,x)\\, d\\theta\n    + \\int q(\\theta) \\log p(x)\\, d\\theta \\\\\n&= \\mathbb{E}_q[\\log q(\\theta)]\n    - \\mathbb{E}_q[\\log p(\\theta,x)]\n    + \\log p(x) \\int q(\\theta)\\, d\\theta.\n\\end{aligned}\n\\] Since \\(q\\) is a density, the last integral equals 1. Rearranging gives \\[\n\\log p(x)\n  = \\underbrace{\\mathbb{E}_q[\\log p(\\theta,x)]\n                 - \\mathbb{E}_q[\\log q(\\theta)]}_{\\mathcal{L}(q)}\n    + \\operatorname{KL}\\bigl(q \\Vert p(\\cdot \\mid x)\\bigr),\n\\] which is the claimed identity.\nThe inequality \\(\\mathcal{L}(q) \\le \\log p(x)\\) follows from nonnegativity of the KL divergence. Equality holds if and only if \\(\\operatorname{KL}\\bigl(q \\Vert p(\\cdot \\mid x)\\bigr) = 0\\), i.e., \\(q = p(\\cdot \\mid x)\\) almost everywhere. \\(\\square\\)\n\nThus, maximizing the ELBO is equivalent to minimizing the KL divergence to the posterior within the chosen family \\(\\mathcal{Q}\\).\n\n\n\n\nWe now restrict to a tractable family \\(\\mathcal{Q}\\) of candidate densities. A common choice is the mean-field family, which assumes conditional independence between groups of parameters under \\(q\\).\n\n\nPartition \\(\\theta\\) into blocks\n\\[\n\\theta = (\\theta_1, \\dots, \\theta_J),\n\\]\nwhere each \\(\\theta_j\\) takes values in some measurable space \\((\\Theta_j, \\mathcal{T}_j)\\). The mean-field variational family is\n\\[\n\\mathcal{Q}_{\\text{MF}}\n  := \\Bigl\\{ q(\\theta) = \\prod_{j=1}^J q_j(\\theta_j)\n                  : q_j \\text{ densities on } \\Theta_j \\Bigr\\}.\n\\]\nThe factorization is an approximation: in general, the true posterior \\(p(\\theta \\mid x)\\) does not factorize in this way, so VI introduces dependence-structure bias.\n\n\n\nWe wish to solve the constrained optimization problem\n\\[\n\\max_{q_1,\\dots,q_J}\\, \\mathcal{L}(q)\n  \\quad \\text{subject to}\\quad\n  q(\\theta) = \\prod_{j=1}^J q_j(\\theta_j), \\;\n  q_j \\ge 0, \\; \\int q_j(\\theta_j)\\, d\\theta_j = 1.\n\\]\nExact joint optimization is often difficult, but we can use coordinate ascent: repeatedly optimize \\(\\mathcal{L}(q)\\) with respect to a single factor \\(q_j\\), holding the others fixed. The optimal \\(q_j\\) has a closed form.\n\nTheorem 9.2 (Optimal Mean-Field Factor Updates).\nFix \\(q_{-j}(\\theta_{-j}) = \\prod_{k \\ne j} q_k(\\theta_k)\\) and consider \\(q_j\\) varying over densities on \\(\\Theta_j\\). Then, up to multiplicative normalization,\n\\[\n\\log q_j^*(\\theta_j)\n  = \\mathbb{E}_{q_{-j}}[\\log p(\\theta, x)] + \\text{constant},\n\\]\nor equivalently,\n\\[\nq_j^*(\\theta_j)\n  \\propto \\exp\\Bigl(\\mathbb{E}_{q_{-j}}[\\log p(\\theta, x)]\\Bigr).\n\\]\nProof. Write the ELBO as \\[\n\\mathcal{L}(q)\n  = \\mathbb{E}_q[\\log p(\\theta,x)]\n    - \\mathbb{E}_q[\\log q(\\theta)].\n\\] Under the mean-field factorization \\(q(\\theta) = q_j(\\theta_j) q_{-j}(\\theta_{-j})\\), we can group terms depending on \\(q_j\\) and those independent of \\(q_j\\).\nFirst term: \\[\n\\mathbb{E}_q[\\log p(\\theta,x)]\n  = \\int q_j(\\theta_j)\\, \\mathbb{E}_{q_{-j}}[\\log p(\\theta,x)]\\, d\\theta_j.\n\\]\nSecond term (entropy part): \\[\n\\mathbb{E}_q[\\log q(\\theta)]\n  = \\mathbb{E}_q\\bigl[\\log q_j(\\theta_j)\\bigr]\n    + \\mathbb{E}_q\\bigl[\\log q_{-j}(\\theta_{-j})\\bigr].\n\\] The second expectation does not depend on \\(q_j\\) and can be treated as constant. Hence, up to an additive constant independent of \\(q_j\\), the ELBO as a functional of \\(q_j\\) is \\[\n\\mathcal{L}_j(q_j)\n  = \\int q_j(\\theta_j)\n        \\mathbb{E}_{q_{-j}}[\\log p(\\theta,x)]\\, d\\theta_j\n    - \\int q_j(\\theta_j) \\log q_j(\\theta_j)\\, d\\theta_j.\n\\]\nWe must maximize \\(\\mathcal{L}_j(q_j)\\) over all densities \\(q_j\\) on \\(\\Theta_j\\). This is a functional optimization problem with a normalization constraint \\(\\int q_j(\\theta_j) d\\theta_j = 1\\). Introduce a Lagrange multiplier \\(\\lambda\\) and consider the Lagrangian \\[\n\\mathcal{F}(q_j)\n  = \\mathcal{L}_j(q_j)\n    + \\lambda\\Bigl( \\int q_j(\\theta_j) d\\theta_j - 1 \\Bigr).\n\\]\nTaking a first variation in the direction of an arbitrary perturbation \\(h\\) with \\(\\int h(\\theta_j) d\\theta_j = 0\\) and using Gâteaux derivatives, we obtain \\[\n\\delta \\mathcal{F} = \\int h(\\theta_j)\n  \\Bigl( \\mathbb{E}_{q_{-j}}[\\log p(\\theta,x)]\n         - (1 + \\log q_j(\\theta_j))\n         + \\lambda \\Bigr) d\\theta_j.\n\\] At an optimum, \\(\\delta \\mathcal{F} = 0\\) for all such \\(h\\), which implies that the term in parentheses must vanish almost everywhere: \\[\n\\mathbb{E}_{q_{-j}}[\\log p(\\theta,x)]\n  - (1 + \\log q_j^*(\\theta_j))\n  + \\lambda = 0.\n\\] Solving for \\(\\log q_j^*(\\theta_j)\\) gives \\[\n\\log q_j^*(\\theta_j)\n  = \\mathbb{E}_{q_{-j}}[\\log p(\\theta,x)]\n    + (\\lambda - 1).\n\\] The constant \\((\\lambda - 1)\\) enforces normalization and does not depend on \\(\\theta_j\\), so we write simply \\[\n\\log q_j^*(\\theta_j) = \\mathbb{E}_{q_{-j}}[\\log p(\\theta,x)] + C,\n\\] with \\(C\\) a constant. Exponentiating both sides and renormalizing yields the stated form. \\(\\square\\)\n\nThis theorem is the basis of coordinate ascent variational inference (CAVI): at each step, replace \\(q_j\\) by \\(q_j^*\\) while holding \\(q_{-j}\\) fixed.\n\n\n\nSuppose the joint density \\(p(\\theta,x)\\) belongs to an exponential family of the form\n\\[\n\\log p(\\theta,x) = \\eta(x)^\\top T(\\theta) - A(\\eta(x)) + c(x),\n\\]\nand suppose each factor \\(q_j\\) is restricted to an exponential family with natural parameters \\(\\lambda_j\\). Then the expectation \\(\\mathbb{E}_{q_{-j}}[\\log p(\\theta,x)]\\) is often linear in sufficient statistics of \\(\\theta_j\\), implying that \\(q_j^*\\) remains in the same exponential family with updated natural parameters determined by expectations under \\(q_{-j}\\). This yields closed-form CAVI updates.\n\n\n\n\nWe now work out a concrete example to illustrate VI computations and compare them to exact Bayesian inference.\n\n\nConsider a Normal–Normal model with known variance:\n\\[\nY_i \\mid \\theta \\;\\sim\\; N(\\theta, \\sigma^2), \\quad i=1,\\dots,n, \\quad\n\\theta \\sim N(m_0, v_0),\n\\]\nwith \\(\\sigma^2 &gt; 0\\), \\(v_0 &gt; 0\\) known. The posterior is exactly Normal,\n\\[\n\\theta \\mid y_{1:n} \\sim N(m_n, v_n),\n\\]\nwhere\n\\[\nv_n^{-1} = v_0^{-1} + \\frac{n}{\\sigma^2},\n\\qquad\nm_n = v_n\\Bigl( v_0^{-1} m_0 + \\frac{n \\bar{y}}{\\sigma^2} \\Bigr),\n\\qquad\n\\bar{y} = \\frac{1}{n} \\sum_{i=1}^n y_i.\n\\]\nThis is a conjugate setting, so VI is not necessary for tractability; however, it provides a clean sanity check.\n\n\n\nIntroduce an artificial factorization by writing \\(\\theta = (\\theta_1, \\theta_2)\\) with the constraint \\(\\theta_1 = \\theta_2\\) under the true model. Suppose we approximate the posterior with a mean-field family\n\\[\nq(\\theta_1, \\theta_2) = q_1(\\theta_1) q_2(\\theta_2),\n\\]\neven though the true posterior does not factorize in this way (it is supported on the diagonal \\(\\theta_1 = \\theta_2\\)). Applying Theorem 9.2 yields coupled updates for \\(q_1\\) and \\(q_2\\) which, at the optimum, restore the equality \\(\\theta_1 = \\theta_2\\) in distribution, and the product \\(q_1 q_2\\) recovers the exact posterior density. This example illustrates that mean-field VI can be exact if the factorization is aligned with conditional independence structure implied by the model.\nMore realistic examples (e.g., multivariate Normal posteriors with non-diagonal covariance) yield strictly biased mean-field approximations, which we discuss next.\n\n\n\n\n\n\nLet \\(f(\\theta)\\) be a posterior integrable functional of interest, and denote\n\\[\n\\mu := \\mathbb{E}_{p(\\cdot \\mid x)}[f(\\theta)],\n\\qquad\n\\mu_{\\text{VI}} := \\mathbb{E}_{q^*}[f(\\theta)].\n\\]\n\nFor an ergodic MCMC algorithm with invariant distribution \\(p(\\cdot \\mid x)\\) and samples \\(\\theta^{(1)},\\dots,\\theta^{(N)}\\), the Monte Carlo estimator \\[\n\\hat{\\mu}_N = \\frac{1}{N} \\sum_{k=1}^N f(\\theta^{(k)})\n\\] satisfies a CLT under conditions from Module 5, \\[\n\\sqrt{N}(\\hat{\\mu}_N - \\mu) \\overset{d}{\\to} N(0, \\sigma_f^2).\n\\] Thus, it is (asymptotically) unbiased but has variance \\(\\sigma_f^2 / N\\).\nFor VI, the quantity \\(\\mu_{\\text{VI}}\\) is deterministic once \\(q^*\\) is obtained. There is no sampling variance, but in general \\(\\mu_{\\text{VI}} \\ne \\mu\\); the difference \\(\\mu_{\\text{VI}} - \\mu\\) is an approximation bias induced by restricting \\(q\\) to \\(\\mathcal{Q}\\).\n\nIn practice, VI trades off bias against computational speed and ease of implementation.\n\n\n\nTypical issues include:\n\nUnderestimation of posterior variance. Mean-field approximations ignore posterior correlations, which often leads to overly concentrated approximations.\nMode-seeking behavior. Minimizing \\(\\operatorname{KL}(q \\Vert p)\\) penalizes placing mass where \\(p\\) is small but is relatively tolerant of missing modes entirely, so VI tends to focus on one mode of a multimodal posterior.\nSensitivity to initialization. CAVI may converge to local optima of the ELBO in nonconvex problems.\n\nThese phenomena should be understood and diagnosed when using VI in place of MCMC.\n\n\n\n\n\nELBO Identity (Measure-Theoretic Proof). Prove Theorem 9.1 in full generality using probability measures \\(P\\) and \\(Q\\) and Radon–Nikodym derivatives, explicitly checking conditions under which termwise integration and changes of measure are justified.\nCAVI Derivation with Functional Analysis. Re-derive Theorem 9.2 using functional-analytic language (e.g., viewing the space of densities as a convex subset of \\(L^1\\)), and show that the ELBO is strictly concave in each factor \\(q_j\\) when \\(p(\\theta,x)\\) is strictly positive.\nVI in a Conjugate Model. For the Normal–Normal model with known variance, work out a variational approximation in which \\(q\\) is restricted to a Normal family. Verify that the variational optimum coincides with the exact posterior, and compute the ELBO at the optimum.\nBias in a Correlated Gaussian Posterior. Consider a bivariate Normal posterior \\(N_2(m, \\Sigma)\\) with nonzero off-diagonal entries. Approximate it by a mean-field product \\(q(\\theta_1,\\theta_2) = q_1(\\theta_1) q_2(\\theta_2)\\) with \\(q_j\\) univariate Normals, and explicitly compute \\(q_1, q_2\\) and the resulting approximation error in means and variances.\nVI vs MCMC in High Dimensions. Consider a high-dimensional Bayesian logistic regression model. Discuss qualitatively and, where possible, quantitatively how VI and MCMC scale with dimension and sample size. In particular, relate the computational complexity of CAVI updates to that of one MCMC sweep (e.g., random-walk MH or HMC), and discuss the implications for bias and variance.",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 9: Variational Inference"
+    ]
+  },
+  {
+    "objectID": "modules/module09-vi.html#kl-divergence-and-the-elbo",
+    "href": "modules/module09-vi.html#kl-divergence-and-the-elbo",
+    "title": "Module 9: Variational Inference",
+    "section": "",
+    "text": "We work on a measurable parameter space \\(\\bigl(\\Theta, \\mathcal{T}\\bigr)\\) with a \\(\\sigma\\)-finite reference measure \\(\\nu\\) (typically Lebesgue measure on \\(\\mathbb{R}^d\\)). All densities below are understood with respect to \\(\\nu\\).\n\n\nLet \\(P\\) and \\(Q\\) be probability measures on \\(\\bigl(\\Theta, \\mathcal{T}\\bigr)\\). Assume that\n\\[\nQ \\ll P,\n\\]\nso that the Radon–Nikodym derivative \\(\\frac{dQ}{dP}\\) exists. The Kullback–Leibler divergence from \\(Q\\) to \\(P\\) is\n\\[\n\\operatorname{KL}(Q \\Vert P)\n  := \\int_\\Theta \\log\\Bigl( \\frac{dQ}{dP}(\\theta) \\Bigr) \\, Q(d\\theta)\n  = \\int_\\Theta \\frac{dQ}{dP}(\\theta) \\log\\Bigl( \\frac{dQ}{dP}(\\theta) \\Bigr) \\, P(d\\theta),\n\\]\nwith the convention that \\(a \\log a = 0\\) at \\(a=0\\) and that \\(\\operatorname{KL}(Q \\Vert P) = +\\infty\\) if \\(Q \\not\\ll P\\).\nIn the common case where \\(P\\) and \\(Q\\) admit densities \\(p\\) and \\(q\\) with respect to \\(\\nu\\), we write\n\\[\n\\operatorname{KL}(q \\Vert p)\n  = \\int_\\Theta q(\\theta) \\log \\frac{q(\\theta)}{p(\\theta)} \\, \\nu(d\\theta).\n\\]\nBasic properties. Under mild integrability assumptions:\n\n\\(\\operatorname{KL}(Q \\Vert P) \\ge 0\\),\n\\(\\operatorname{KL}(Q \\Vert P) = 0\\) if and only if \\(Q = P\\) (as measures),\n\\(Q \\mapsto \\operatorname{KL}(Q \\Vert P)\\) is convex.\n\nThese follow from Jensen’s inequality applied to the convex function \\(x \\mapsto x \\log x\\).\n\n\n\nLet \\(x\\) denote observed data. Write the joint density\n\\[\np(\\theta, x) = p(x \\mid \\theta)\\, p(\\theta),\n\\]\nand suppose the posterior density exists,\n\\[\np(\\theta \\mid x) = \\frac{p(\\theta, x)}{p(x)}, \\quad\np(x) = \\int p(\\theta, x)\\, d\\theta.\n\\]\nLet \\(\\mathcal{Q}\\) be a family of candidate densities \\(q(\\theta)\\) (with respect to the same reference measure). Variational inference chooses\n\\[\nq^* \\in \\arg\\min_{q \\in \\mathcal{Q}} \\operatorname{KL}\\bigl(q \\Vert p(\\cdot \\mid x)\\bigr).\n\\]\nDirect optimization of \\(\\operatorname{KL}(q \\Vert p(\\cdot \\mid x))\\) is often inconvenient because it involves the (intractable) posterior density. We therefore introduce the evidence lower bound (ELBO),\n\\[\n\\mathcal{L}(q) := \\int q(\\theta) \\log \\frac{p(\\theta, x)}{q(\\theta)} \\, d\\theta\n                = \\mathbb{E}_q\\bigl[ \\log p(\\theta, x) \\bigr]\n                  - \\mathbb{E}_q\\bigl[ \\log q(\\theta) \\bigr].\n\\]\nWe will show that maximizing \\(\\mathcal{L}(q)\\) is equivalent to minimizing \\(\\operatorname{KL}\\bigl(q \\Vert p(\\cdot \\mid x)\\bigr)\\).\n\nTheorem 9.1 (ELBO–KL Decomposition).\nFor any density \\(q\\) such that \\(\\operatorname{KL}\\bigl(q \\Vert p(\\cdot \\mid x)\\bigr) &lt; \\infty\\), we have\n\\[\n\\log p(x) = \\mathcal{L}(q)\n             + \\operatorname{KL}\\bigl(q \\Vert p(\\cdot \\mid x)\\bigr).\n\\]\nIn particular, \\(\\mathcal{L}(q) \\le \\log p(x)\\), with equality if and only if \\(q = p(\\cdot \\mid x)\\) almost everywhere.\nProof. By definition of KL divergence between \\(q\\) and the posterior, \\[\n\\operatorname{KL}\\bigl(q \\Vert p(\\cdot \\mid x)\\bigr)\n  = \\int q(\\theta)\n       \\log \\frac{q(\\theta)}{p(\\theta \\mid x)}\\, d\\theta.\n\\] Using Bayes’ rule \\(p(\\theta \\mid x) = p(\\theta, x)/p(x)\\), \\[\n\\log \\frac{q(\\theta)}{p(\\theta \\mid x)}\n  = \\log q(\\theta)\n    - \\log p(\\theta,x)\n    + \\log p(x).\n\\] Substitute into the KL expression and integrate termwise: \\[\n\\begin{aligned}\n\\operatorname{KL}\\bigl(q \\Vert p(\\cdot \\mid x)\\bigr)\n&= \\int q(\\theta) \\log q(\\theta)\\, d\\theta\n    - \\int q(\\theta) \\log p(\\theta,x)\\, d\\theta\n    + \\int q(\\theta) \\log p(x)\\, d\\theta \\\\\n&= \\mathbb{E}_q[\\log q(\\theta)]\n    - \\mathbb{E}_q[\\log p(\\theta,x)]\n    + \\log p(x) \\int q(\\theta)\\, d\\theta.\n\\end{aligned}\n\\] Since \\(q\\) is a density, the last integral equals 1. Rearranging gives \\[\n\\log p(x)\n  = \\underbrace{\\mathbb{E}_q[\\log p(\\theta,x)]\n                 - \\mathbb{E}_q[\\log q(\\theta)]}_{\\mathcal{L}(q)}\n    + \\operatorname{KL}\\bigl(q \\Vert p(\\cdot \\mid x)\\bigr),\n\\] which is the claimed identity.\nThe inequality \\(\\mathcal{L}(q) \\le \\log p(x)\\) follows from nonnegativity of the KL divergence. Equality holds if and only if \\(\\operatorname{KL}\\bigl(q \\Vert p(\\cdot \\mid x)\\bigr) = 0\\), i.e., \\(q = p(\\cdot \\mid x)\\) almost everywhere. \\(\\square\\)\n\nThus, maximizing the ELBO is equivalent to minimizing the KL divergence to the posterior within the chosen family \\(\\mathcal{Q}\\).",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 9: Variational Inference"
+    ]
+  },
+  {
+    "objectID": "modules/module09-vi.html#mean-field-variational-families",
+    "href": "modules/module09-vi.html#mean-field-variational-families",
+    "title": "Module 9: Variational Inference",
+    "section": "",
+    "text": "We now restrict to a tractable family \\(\\mathcal{Q}\\) of candidate densities. A common choice is the mean-field family, which assumes conditional independence between groups of parameters under \\(q\\).\n\n\nPartition \\(\\theta\\) into blocks\n\\[\n\\theta = (\\theta_1, \\dots, \\theta_J),\n\\]\nwhere each \\(\\theta_j\\) takes values in some measurable space \\((\\Theta_j, \\mathcal{T}_j)\\). The mean-field variational family is\n\\[\n\\mathcal{Q}_{\\text{MF}}\n  := \\Bigl\\{ q(\\theta) = \\prod_{j=1}^J q_j(\\theta_j)\n                  : q_j \\text{ densities on } \\Theta_j \\Bigr\\}.\n\\]\nThe factorization is an approximation: in general, the true posterior \\(p(\\theta \\mid x)\\) does not factorize in this way, so VI introduces dependence-structure bias.\n\n\n\nWe wish to solve the constrained optimization problem\n\\[\n\\max_{q_1,\\dots,q_J}\\, \\mathcal{L}(q)\n  \\quad \\text{subject to}\\quad\n  q(\\theta) = \\prod_{j=1}^J q_j(\\theta_j), \\;\n  q_j \\ge 0, \\; \\int q_j(\\theta_j)\\, d\\theta_j = 1.\n\\]\nExact joint optimization is often difficult, but we can use coordinate ascent: repeatedly optimize \\(\\mathcal{L}(q)\\) with respect to a single factor \\(q_j\\), holding the others fixed. The optimal \\(q_j\\) has a closed form.\n\nTheorem 9.2 (Optimal Mean-Field Factor Updates).\nFix \\(q_{-j}(\\theta_{-j}) = \\prod_{k \\ne j} q_k(\\theta_k)\\) and consider \\(q_j\\) varying over densities on \\(\\Theta_j\\). Then, up to multiplicative normalization,\n\\[\n\\log q_j^*(\\theta_j)\n  = \\mathbb{E}_{q_{-j}}[\\log p(\\theta, x)] + \\text{constant},\n\\]\nor equivalently,\n\\[\nq_j^*(\\theta_j)\n  \\propto \\exp\\Bigl(\\mathbb{E}_{q_{-j}}[\\log p(\\theta, x)]\\Bigr).\n\\]\nProof. Write the ELBO as \\[\n\\mathcal{L}(q)\n  = \\mathbb{E}_q[\\log p(\\theta,x)]\n    - \\mathbb{E}_q[\\log q(\\theta)].\n\\] Under the mean-field factorization \\(q(\\theta) = q_j(\\theta_j) q_{-j}(\\theta_{-j})\\), we can group terms depending on \\(q_j\\) and those independent of \\(q_j\\).\nFirst term: \\[\n\\mathbb{E}_q[\\log p(\\theta,x)]\n  = \\int q_j(\\theta_j)\\, \\mathbb{E}_{q_{-j}}[\\log p(\\theta,x)]\\, d\\theta_j.\n\\]\nSecond term (entropy part): \\[\n\\mathbb{E}_q[\\log q(\\theta)]\n  = \\mathbb{E}_q\\bigl[\\log q_j(\\theta_j)\\bigr]\n    + \\mathbb{E}_q\\bigl[\\log q_{-j}(\\theta_{-j})\\bigr].\n\\] The second expectation does not depend on \\(q_j\\) and can be treated as constant. Hence, up to an additive constant independent of \\(q_j\\), the ELBO as a functional of \\(q_j\\) is \\[\n\\mathcal{L}_j(q_j)\n  = \\int q_j(\\theta_j)\n        \\mathbb{E}_{q_{-j}}[\\log p(\\theta,x)]\\, d\\theta_j\n    - \\int q_j(\\theta_j) \\log q_j(\\theta_j)\\, d\\theta_j.\n\\]\nWe must maximize \\(\\mathcal{L}_j(q_j)\\) over all densities \\(q_j\\) on \\(\\Theta_j\\). This is a functional optimization problem with a normalization constraint \\(\\int q_j(\\theta_j) d\\theta_j = 1\\). Introduce a Lagrange multiplier \\(\\lambda\\) and consider the Lagrangian \\[\n\\mathcal{F}(q_j)\n  = \\mathcal{L}_j(q_j)\n    + \\lambda\\Bigl( \\int q_j(\\theta_j) d\\theta_j - 1 \\Bigr).\n\\]\nTaking a first variation in the direction of an arbitrary perturbation \\(h\\) with \\(\\int h(\\theta_j) d\\theta_j = 0\\) and using Gâteaux derivatives, we obtain \\[\n\\delta \\mathcal{F} = \\int h(\\theta_j)\n  \\Bigl( \\mathbb{E}_{q_{-j}}[\\log p(\\theta,x)]\n         - (1 + \\log q_j(\\theta_j))\n         + \\lambda \\Bigr) d\\theta_j.\n\\] At an optimum, \\(\\delta \\mathcal{F} = 0\\) for all such \\(h\\), which implies that the term in parentheses must vanish almost everywhere: \\[\n\\mathbb{E}_{q_{-j}}[\\log p(\\theta,x)]\n  - (1 + \\log q_j^*(\\theta_j))\n  + \\lambda = 0.\n\\] Solving for \\(\\log q_j^*(\\theta_j)\\) gives \\[\n\\log q_j^*(\\theta_j)\n  = \\mathbb{E}_{q_{-j}}[\\log p(\\theta,x)]\n    + (\\lambda - 1).\n\\] The constant \\((\\lambda - 1)\\) enforces normalization and does not depend on \\(\\theta_j\\), so we write simply \\[\n\\log q_j^*(\\theta_j) = \\mathbb{E}_{q_{-j}}[\\log p(\\theta,x)] + C,\n\\] with \\(C\\) a constant. Exponentiating both sides and renormalizing yields the stated form. \\(\\square\\)\n\nThis theorem is the basis of coordinate ascent variational inference (CAVI): at each step, replace \\(q_j\\) by \\(q_j^*\\) while holding \\(q_{-j}\\) fixed.\n\n\n\nSuppose the joint density \\(p(\\theta,x)\\) belongs to an exponential family of the form\n\\[\n\\log p(\\theta,x) = \\eta(x)^\\top T(\\theta) - A(\\eta(x)) + c(x),\n\\]\nand suppose each factor \\(q_j\\) is restricted to an exponential family with natural parameters \\(\\lambda_j\\). Then the expectation \\(\\mathbb{E}_{q_{-j}}[\\log p(\\theta,x)]\\) is often linear in sufficient statistics of \\(\\theta_j\\), implying that \\(q_j^*\\) remains in the same exponential family with updated natural parameters determined by expectations under \\(q_{-j}\\). This yields closed-form CAVI updates.",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 9: Variational Inference"
+    ]
+  },
+  {
+    "objectID": "modules/module09-vi.html#variational-inference-in-a-conjugate-normalnormal-model",
+    "href": "modules/module09-vi.html#variational-inference-in-a-conjugate-normalnormal-model",
+    "title": "Module 9: Variational Inference",
+    "section": "",
+    "text": "We now work out a concrete example to illustrate VI computations and compare them to exact Bayesian inference.\n\n\nConsider a Normal–Normal model with known variance:\n\\[\nY_i \\mid \\theta \\;\\sim\\; N(\\theta, \\sigma^2), \\quad i=1,\\dots,n, \\quad\n\\theta \\sim N(m_0, v_0),\n\\]\nwith \\(\\sigma^2 &gt; 0\\), \\(v_0 &gt; 0\\) known. The posterior is exactly Normal,\n\\[\n\\theta \\mid y_{1:n} \\sim N(m_n, v_n),\n\\]\nwhere\n\\[\nv_n^{-1} = v_0^{-1} + \\frac{n}{\\sigma^2},\n\\qquad\nm_n = v_n\\Bigl( v_0^{-1} m_0 + \\frac{n \\bar{y}}{\\sigma^2} \\Bigr),\n\\qquad\n\\bar{y} = \\frac{1}{n} \\sum_{i=1}^n y_i.\n\\]\nThis is a conjugate setting, so VI is not necessary for tractability; however, it provides a clean sanity check.\n\n\n\nIntroduce an artificial factorization by writing \\(\\theta = (\\theta_1, \\theta_2)\\) with the constraint \\(\\theta_1 = \\theta_2\\) under the true model. Suppose we approximate the posterior with a mean-field family\n\\[\nq(\\theta_1, \\theta_2) = q_1(\\theta_1) q_2(\\theta_2),\n\\]\neven though the true posterior does not factorize in this way (it is supported on the diagonal \\(\\theta_1 = \\theta_2\\)). Applying Theorem 9.2 yields coupled updates for \\(q_1\\) and \\(q_2\\) which, at the optimum, restore the equality \\(\\theta_1 = \\theta_2\\) in distribution, and the product \\(q_1 q_2\\) recovers the exact posterior density. This example illustrates that mean-field VI can be exact if the factorization is aligned with conditional independence structure implied by the model.\nMore realistic examples (e.g., multivariate Normal posteriors with non-diagonal covariance) yield strictly biased mean-field approximations, which we discuss next.",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 9: Variational Inference"
+    ]
+  },
+  {
+    "objectID": "modules/module09-vi.html#comparison-with-mcmc-bias-variance-and-asymptotics",
+    "href": "modules/module09-vi.html#comparison-with-mcmc-bias-variance-and-asymptotics",
+    "title": "Module 9: Variational Inference",
+    "section": "",
+    "text": "Let \\(f(\\theta)\\) be a posterior integrable functional of interest, and denote\n\\[\n\\mu := \\mathbb{E}_{p(\\cdot \\mid x)}[f(\\theta)],\n\\qquad\n\\mu_{\\text{VI}} := \\mathbb{E}_{q^*}[f(\\theta)].\n\\]\n\nFor an ergodic MCMC algorithm with invariant distribution \\(p(\\cdot \\mid x)\\) and samples \\(\\theta^{(1)},\\dots,\\theta^{(N)}\\), the Monte Carlo estimator \\[\n\\hat{\\mu}_N = \\frac{1}{N} \\sum_{k=1}^N f(\\theta^{(k)})\n\\] satisfies a CLT under conditions from Module 5, \\[\n\\sqrt{N}(\\hat{\\mu}_N - \\mu) \\overset{d}{\\to} N(0, \\sigma_f^2).\n\\] Thus, it is (asymptotically) unbiased but has variance \\(\\sigma_f^2 / N\\).\nFor VI, the quantity \\(\\mu_{\\text{VI}}\\) is deterministic once \\(q^*\\) is obtained. There is no sampling variance, but in general \\(\\mu_{\\text{VI}} \\ne \\mu\\); the difference \\(\\mu_{\\text{VI}} - \\mu\\) is an approximation bias induced by restricting \\(q\\) to \\(\\mathcal{Q}\\).\n\nIn practice, VI trades off bias against computational speed and ease of implementation.\n\n\n\nTypical issues include:\n\nUnderestimation of posterior variance. Mean-field approximations ignore posterior correlations, which often leads to overly concentrated approximations.\nMode-seeking behavior. Minimizing \\(\\operatorname{KL}(q \\Vert p)\\) penalizes placing mass where \\(p\\) is small but is relatively tolerant of missing modes entirely, so VI tends to focus on one mode of a multimodal posterior.\nSensitivity to initialization. CAVI may converge to local optima of the ELBO in nonconvex problems.\n\nThese phenomena should be understood and diagnosed when using VI in place of MCMC.",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 9: Variational Inference"
+    ]
+  },
+  {
+    "objectID": "modules/module09-vi.html#problem-set-9-representative-problems",
+    "href": "modules/module09-vi.html#problem-set-9-representative-problems",
+    "title": "Module 9: Variational Inference",
+    "section": "",
+    "text": "ELBO Identity (Measure-Theoretic Proof). Prove Theorem 9.1 in full generality using probability measures \\(P\\) and \\(Q\\) and Radon–Nikodym derivatives, explicitly checking conditions under which termwise integration and changes of measure are justified.\nCAVI Derivation with Functional Analysis. Re-derive Theorem 9.2 using functional-analytic language (e.g., viewing the space of densities as a convex subset of \\(L^1\\)), and show that the ELBO is strictly concave in each factor \\(q_j\\) when \\(p(\\theta,x)\\) is strictly positive.\nVI in a Conjugate Model. For the Normal–Normal model with known variance, work out a variational approximation in which \\(q\\) is restricted to a Normal family. Verify that the variational optimum coincides with the exact posterior, and compute the ELBO at the optimum.\nBias in a Correlated Gaussian Posterior. Consider a bivariate Normal posterior \\(N_2(m, \\Sigma)\\) with nonzero off-diagonal entries. Approximate it by a mean-field product \\(q(\\theta_1,\\theta_2) = q_1(\\theta_1) q_2(\\theta_2)\\) with \\(q_j\\) univariate Normals, and explicitly compute \\(q_1, q_2\\) and the resulting approximation error in means and variances.\nVI vs MCMC in High Dimensions. Consider a high-dimensional Bayesian logistic regression model. Discuss qualitatively and, where possible, quantitatively how VI and MCMC scale with dimension and sample size. In particular, relate the computational complexity of CAVI updates to that of one MCMC sweep (e.g., random-walk MH or HMC), and discuss the implications for bias and variance.",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 9: Variational Inference"
+    ]
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Bayesian Statistics and Inference",
+    "section": "",
+    "text": "This site contains lecture notes, syllabus, and problem sets for a mathematically rigorous, measure-theoretic course in Bayesian Statistics and Bayesian Inference.\nThe course is designed for graduate or early PhD students with strong backgrounds in:\n\nProbability theory (measure-theoretic)\nLinear algebra\nReal analysis (including modes of convergence and basic functional analysis flavor)\n\nThe emphasis is theory-first:\n\nAll major algorithms are derived from first principles.\nPrior, likelihood, and posterior are treated as measures.\nBayesian inference is grounded in decision theory.\nComputational methods (MCMC, variational inference, optimization) are analyzed with proofs of correctness, convergence, and asymptotic behavior.\n\n\n\nBy the end of the course, students should be able to:\n\nFormally derive Bayes’ theorem via the Radon–Nikodym theorem and work with priors, likelihoods, and posteriors as measures.\nAnalyze identifiability, posterior propriety, posterior consistency, and convergence properties of Bayesian models and algorithms.\nDerive from first principles:\n\nConjugate posterior formulas and predictive distributions.\nRegression posteriors and approximate posteriors in generalized linear models.\nMCMC algorithms (Metropolis–Hastings, Gibbs, HMC, MALA) and prove invariance and convergence results.\nVariational inference updates via ELBO optimization.\nGaussian Process regression posteriors and their asymptotic properties.\n\nEvaluate Bayesian procedures from both Bayesian and frequentist perspectives (decision-theoretic risk, Bernstein–von Mises, coverage).\nCritically assess models via posterior predictive checks and sensitivity / robustness analyses.\n\n\n\n\nPrimary references:\n\nBernardo, J. M., & Smith, A. F. M. (1994). Bayesian Theory.\nRobert, C. P., & Casella, G. (2004). Monte Carlo Statistical Methods.\nGelman, A., Carlin, J. B., Stern, H. S., Dunson, D. B., Vehtari, A., & Rubin, D. B. (2013). Bayesian Data Analysis.\nGhosh, J. K., & Ramamoorthi, R. V. (2003). Bayesian Nonparametrics.\nRasmussen, C. E., & Williams, C. K. I. (2006). Gaussian Processes for Machine Learning.\nvan der Vaart, A. W. (1998). Asymptotic Statistics.\n\n\n\n\nThe course is organized into 13 modules:\n\nFoundations of Bayesian Inference\nConjugate Models and Exact Inference\nBayesian Regression\nBayesian Generalized Linear Models\nMarkov Chain Monte Carlo (MCMC) Theory\nMetropolis–Hastings Algorithm\nGibbs Sampling\nAdvanced MCMC Methods\nVariational Inference\nGaussian Processes\nOptimization in Bayesian Inference\nAsymptotic Theory and Consistency\nModel Checking and Criticism\n\nUse the sidebar or navigation bar to access detailed notes for each module.",
+    "crumbs": [
+      "Home",
+      "Bayesian Statistics and Inference"
+    ]
+  },
+  {
+    "objectID": "index.html#learning-outcomes",
+    "href": "index.html#learning-outcomes",
+    "title": "Bayesian Statistics and Inference",
+    "section": "",
+    "text": "By the end of the course, students should be able to:\n\nFormally derive Bayes’ theorem via the Radon–Nikodym theorem and work with priors, likelihoods, and posteriors as measures.\nAnalyze identifiability, posterior propriety, posterior consistency, and convergence properties of Bayesian models and algorithms.\nDerive from first principles:\n\nConjugate posterior formulas and predictive distributions.\nRegression posteriors and approximate posteriors in generalized linear models.\nMCMC algorithms (Metropolis–Hastings, Gibbs, HMC, MALA) and prove invariance and convergence results.\nVariational inference updates via ELBO optimization.\nGaussian Process regression posteriors and their asymptotic properties.\n\nEvaluate Bayesian procedures from both Bayesian and frequentist perspectives (decision-theoretic risk, Bernstein–von Mises, coverage).\nCritically assess models via posterior predictive checks and sensitivity / robustness analyses.",
+    "crumbs": [
+      "Home",
+      "Bayesian Statistics and Inference"
+    ]
+  },
+  {
+    "objectID": "index.html#references",
+    "href": "index.html#references",
+    "title": "Bayesian Statistics and Inference",
+    "section": "",
+    "text": "Primary references:\n\nBernardo, J. M., & Smith, A. F. M. (1994). Bayesian Theory.\nRobert, C. P., & Casella, G. (2004). Monte Carlo Statistical Methods.\nGelman, A., Carlin, J. B., Stern, H. S., Dunson, D. B., Vehtari, A., & Rubin, D. B. (2013). Bayesian Data Analysis.\nGhosh, J. K., & Ramamoorthi, R. V. (2003). Bayesian Nonparametrics.\nRasmussen, C. E., & Williams, C. K. I. (2006). Gaussian Processes for Machine Learning.\nvan der Vaart, A. W. (1998). Asymptotic Statistics.",
+    "crumbs": [
+      "Home",
+      "Bayesian Statistics and Inference"
+    ]
+  },
+  {
+    "objectID": "index.html#course-structure",
+    "href": "index.html#course-structure",
+    "title": "Bayesian Statistics and Inference",
+    "section": "",
+    "text": "The course is organized into 13 modules:\n\nFoundations of Bayesian Inference\nConjugate Models and Exact Inference\nBayesian Regression\nBayesian Generalized Linear Models\nMarkov Chain Monte Carlo (MCMC) Theory\nMetropolis–Hastings Algorithm\nGibbs Sampling\nAdvanced MCMC Methods\nVariational Inference\nGaussian Processes\nOptimization in Bayesian Inference\nAsymptotic Theory and Consistency\nModel Checking and Criticism\n\nUse the sidebar or navigation bar to access detailed notes for each module.",
+    "crumbs": [
+      "Home",
+      "Bayesian Statistics and Inference"
+    ]
+  },
+  {
+    "objectID": "syllabus.html",
+    "href": "syllabus.html",
+    "title": "Syllabus",
+    "section": "",
+    "text": "This course is a mathematically rigorous introduction to Bayesian Statistics and Bayesian Inference, aimed at graduate and early PhD students. The course emphasizes measure-theoretic probability, Bayesian decision theory, and the derivation of computational methods from first principles.\nThe course assumes familiarity with probability theory at the level of measure spaces and random variables, linear algebra, and real analysis. The primary focus is on theory: definitions, theorems, lemmas, propositions, and proofs. Applications and software are discussed only as secondary illustrations.\n\n\n\n\nMeasure-theoretic probability\nReal analysis (convergence, continuity, basic functional analysis flavor)\nLinear algebra\n\n\n\n\n\nFoundations of Bayesian Inference\n\nProbability spaces and random variables\nConditional probability and conditional expectation\nBayes’ theorem as a statement about Radon–Nikodym derivatives\nPrior, likelihood, posterior as measures\nPosterior propriety and absolute continuity\nBayesian decision theory and loss functions\nBayes estimators and admissibility\nCredible intervals vs confidence intervals\nBernstein–von Mises theorem (statement and proof sketch)\n\nConjugate Models and Exact Inference\n\nExponential family distributions\nGeneral theory of conjugate priors\nBeta–Binomial, Gamma–Poisson, Normal–Normal conjugate pairs\nPosterior moments and predictive distributions\nMarginal likelihood and Bayes factors\n\nBayesian Regression\n\nBayesian linear regression with Gaussian priors\nPosterior distributions of coefficients and variance\nRidge regression as MAP estimation\nPosterior predictive distributions\nCredible intervals for regression coefficients\n\nBayesian Generalized Linear Models\n\nLogistic regression in a Bayesian framework\nNon-conjugacy and implications\nLaplace approximation for non-conjugate models\nIdentifiability and separation issues\nPosterior geometry and curvature\n\nMarkov Chain Monte Carlo (MCMC) Theory\n\nMarkov chains on general state spaces\nInvariant distributions and detailed balance\nReversibility and stationarity\nErgodicity and convergence theorems\nCentral limit theorems for Markov chains\n\nMetropolis–Hastings Algorithm\n\nDerivation from detailed balance\nProposal distributions and acceptance probabilities\nProof of stationarity\nOptimal scaling results in high dimensions\nPathologies and failure modes\n\nGibbs Sampling\n\nConditional distributions and block sampling\nGibbs as a special case of MH\nConvergence properties and irreducibility\nProofs of correctness\nData augmentation\n\nAdvanced MCMC Methods\n\nHamiltonian Monte Carlo (HMC)\nLangevin dynamics and MALA\nNo-U-Turn Sampler (NUTS)\nSlice sampling\nAdaptive MCMC\nTheoretical guarantees and limitations\n\nVariational Inference\n\nKL divergence minimization\nEvidence Lower Bound (ELBO)\nMean-field approximations\nCoordinate ascent variational inference (CAVI)\nComparison with MCMC (bias vs variance)\n\nGaussian Processes\n\nGaussian processes as distributions over functions\nCovariance kernels and RKHS connections\nGP regression (exact inference)\nPosterior mean and covariance derivation\nHyperparameter estimation\nComputational complexity and approximations\n\nOptimization in Bayesian Inference\n\nMAP estimation\nGradient-based optimization\nNewton and quasi-Newton methods\nConvexity and non-convexity of posteriors\nRelationship between optimization and sampling\n\nAsymptotic Theory and Consistency\n\nPosterior consistency\nMisspecified models\nPosterior concentration rates\nFrequentist coverage of Bayesian procedures\n\nModel Checking and Criticism\n\nPosterior predictive checks\nSensitivity to priors\nPrior elicitation\nBayesian robustness\n\n\n\n\n\n\nProblem sets (proof-based): 40%\nMidterm exam (theory): 25%\nFinal exam or project (theory and synthesis): 35%\n\nProblem sets emphasize derivations, convergence proofs, construction of counterexamples, and rigorous analysis of Bayesian procedures and algorithms.",
+    "crumbs": [
+      "Home",
+      "Syllabus"
+    ]
+  },
+  {
+    "objectID": "syllabus.html#course-description",
+    "href": "syllabus.html#course-description",
+    "title": "Syllabus",
+    "section": "",
+    "text": "This course is a mathematically rigorous introduction to Bayesian Statistics and Bayesian Inference, aimed at graduate and early PhD students. The course emphasizes measure-theoretic probability, Bayesian decision theory, and the derivation of computational methods from first principles.\nThe course assumes familiarity with probability theory at the level of measure spaces and random variables, linear algebra, and real analysis. The primary focus is on theory: definitions, theorems, lemmas, propositions, and proofs. Applications and software are discussed only as secondary illustrations.",
+    "crumbs": [
+      "Home",
+      "Syllabus"
+    ]
+  },
+  {
+    "objectID": "syllabus.html#prerequisites",
+    "href": "syllabus.html#prerequisites",
+    "title": "Syllabus",
+    "section": "",
+    "text": "Measure-theoretic probability\nReal analysis (convergence, continuity, basic functional analysis flavor)\nLinear algebra",
+    "crumbs": [
+      "Home",
+      "Syllabus"
+    ]
+  },
+  {
+    "objectID": "syllabus.html#topics-by-module",
+    "href": "syllabus.html#topics-by-module",
+    "title": "Syllabus",
+    "section": "",
+    "text": "Foundations of Bayesian Inference\n\nProbability spaces and random variables\nConditional probability and conditional expectation\nBayes’ theorem as a statement about Radon–Nikodym derivatives\nPrior, likelihood, posterior as measures\nPosterior propriety and absolute continuity\nBayesian decision theory and loss functions\nBayes estimators and admissibility\nCredible intervals vs confidence intervals\nBernstein–von Mises theorem (statement and proof sketch)\n\nConjugate Models and Exact Inference\n\nExponential family distributions\nGeneral theory of conjugate priors\nBeta–Binomial, Gamma–Poisson, Normal–Normal conjugate pairs\nPosterior moments and predictive distributions\nMarginal likelihood and Bayes factors\n\nBayesian Regression\n\nBayesian linear regression with Gaussian priors\nPosterior distributions of coefficients and variance\nRidge regression as MAP estimation\nPosterior predictive distributions\nCredible intervals for regression coefficients\n\nBayesian Generalized Linear Models\n\nLogistic regression in a Bayesian framework\nNon-conjugacy and implications\nLaplace approximation for non-conjugate models\nIdentifiability and separation issues\nPosterior geometry and curvature\n\nMarkov Chain Monte Carlo (MCMC) Theory\n\nMarkov chains on general state spaces\nInvariant distributions and detailed balance\nReversibility and stationarity\nErgodicity and convergence theorems\nCentral limit theorems for Markov chains\n\nMetropolis–Hastings Algorithm\n\nDerivation from detailed balance\nProposal distributions and acceptance probabilities\nProof of stationarity\nOptimal scaling results in high dimensions\nPathologies and failure modes\n\nGibbs Sampling\n\nConditional distributions and block sampling\nGibbs as a special case of MH\nConvergence properties and irreducibility\nProofs of correctness\nData augmentation\n\nAdvanced MCMC Methods\n\nHamiltonian Monte Carlo (HMC)\nLangevin dynamics and MALA\nNo-U-Turn Sampler (NUTS)\nSlice sampling\nAdaptive MCMC\nTheoretical guarantees and limitations\n\nVariational Inference\n\nKL divergence minimization\nEvidence Lower Bound (ELBO)\nMean-field approximations\nCoordinate ascent variational inference (CAVI)\nComparison with MCMC (bias vs variance)\n\nGaussian Processes\n\nGaussian processes as distributions over functions\nCovariance kernels and RKHS connections\nGP regression (exact inference)\nPosterior mean and covariance derivation\nHyperparameter estimation\nComputational complexity and approximations\n\nOptimization in Bayesian Inference\n\nMAP estimation\nGradient-based optimization\nNewton and quasi-Newton methods\nConvexity and non-convexity of posteriors\nRelationship between optimization and sampling\n\nAsymptotic Theory and Consistency\n\nPosterior consistency\nMisspecified models\nPosterior concentration rates\nFrequentist coverage of Bayesian procedures\n\nModel Checking and Criticism\n\nPosterior predictive checks\nSensitivity to priors\nPrior elicitation\nBayesian robustness",
+    "crumbs": [
+      "Home",
+      "Syllabus"
+    ]
+  },
+  {
+    "objectID": "syllabus.html#assessment-template",
+    "href": "syllabus.html#assessment-template",
+    "title": "Syllabus",
+    "section": "",
+    "text": "Problem sets (proof-based): 40%\nMidterm exam (theory): 25%\nFinal exam or project (theory and synthesis): 35%\n\nProblem sets emphasize derivations, convergence proofs, construction of counterexamples, and rigorous analysis of Bayesian procedures and algorithms.",
+    "crumbs": [
+      "Home",
+      "Syllabus"
+    ]
+  },
+  {
+    "objectID": "modules/module08-advanced-mcmc.html",
+    "href": "modules/module08-advanced-mcmc.html",
+    "title": "Module 8: Advanced MCMC Methods",
+    "section": "",
+    "text": "This module introduces advanced MCMC algorithms: Hamiltonian Monte Carlo (HMC), Langevin dynamics (MALA), the No-U-Turn Sampler (NUTS), slice sampling, and adaptive MCMC. We emphasize the measure-theoretic foundations of their invariance properties and discuss theoretical guarantees and limitations.\n\n\n\n\nLet (^d) denote parameters of interest with target density (()). Introduce auxiliary momentum variables (p ^d) with density (N(0, M)), where (M) is a positive-definite mass matrix.\nDefine the Hamiltonian [ H(, p) = U() + K(p) = -() + pM{-1} p + . ]\nHamilton’s equations are [ = p H(,p) = M^{-1} p, = -H(,p) = -U(). ]\n\n\n\nThe exact Hamiltonian flow (_t: (,p) (_t, p_t)) is volume-preserving (Jacobian determinant 1) and conserves (H(,p)).\nIdea of proof: Use Liouville’s theorem (divergence-free Hamiltonian vector field) and differentiability of (H).\n\n\n\nA typical HMC iteration:\n\nSample (p N(0, M)) independently of current ().\nApproximate Hamiltonian flow for a time (L ) using a symplectic integrator (e.g., leapfrog) to obtain proposal ((‘, p’)).\nAccept or reject ((‘, p’)) using an MH step with acceptance probability [ = {1, (-H(‘,p’) + H(,p))}. ]\nReturn (’) if accepted, otherwise retain ().\n\nThe exact flow would preserve the joint density (e^{-H(,p)}); the Metropolis correction accounts for numerical integration error.\n\n\n\n\n\n\nConsider the SDE [ d_t = (_t) , dt + dB_t, ] where (B_t) is a standard Brownian motion. Under suitable conditions, () is the invariant distribution of this diffusion.\n\n\n\nDiscretize the SDE with step size (&gt; 0): [ _{k+1} = _k + (_k) + Z_k, ] where (Z_k N(0, I_d)) i.i.d. ULA does not exactly preserve (), but can approximate it under small ().\n\n\n\nUse the ULA proposal within MH:\n\nProposal density: [ q(, ’) = N( + (),; I_d ). ]\nAcceptance probability as in MH to correct discretization bias.\n\nUnder regularity conditions, MALA is reversible with invariant distribution ().\n\n\n\n\nThe No-U-Turn Sampler (NUTS) adaptively selects trajectory lengths in HMC to avoid wasteful backtracking.\n\nConceptually explores forward and backward along the Hamiltonian trajectory until a “U-turn” criterion is met.\nMaintains reversibility and detailed balance through careful construction of a binary tree of candidate states and a symmetric selection rule.\n\nRigorous convergence analyses are more involved but build on the invariance of the joint ((,p)) measure and conditions on step-size adaptation.\n\n\n\n\n\nGiven target density (()), introduce an auxiliary variable (u (0, ())). The joint density is [ f(,u) {0 &lt; u &lt; ()}. ]\nGibbs sampling in ((,u)) space:\n\nSample (u (0, ())).\nSample (u) uniformly from the “slice” ({: () &gt; u}).\n\nThe marginal of () is (), making slice sampling an exact MCMC method.\n\n\n\nExact sampling from slices is often impossible; one uses interval expansion and shrinking procedures (e.g., stepping-out and shrinkage) that maintain invariance if constructed carefully.\n\n\n\n\n\n\nAdaptive MCMC updates the transition kernel over time, e.g., adjusting proposal covariance in MH. The resulting chain is no longer Markov with a fixed kernel, complicating convergence analysis.\n\n\n\nA common set of sufficient conditions for convergence to ():\n\nDiminishing adaptation: The difference between successive kernels goes to zero: [ x | K{n+1}(x, ) - K_n(x, ) |_{} . ]\nContainment: A uniform bound on convergence times across the adaptive sequence.\n\n\n\n\nIf the family of kernels ({K_n}) used in the adaptive algorithm all admit () as invariant distribution, and if diminishing adaptation and a suitable containment condition hold, then the adaptive chain converges to () in distribution.\nIdea of proof: Use coupling arguments and perturbation bounds on Markov operators to control the effect of adaptation.\n\n\n\n\n\nHMC Invariance. Show that the exact Hamiltonian flow preserves the extended density (e^{-H(,p)}). Then argue why the Metropolis correction step yields a Markov chain with invariant distribution (()).\nMALA Detailed Balance. Derive the MALA acceptance probability and verify detailed balance with respect to () in the general case.\nSlice Sampling Correctness. Prove that the basic slice sampling scheme with exact slice sampling has () as invariant distribution.\nAdaptive MH Example. Consider an adaptive random-walk MH algorithm that updates the proposal covariance based on the empirical covariance of past samples. Discuss conditions under which diminishing adaptation holds and potential violations of containment.\nHMC Step-Size Tuning. Discuss how step size and number of leapfrog steps in HMC affect acceptance rates, energy error, and effective exploration, relating your discussion to the theory of symplectic integrators and of optimal scaling.",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 8: Advanced MCMC Methods"
+    ]
+  },
+  {
+    "objectID": "modules/module08-advanced-mcmc.html#hamiltonian-monte-carlo-hmc",
+    "href": "modules/module08-advanced-mcmc.html#hamiltonian-monte-carlo-hmc",
+    "title": "Module 8: Advanced MCMC Methods",
+    "section": "",
+    "text": "Let (^d) denote parameters of interest with target density (()). Introduce auxiliary momentum variables (p ^d) with density (N(0, M)), where (M) is a positive-definite mass matrix.\nDefine the Hamiltonian [ H(, p) = U() + K(p) = -() + pM{-1} p + . ]\nHamilton’s equations are [ = p H(,p) = M^{-1} p, = -H(,p) = -U(). ]\n\n\n\nThe exact Hamiltonian flow (_t: (,p) (_t, p_t)) is volume-preserving (Jacobian determinant 1) and conserves (H(,p)).\nIdea of proof: Use Liouville’s theorem (divergence-free Hamiltonian vector field) and differentiability of (H).\n\n\n\nA typical HMC iteration:\n\nSample (p N(0, M)) independently of current ().\nApproximate Hamiltonian flow for a time (L ) using a symplectic integrator (e.g., leapfrog) to obtain proposal ((‘, p’)).\nAccept or reject ((‘, p’)) using an MH step with acceptance probability [ = {1, (-H(‘,p’) + H(,p))}. ]\nReturn (’) if accepted, otherwise retain ().\n\nThe exact flow would preserve the joint density (e^{-H(,p)}); the Metropolis correction accounts for numerical integration error.",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 8: Advanced MCMC Methods"
+    ]
+  },
+  {
+    "objectID": "modules/module08-advanced-mcmc.html#langevin-dynamics-and-mala",
+    "href": "modules/module08-advanced-mcmc.html#langevin-dynamics-and-mala",
+    "title": "Module 8: Advanced MCMC Methods",
+    "section": "",
+    "text": "Consider the SDE [ d_t = (_t) , dt + dB_t, ] where (B_t) is a standard Brownian motion. Under suitable conditions, () is the invariant distribution of this diffusion.\n\n\n\nDiscretize the SDE with step size (&gt; 0): [ _{k+1} = _k + (_k) + Z_k, ] where (Z_k N(0, I_d)) i.i.d. ULA does not exactly preserve (), but can approximate it under small ().\n\n\n\nUse the ULA proposal within MH:\n\nProposal density: [ q(, ’) = N( + (),; I_d ). ]\nAcceptance probability as in MH to correct discretization bias.\n\nUnder regularity conditions, MALA is reversible with invariant distribution ().",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 8: Advanced MCMC Methods"
+    ]
+  },
+  {
+    "objectID": "modules/module08-advanced-mcmc.html#nuts-and-adaptive-path-length",
+    "href": "modules/module08-advanced-mcmc.html#nuts-and-adaptive-path-length",
+    "title": "Module 8: Advanced MCMC Methods",
+    "section": "",
+    "text": "The No-U-Turn Sampler (NUTS) adaptively selects trajectory lengths in HMC to avoid wasteful backtracking.\n\nConceptually explores forward and backward along the Hamiltonian trajectory until a “U-turn” criterion is met.\nMaintains reversibility and detailed balance through careful construction of a binary tree of candidate states and a symmetric selection rule.\n\nRigorous convergence analyses are more involved but build on the invariance of the joint ((,p)) measure and conditions on step-size adaptation.",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 8: Advanced MCMC Methods"
+    ]
+  },
+  {
+    "objectID": "modules/module08-advanced-mcmc.html#slice-sampling",
+    "href": "modules/module08-advanced-mcmc.html#slice-sampling",
+    "title": "Module 8: Advanced MCMC Methods",
+    "section": "",
+    "text": "Given target density (()), introduce an auxiliary variable (u (0, ())). The joint density is [ f(,u) {0 &lt; u &lt; ()}. ]\nGibbs sampling in ((,u)) space:\n\nSample (u (0, ())).\nSample (u) uniformly from the “slice” ({: () &gt; u}).\n\nThe marginal of () is (), making slice sampling an exact MCMC method.\n\n\n\nExact sampling from slices is often impossible; one uses interval expansion and shrinking procedures (e.g., stepping-out and shrinkage) that maintain invariance if constructed carefully.",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 8: Advanced MCMC Methods"
+    ]
+  },
+  {
+    "objectID": "modules/module08-advanced-mcmc.html#adaptive-mcmc",
+    "href": "modules/module08-advanced-mcmc.html#adaptive-mcmc",
+    "title": "Module 8: Advanced MCMC Methods",
+    "section": "",
+    "text": "Adaptive MCMC updates the transition kernel over time, e.g., adjusting proposal covariance in MH. The resulting chain is no longer Markov with a fixed kernel, complicating convergence analysis.\n\n\n\nA common set of sufficient conditions for convergence to ():\n\nDiminishing adaptation: The difference between successive kernels goes to zero: [ x | K{n+1}(x, ) - K_n(x, ) |_{} . ]\nContainment: A uniform bound on convergence times across the adaptive sequence.\n\n\n\n\nIf the family of kernels ({K_n}) used in the adaptive algorithm all admit () as invariant distribution, and if diminishing adaptation and a suitable containment condition hold, then the adaptive chain converges to () in distribution.\nIdea of proof: Use coupling arguments and perturbation bounds on Markov operators to control the effect of adaptation.",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 8: Advanced MCMC Methods"
+    ]
+  },
+  {
+    "objectID": "modules/module08-advanced-mcmc.html#problem-set-8-representative-problems",
+    "href": "modules/module08-advanced-mcmc.html#problem-set-8-representative-problems",
+    "title": "Module 8: Advanced MCMC Methods",
+    "section": "",
+    "text": "HMC Invariance. Show that the exact Hamiltonian flow preserves the extended density (e^{-H(,p)}). Then argue why the Metropolis correction step yields a Markov chain with invariant distribution (()).\nMALA Detailed Balance. Derive the MALA acceptance probability and verify detailed balance with respect to () in the general case.\nSlice Sampling Correctness. Prove that the basic slice sampling scheme with exact slice sampling has () as invariant distribution.\nAdaptive MH Example. Consider an adaptive random-walk MH algorithm that updates the proposal covariance based on the empirical covariance of past samples. Discuss conditions under which diminishing adaptation holds and potential violations of containment.\nHMC Step-Size Tuning. Discuss how step size and number of leapfrog steps in HMC affect acceptance rates, energy error, and effective exploration, relating your discussion to the theory of symplectic integrators and of optimal scaling.",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 8: Advanced MCMC Methods"
+    ]
+  },
+  {
+    "objectID": "modules/module11-optimization.html",
+    "href": "modules/module11-optimization.html",
+    "title": "Module 11: Optimization in Bayesian Inference",
+    "section": "",
+    "text": "This module focuses on optimization problems arising in Bayesian inference, especially Maximum A Posteriori (MAP) estimation. We study gradient-based optimization methods, Newton and quasi-Newton methods, convexity vs non-convexity of posteriors, and relationships between optimization and sampling.\n\n\n\n\nLet ((x)) denote the posterior density of () given data (x). A MAP estimator is [ {} {} (x). ] Equivalently, it minimizes the negative log-posterior: [ {} {} {-(x)}. ]\n\n\n\nIf the prior is flat (improper uniform) or weakly informative, the MAP estimator can coincide with or closely approximate the maximum likelihood estimator (MLE).\nIn exponential family models with conjugate priors, the MAP often has a closed-form expression involving prior pseudo-counts.\n\n\n\n\n\n\nLet [ L() = -(x) ] be the objective function. Gradient descent iterations are given by [ _{k+1} = _k - _k L(_k), ] where (_k &gt; 0) is a step size.\nUnder standard conditions (Lipschitz gradient, suitable step-size schedule), gradient descent converges to a local minimum of (L).\n\n\n\nFor large data sets, one may approximate (L()) using mini-batches, leading to stochastic gradient descent (SGD) and its variants. Care is required to ensure convergence to stationary points.\n\n\n\n\n\n\nNewton’s method uses second-order information: [ _{k+1} = _k - H(_k)^{-1} L(_k), ] where (H() = ^2 L()) is the Hessian.\nUnder conditions of local strong convexity and smoothness, Newton’s method converges quadratically to a local minimizer.\n\n\n\nQuasi-Newton methods (e.g., BFGS, L-BFGS) construct approximations (B_k H(_k)^{-1}) using gradient evaluations. They can be more efficient in high dimensions where computing or inverting the Hessian is infeasible.\n\n\n\nFor the logistic regression posterior with Gaussian prior, the negative log-posterior is convex, and the Hessian is given by [ H() = X^W() X + V_0^{-1}, ] where (W()) is the diagonal matrix of Bernoulli variances. Newton’s method converges rapidly to the MAP under mild conditions.\n\n\n\n\n\n\nIn some models (e.g., logistic regression with Gaussian prior), the negative log-posterior is convex, so any local minimum is global, and optimization is relatively straightforward.\n\n\n\nIn mixture models, hierarchical models, and models with latent discrete structure, the posterior can be highly non-convex with multiple modes.\n\nMAP estimation may depend strongly on initialization.\nOptimization can become trapped in local modes.\n\n\n\n\nOptimization-based methods (MAP, Laplace approximation) provide local summaries of the posterior near a mode. Sampling-based methods (MCMC) attempt to explore the full posterior, including multiple modes and heavy tails.\nThe two approaches can be combined:\n\nUse optimization to find good initial states for MCMC.\nUse Hessian information around the MAP to construct better proposals (e.g., preconditioned MH, Riemannian HMC).\n\n\n\n\n\n\nMAP vs MLE. In an exponential family model with conjugate prior, derive conditions under which the MAP estimator equals the MLE. Provide explicit examples where they differ and analyze the influence of hyperparameters.\nNewton’s Method for Logistic Regression. Derive the Newton update for the logistic regression posterior with Gaussian prior. Prove local quadratic convergence under appropriate regularity conditions (e.g., strong convexity near the optimum).\nQuasi-Newton Convergence. Outline a convergence proof for BFGS under assumptions of smooth, strongly convex objective functions. Discuss how these conditions relate to typical Bayesian posteriors.\nNon-Convex Posterior Example. Consider a simple Gaussian mixture model with a symmetric prior over component labels. Show that the posterior has multiple symmetric modes and analyze how MAP estimation depends on initialization.\nOptimization–Sampling Interaction. Discuss how Laplace approximations around the MAP can be used to construct efficient proposals for MH (e.g., independence samplers), and analyze conditions under which such proposals lead to geometrically ergodic chains.",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 11: Optimization in Bayesian Inference"
+    ]
+  },
+  {
+    "objectID": "modules/module11-optimization.html#map-estimation",
+    "href": "modules/module11-optimization.html#map-estimation",
+    "title": "Module 11: Optimization in Bayesian Inference",
+    "section": "",
+    "text": "Let ((x)) denote the posterior density of () given data (x). A MAP estimator is [ {} {} (x). ] Equivalently, it minimizes the negative log-posterior: [ {} {} {-(x)}. ]\n\n\n\nIf the prior is flat (improper uniform) or weakly informative, the MAP estimator can coincide with or closely approximate the maximum likelihood estimator (MLE).\nIn exponential family models with conjugate priors, the MAP often has a closed-form expression involving prior pseudo-counts.",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 11: Optimization in Bayesian Inference"
+    ]
+  },
+  {
+    "objectID": "modules/module11-optimization.html#gradient-based-optimization",
+    "href": "modules/module11-optimization.html#gradient-based-optimization",
+    "title": "Module 11: Optimization in Bayesian Inference",
+    "section": "",
+    "text": "Let [ L() = -(x) ] be the objective function. Gradient descent iterations are given by [ _{k+1} = _k - _k L(_k), ] where (_k &gt; 0) is a step size.\nUnder standard conditions (Lipschitz gradient, suitable step-size schedule), gradient descent converges to a local minimum of (L).\n\n\n\nFor large data sets, one may approximate (L()) using mini-batches, leading to stochastic gradient descent (SGD) and its variants. Care is required to ensure convergence to stationary points.",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 11: Optimization in Bayesian Inference"
+    ]
+  },
+  {
+    "objectID": "modules/module11-optimization.html#newton-and-quasi-newton-methods",
+    "href": "modules/module11-optimization.html#newton-and-quasi-newton-methods",
+    "title": "Module 11: Optimization in Bayesian Inference",
+    "section": "",
+    "text": "Newton’s method uses second-order information: [ _{k+1} = _k - H(_k)^{-1} L(_k), ] where (H() = ^2 L()) is the Hessian.\nUnder conditions of local strong convexity and smoothness, Newton’s method converges quadratically to a local minimizer.\n\n\n\nQuasi-Newton methods (e.g., BFGS, L-BFGS) construct approximations (B_k H(_k)^{-1}) using gradient evaluations. They can be more efficient in high dimensions where computing or inverting the Hessian is infeasible.\n\n\n\nFor the logistic regression posterior with Gaussian prior, the negative log-posterior is convex, and the Hessian is given by [ H() = X^W() X + V_0^{-1}, ] where (W()) is the diagonal matrix of Bernoulli variances. Newton’s method converges rapidly to the MAP under mild conditions.",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 11: Optimization in Bayesian Inference"
+    ]
+  },
+  {
+    "objectID": "modules/module11-optimization.html#convexity-non-convexity-and-multiple-modes",
+    "href": "modules/module11-optimization.html#convexity-non-convexity-and-multiple-modes",
+    "title": "Module 11: Optimization in Bayesian Inference",
+    "section": "",
+    "text": "In some models (e.g., logistic regression with Gaussian prior), the negative log-posterior is convex, so any local minimum is global, and optimization is relatively straightforward.\n\n\n\nIn mixture models, hierarchical models, and models with latent discrete structure, the posterior can be highly non-convex with multiple modes.\n\nMAP estimation may depend strongly on initialization.\nOptimization can become trapped in local modes.\n\n\n\n\nOptimization-based methods (MAP, Laplace approximation) provide local summaries of the posterior near a mode. Sampling-based methods (MCMC) attempt to explore the full posterior, including multiple modes and heavy tails.\nThe two approaches can be combined:\n\nUse optimization to find good initial states for MCMC.\nUse Hessian information around the MAP to construct better proposals (e.g., preconditioned MH, Riemannian HMC).",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 11: Optimization in Bayesian Inference"
+    ]
+  },
+  {
+    "objectID": "modules/module11-optimization.html#problem-set-11-representative-problems",
+    "href": "modules/module11-optimization.html#problem-set-11-representative-problems",
+    "title": "Module 11: Optimization in Bayesian Inference",
+    "section": "",
+    "text": "MAP vs MLE. In an exponential family model with conjugate prior, derive conditions under which the MAP estimator equals the MLE. Provide explicit examples where they differ and analyze the influence of hyperparameters.\nNewton’s Method for Logistic Regression. Derive the Newton update for the logistic regression posterior with Gaussian prior. Prove local quadratic convergence under appropriate regularity conditions (e.g., strong convexity near the optimum).\nQuasi-Newton Convergence. Outline a convergence proof for BFGS under assumptions of smooth, strongly convex objective functions. Discuss how these conditions relate to typical Bayesian posteriors.\nNon-Convex Posterior Example. Consider a simple Gaussian mixture model with a symmetric prior over component labels. Show that the posterior has multiple symmetric modes and analyze how MAP estimation depends on initialization.\nOptimization–Sampling Interaction. Discuss how Laplace approximations around the MAP can be used to construct efficient proposals for MH (e.g., independence samplers), and analyze conditions under which such proposals lead to geometrically ergodic chains.",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 11: Optimization in Bayesian Inference"
+    ]
+  },
+  {
+    "objectID": "modules/module06-mh.html",
+    "href": "modules/module06-mh.html",
+    "title": "Module 6: Metropolis–Hastings Algorithm",
+    "section": "",
+    "text": "This module derives the Metropolis–Hastings (MH) algorithm from detailed balance and analyzes its stationarity, irreducibility, convergence properties, optimal scaling in high dimensions, and common pathologies.\n\n\n\n\n\nState space: ((, )).\nTarget distribution: probability measure () on ((, )), with density (possibly unnormalized) ((x)) w.r.t. a reference measure ().\nProposal kernel: (q(x, dy)), with density (q(x,y)) w.r.t. ().\n\n\n\n\nDefine the acceptance probability [ (x,y) = { 1, } ] when the ratio is well-defined and positive. On sets where ((x) q(x,y) = 0), define ((x,y)) appropriately (e.g., 0) to obtain a measurable function.\n\n\n\nThe Metropolis–Hastings transition kernel is [ K(x, dy) = q(x, dy) (x,y) + r(x) , x(dy), ] where [ r(x) = 1 -  q(x, dy) (x,y) ] ensures that (K(x, )) is a probability measure. Here, (_x) denotes the Dirac measure at (x).\n\n\n\n\n\n\nAssume that (q(x,y) &gt; 0) whenever ((x) (y) &gt; 0). Then the MH kernel (K) satisfies detailed balance with respect to (): [ (dx) K(x, dy) = (dy) K(y, dx). ] In particular, () is invariant for (K).\nProof: For (x y), [ (dx) K(x, dy) = (dx) q(x, dy) (x,y), ] [ (dy) K(y, dx) = (dy) q(y, dx) (y,x). ] By construction, [ (x) q(x,y) (x,y) = { (x) q(x,y), (y) q(y,x) } ] and similarly [ (y) q(y,x) (y,x) = { (y) q(y,x), (x) q(x,y) }. ] Hence these expressions are equal, implying detailed balance for off-diagonal transitions. The diagonal part ensures normalization and is automatically symmetric when integrated over sets. Therefore, detailed balance holds, and invariance follows by Lemma 5.3.\n\n\n\n\n\n\nIf the proposal kernel (q) is ()-irreducible on the support of () (for some nontrivial ()) and proposals are accepted with positive probability wherever (&gt;0), then the MH chain is ()-irreducible.\n\n\n\nMH chains are typically aperiodic provided there is a nonzero probability of remaining at the current state (e.g., via rejection). The self-transition probability (r(x)) ensures aperiodicity under mild conditions.\n\n\n\nUnder irreducibility, aperiodicity, and positive recurrence, the MH chain converges in distribution to (): for any initial distribution (_0), [ | 0 K^n - |{} n . ]\nMoreover, if suitable drift and minorization conditions hold, the convergence is geometric, and ergodic theorems and CLTs apply.\n\n\n\n\nConsider a sequence of target distributions (_d) on (^d), e.g., i.i.d. product measures, and random-walk MH with Gaussian proposals of the form [ Y = X + Z, Z N_d(0, I_d). ]\n\n\nUnder suitable regularity conditions (e.g., target is product of i.i.d. components with smooth log-density), the rescaled MH chain converges to a diffusion as (d ). The optimal acceptance rate maximizing the speed of this limiting diffusion is approximately [ ^* . ]\nIdea of proof: Show weak convergence of the interpolated chain to a Langevin diffusion and optimize the diffusion speed with respect to ().\n\n\n\n\n\n\n\nStep size too small: High acceptance rate but extremely slow exploration (high autocorrelation).\nStep size too large: Very low acceptance rate, many rejections, and poor mixing.\n\n\n\n\n\nTargets with strong correlations or narrow ridges lead to slow mixing of isotropic random-walk proposals.\nMultimodal targets may trap the chain in one mode for long periods.\n\n\n\n\nFor targets with heavy tails, random-walk MH may fail to be geometrically ergodic, complicating convergence diagnostics and CLTs.\n\n\n\n\n\nDetailed Balance for MH. Prove Theorem 6.1 rigorously, including the treatment of sets where ((x) q(x,y) = 0) and verifying measurability.\nIrreducibility for Random-Walk MH. For a random-walk MH algorithm on (^d) with Gaussian proposal and target density strictly positive and continuous on (^d), prove that the chain is ()-irreducible.\nGeometric Ergodicity and Heavy Tails. Consider a target distribution with polynomially decaying tails and a random-walk MH with Gaussian proposals. Investigate whether the chain satisfies a drift condition that implies geometric ergodicity.\nDiffusion Limit Sketch. Outline the diffusion limit argument leading to the 0.234 optimal acceptance rate for high-dimensional random-walk MH, identifying the main probabilistic tools used.\nPractical Tuning. Discuss heuristic rules for tuning proposal variances in MH in finite dimensions and relate them to the high-dimensional scaling theory.",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 6: Metropolis–Hastings Algorithm"
+    ]
+  },
+  {
+    "objectID": "modules/module06-mh.html#construction-of-the-metropolishastings-kernel",
+    "href": "modules/module06-mh.html#construction-of-the-metropolishastings-kernel",
+    "title": "Module 6: Metropolis–Hastings Algorithm",
+    "section": "",
+    "text": "State space: ((, )).\nTarget distribution: probability measure () on ((, )), with density (possibly unnormalized) ((x)) w.r.t. a reference measure ().\nProposal kernel: (q(x, dy)), with density (q(x,y)) w.r.t. ().\n\n\n\n\nDefine the acceptance probability [ (x,y) = { 1, } ] when the ratio is well-defined and positive. On sets where ((x) q(x,y) = 0), define ((x,y)) appropriately (e.g., 0) to obtain a measurable function.\n\n\n\nThe Metropolis–Hastings transition kernel is [ K(x, dy) = q(x, dy) (x,y) + r(x) , x(dy), ] where [ r(x) = 1 -  q(x, dy) (x,y) ] ensures that (K(x, )) is a probability measure. Here, (_x) denotes the Dirac measure at (x).",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 6: Metropolis–Hastings Algorithm"
+    ]
+  },
+  {
+    "objectID": "modules/module06-mh.html#detailed-balance-and-stationarity",
+    "href": "modules/module06-mh.html#detailed-balance-and-stationarity",
+    "title": "Module 6: Metropolis–Hastings Algorithm",
+    "section": "",
+    "text": "Assume that (q(x,y) &gt; 0) whenever ((x) (y) &gt; 0). Then the MH kernel (K) satisfies detailed balance with respect to (): [ (dx) K(x, dy) = (dy) K(y, dx). ] In particular, () is invariant for (K).\nProof: For (x y), [ (dx) K(x, dy) = (dx) q(x, dy) (x,y), ] [ (dy) K(y, dx) = (dy) q(y, dx) (y,x). ] By construction, [ (x) q(x,y) (x,y) = { (x) q(x,y), (y) q(y,x) } ] and similarly [ (y) q(y,x) (y,x) = { (y) q(y,x), (x) q(x,y) }. ] Hence these expressions are equal, implying detailed balance for off-diagonal transitions. The diagonal part ensures normalization and is automatically symmetric when integrated over sets. Therefore, detailed balance holds, and invariance follows by Lemma 5.3.",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 6: Metropolis–Hastings Algorithm"
+    ]
+  },
+  {
+    "objectID": "modules/module06-mh.html#irreducibility-aperiodicity-and-convergence",
+    "href": "modules/module06-mh.html#irreducibility-aperiodicity-and-convergence",
+    "title": "Module 6: Metropolis–Hastings Algorithm",
+    "section": "",
+    "text": "If the proposal kernel (q) is ()-irreducible on the support of () (for some nontrivial ()) and proposals are accepted with positive probability wherever (&gt;0), then the MH chain is ()-irreducible.\n\n\n\nMH chains are typically aperiodic provided there is a nonzero probability of remaining at the current state (e.g., via rejection). The self-transition probability (r(x)) ensures aperiodicity under mild conditions.\n\n\n\nUnder irreducibility, aperiodicity, and positive recurrence, the MH chain converges in distribution to (): for any initial distribution (_0), [ | 0 K^n - |{} n . ]\nMoreover, if suitable drift and minorization conditions hold, the convergence is geometric, and ergodic theorems and CLTs apply.",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 6: Metropolis–Hastings Algorithm"
+    ]
+  },
+  {
+    "objectID": "modules/module06-mh.html#optimal-scaling-in-high-dimensions",
+    "href": "modules/module06-mh.html#optimal-scaling-in-high-dimensions",
+    "title": "Module 6: Metropolis–Hastings Algorithm",
+    "section": "",
+    "text": "Consider a sequence of target distributions (_d) on (^d), e.g., i.i.d. product measures, and random-walk MH with Gaussian proposals of the form [ Y = X + Z, Z N_d(0, I_d). ]\n\n\nUnder suitable regularity conditions (e.g., target is product of i.i.d. components with smooth log-density), the rescaled MH chain converges to a diffusion as (d ). The optimal acceptance rate maximizing the speed of this limiting diffusion is approximately [ ^* . ]\nIdea of proof: Show weak convergence of the interpolated chain to a Langevin diffusion and optimize the diffusion speed with respect to ().",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 6: Metropolis–Hastings Algorithm"
+    ]
+  },
+  {
+    "objectID": "modules/module06-mh.html#pathologies-and-failure-modes",
+    "href": "modules/module06-mh.html#pathologies-and-failure-modes",
+    "title": "Module 6: Metropolis–Hastings Algorithm",
+    "section": "",
+    "text": "Step size too small: High acceptance rate but extremely slow exploration (high autocorrelation).\nStep size too large: Very low acceptance rate, many rejections, and poor mixing.\n\n\n\n\n\nTargets with strong correlations or narrow ridges lead to slow mixing of isotropic random-walk proposals.\nMultimodal targets may trap the chain in one mode for long periods.\n\n\n\n\nFor targets with heavy tails, random-walk MH may fail to be geometrically ergodic, complicating convergence diagnostics and CLTs.",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 6: Metropolis–Hastings Algorithm"
+    ]
+  },
+  {
+    "objectID": "modules/module06-mh.html#problem-set-6-representative-problems",
+    "href": "modules/module06-mh.html#problem-set-6-representative-problems",
+    "title": "Module 6: Metropolis–Hastings Algorithm",
+    "section": "",
+    "text": "Detailed Balance for MH. Prove Theorem 6.1 rigorously, including the treatment of sets where ((x) q(x,y) = 0) and verifying measurability.\nIrreducibility for Random-Walk MH. For a random-walk MH algorithm on (^d) with Gaussian proposal and target density strictly positive and continuous on (^d), prove that the chain is ()-irreducible.\nGeometric Ergodicity and Heavy Tails. Consider a target distribution with polynomially decaying tails and a random-walk MH with Gaussian proposals. Investigate whether the chain satisfies a drift condition that implies geometric ergodicity.\nDiffusion Limit Sketch. Outline the diffusion limit argument leading to the 0.234 optimal acceptance rate for high-dimensional random-walk MH, identifying the main probabilistic tools used.\nPractical Tuning. Discuss heuristic rules for tuning proposal variances in MH in finite dimensions and relate them to the high-dimensional scaling theory.",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 6: Metropolis–Hastings Algorithm"
+    ]
+  },
+  {
+    "objectID": "modules/module12-asymptotics.html",
+    "href": "modules/module12-asymptotics.html",
+    "title": "Module 12: Asymptotic Theory and Consistency",
+    "section": "",
+    "text": "This module develops asymptotic properties of Bayesian procedures: posterior consistency, behavior under model misspecification, posterior contraction rates, and frequentist coverage of Bayesian credible sets.\n\n\n\n\nLet (X_1, X_2, ) be i.i.d. from a distribution (P_{0}) in a model ({P: }). Let () be a prior on (), and ((X_1, , X_n)) the posterior.\n\n\n\nThe posterior is (weakly) consistent at (_0) if for every weak neighborhood (U) of (0), [ (U^c X_1, , X_n) ] (P{_0})-almost surely as (n ).\nStronger modes of consistency (e.g., in total variation or Hellinger distance) can also be defined.\n\n\n\nDefine the Kullback–Leibler divergence [ K(P_{0}, P) = , P_{_0}(dx). ]\n\n\n\nIf the prior () assigns positive mass to all Kullback–Leibler neighborhoods of (0), i.e., [ ({: K(P{0}, P) &lt; }) &gt; 0 &gt; 0, ] then the posterior is weakly consistent at (_0) under suitable measurability and separability conditions.\nIdea of proof: Use tests separating (_0) from complement sets and control the posterior mass assigned to these sets via likelihood ratios and prior mass in Kullback–Leibler neighborhoods.\n\n\n\n\n\n\nIf the true distribution (P_0) is not in the model ({P_}), the posterior may still concentrate around a pseudo-true parameter (^) defined as [ ^ {} K(P_0, P). ]\n\n\n\nUnder regularity conditions, the posterior concentrates in neighborhoods of (^), i.e., for any neighborhood (U) of (^), [ (U^c X_1, , X_n) ] (P_0)-almost surely as (n ).\nIdea of proof: Similar to Schwartz’s theorem but centered at (^*) instead of a true parameter in the model; use generalized likelihood ratio arguments.\n\n\n\n\n\n\nLet (d) be a metric on () (e.g., Hellinger distance between (P_) and (P_{_0})). A sequence (n ) is a contraction rate if there exists a sequence of sets (B_n) such that [ (B_n^c X_1, , X_n) ] (P{_0})-almost surely and [ B_n {: d(, _0) M _n} ] for some constant (M).\n\n\n\nGhosal, Ghosh, and van der Vaart give general sufficient conditions for contraction at rate (_n):\n\nExistence of tests separating (_0) from “far” alternatives.\nPrior mass condition: () assigns enough mass to Kullback–Leibler neighborhoods of (_0) of size (_n).\nEntropy conditions on the model complexity.\n\nIn parametric models, the typical rate is (_n = n^{-1/2}); in nonparametric models, slower rates occur.\n\n\n\n\n\n\nIn regular finite-dimensional parametric models, the Bernstein–von Mises theorem implies that posterior credible sets asymptotically behave like frequentist confidence sets.\n\n\n\nIn more complex models, Bayesian credible sets may:\n\nundercover (actual frequentist coverage &lt; nominal),\novercover (conservative),\nor have shape properties (e.g., adaptivity) that do not align with standard frequentist intervals.\n\nAnalyses of coverage require detailed control of posterior contraction, shape of posterior distributions, and prior influence.\n\n\n\n\n\nSchwartz’s Theorem Sketch. State Schwartz’s theorem rigorously (including topological and measurability conditions) and sketch its proof, emphasizing the construction of tests and the use of Kullback–Leibler neighborhoods.\nConsistency in Exponential Families. For a regular exponential family, verify the Kullback–Leibler support condition for a prior with a continuous positive density on (), and conclude posterior consistency.\nMisspecification Example. Consider data from a heavy-tailed distribution (e.g., Student-t) while the model assumes Normality. Identify the pseudo-true parameter and discuss posterior concentration around it.\nContraction Rate in Gaussian Sequence Model. In a Gaussian sequence model with appropriate priors (e.g., Gaussian with shrinking variances), derive the posterior contraction rate and compare it to minimax rates.\nCoverage Analysis. Analyze the frequentist coverage of Bayesian credible intervals for a simple nonparametric problem (e.g., estimating a density with a Dirichlet process mixture prior), summarizing known results and highlighting phenomena such as undercoverage.",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 12: Asymptotic Theory and Consistency"
+    ]
+  },
+  {
+    "objectID": "modules/module12-asymptotics.html#posterior-consistency",
+    "href": "modules/module12-asymptotics.html#posterior-consistency",
+    "title": "Module 12: Asymptotic Theory and Consistency",
+    "section": "",
+    "text": "Let (X_1, X_2, ) be i.i.d. from a distribution (P_{0}) in a model ({P: }). Let () be a prior on (), and ((X_1, , X_n)) the posterior.\n\n\n\nThe posterior is (weakly) consistent at (_0) if for every weak neighborhood (U) of (0), [ (U^c X_1, , X_n) ] (P{_0})-almost surely as (n ).\nStronger modes of consistency (e.g., in total variation or Hellinger distance) can also be defined.\n\n\n\nDefine the Kullback–Leibler divergence [ K(P_{0}, P) = , P_{_0}(dx). ]\n\n\n\nIf the prior () assigns positive mass to all Kullback–Leibler neighborhoods of (0), i.e., [ ({: K(P{0}, P) &lt; }) &gt; 0 &gt; 0, ] then the posterior is weakly consistent at (_0) under suitable measurability and separability conditions.\nIdea of proof: Use tests separating (_0) from complement sets and control the posterior mass assigned to these sets via likelihood ratios and prior mass in Kullback–Leibler neighborhoods.",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 12: Asymptotic Theory and Consistency"
+    ]
+  },
+  {
+    "objectID": "modules/module12-asymptotics.html#misspecified-models",
+    "href": "modules/module12-asymptotics.html#misspecified-models",
+    "title": "Module 12: Asymptotic Theory and Consistency",
+    "section": "",
+    "text": "If the true distribution (P_0) is not in the model ({P_}), the posterior may still concentrate around a pseudo-true parameter (^) defined as [ ^ {} K(P_0, P). ]\n\n\n\nUnder regularity conditions, the posterior concentrates in neighborhoods of (^), i.e., for any neighborhood (U) of (^), [ (U^c X_1, , X_n) ] (P_0)-almost surely as (n ).\nIdea of proof: Similar to Schwartz’s theorem but centered at (^*) instead of a true parameter in the model; use generalized likelihood ratio arguments.",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 12: Asymptotic Theory and Consistency"
+    ]
+  },
+  {
+    "objectID": "modules/module12-asymptotics.html#posterior-contraction-rates",
+    "href": "modules/module12-asymptotics.html#posterior-contraction-rates",
+    "title": "Module 12: Asymptotic Theory and Consistency",
+    "section": "",
+    "text": "Let (d) be a metric on () (e.g., Hellinger distance between (P_) and (P_{_0})). A sequence (n ) is a contraction rate if there exists a sequence of sets (B_n) such that [ (B_n^c X_1, , X_n) ] (P{_0})-almost surely and [ B_n {: d(, _0) M _n} ] for some constant (M).\n\n\n\nGhosal, Ghosh, and van der Vaart give general sufficient conditions for contraction at rate (_n):\n\nExistence of tests separating (_0) from “far” alternatives.\nPrior mass condition: () assigns enough mass to Kullback–Leibler neighborhoods of (_0) of size (_n).\nEntropy conditions on the model complexity.\n\nIn parametric models, the typical rate is (_n = n^{-1/2}); in nonparametric models, slower rates occur.",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 12: Asymptotic Theory and Consistency"
+    ]
+  },
+  {
+    "objectID": "modules/module12-asymptotics.html#frequentist-coverage-of-bayesian-procedures",
+    "href": "modules/module12-asymptotics.html#frequentist-coverage-of-bayesian-procedures",
+    "title": "Module 12: Asymptotic Theory and Consistency",
+    "section": "",
+    "text": "In regular finite-dimensional parametric models, the Bernstein–von Mises theorem implies that posterior credible sets asymptotically behave like frequentist confidence sets.\n\n\n\nIn more complex models, Bayesian credible sets may:\n\nundercover (actual frequentist coverage &lt; nominal),\novercover (conservative),\nor have shape properties (e.g., adaptivity) that do not align with standard frequentist intervals.\n\nAnalyses of coverage require detailed control of posterior contraction, shape of posterior distributions, and prior influence.",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 12: Asymptotic Theory and Consistency"
+    ]
+  },
+  {
+    "objectID": "modules/module12-asymptotics.html#problem-set-12-representative-problems",
+    "href": "modules/module12-asymptotics.html#problem-set-12-representative-problems",
+    "title": "Module 12: Asymptotic Theory and Consistency",
+    "section": "",
+    "text": "Schwartz’s Theorem Sketch. State Schwartz’s theorem rigorously (including topological and measurability conditions) and sketch its proof, emphasizing the construction of tests and the use of Kullback–Leibler neighborhoods.\nConsistency in Exponential Families. For a regular exponential family, verify the Kullback–Leibler support condition for a prior with a continuous positive density on (), and conclude posterior consistency.\nMisspecification Example. Consider data from a heavy-tailed distribution (e.g., Student-t) while the model assumes Normality. Identify the pseudo-true parameter and discuss posterior concentration around it.\nContraction Rate in Gaussian Sequence Model. In a Gaussian sequence model with appropriate priors (e.g., Gaussian with shrinking variances), derive the posterior contraction rate and compare it to minimax rates.\nCoverage Analysis. Analyze the frequentist coverage of Bayesian credible intervals for a simple nonparametric problem (e.g., estimating a density with a Dirichlet process mixture prior), summarizing known results and highlighting phenomena such as undercoverage.",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 12: Asymptotic Theory and Consistency"
+    ]
+  },
+  {
+    "objectID": "modules/module10-gp.html",
+    "href": "modules/module10-gp.html",
+    "title": "Module 10: Gaussian Processes",
+    "section": "",
+    "text": "This module introduces Gaussian processes (GPs) as distributions over functions, discusses covariance kernels and their connection to reproducing kernel Hilbert spaces (RKHS), and derives the exact posterior for GP regression. We also address hyperparameter estimation and computational complexity.\n\n\n\n\nLet () be an index set (e.g., (^d)). A stochastic process ({f(x) : x }) is a Gaussian process if for any finite collection of points (x_1, , x_n ), the random vector ((f(x_1), , f(x_n))) is multivariate Normal.\nA GP is characterized by its mean function (m: ) and covariance kernel (k: ): [ m(x) = [f(x)], k(x,x’) = (f(x), f(x’)). ] We write [ f (m, k). ]\n\n\n\n\n\n\nA function (k: ) is a positive-definite kernel if for any finite set (x_1, , x_n) and coefficients (c_1, , c_n), [ {i=1}^n {j=1}^n c_i c_j k(x_i, x_j) . ]\n\n\n\nGiven a positive-definite kernel (k), there exists a unique Hilbert space (_k) of functions on () such that:\n\nFor each (x), the function (k(x, ) _k).\nReproducing property: For all (f k) and (x ), [ f(x) = f, k(x, ) {_k}. ]\n\nProof idea: Use the Moore–Aronszajn theorem to construct (_k) as the completion of finite linear combinations of kernel sections.\n\n\n\nWhile (_k) is not generally the support of the GP, there is a close relationship between sample path regularity and RKHS norms. For some kernels, GP sample paths almost surely lie outside the RKHS but are controlled by it.\n\n\n\n\n\n\nLet (f (0, k)). Observations are [ y_i = f(x_i) + _i, i N(0, ^2), ] independent noise. Collect (y = (y_1, , y_n)^) and define the Gram matrix (K ^{n n}) with entries (K{ij} = k(x_i, x_j)).\nFor a set of test inputs (X_* = (x_^{(1)}, , x_^{(m)})), define:\n\n(K_* ^{n m}) with entries ((K_){i} = k(x_i, x^{()})),\n(K_{} ^{m m}) with entries ((K_{})_{‘} = k(x_^{()}, x_^{(’)})).\n\n\n\n\nThe joint prior for (f(X)) and (f(X_*)) is multivariate Normal: [\n\\[\\begin{pmatrix}\n  f(X) \\\\\n  f(X_*)\n\\end{pmatrix}\\]\nN( 0,\n\\[\\begin{pmatrix}\n  K & K_* \\\\\n  K_*^\\top & K_{**}\n\\end{pmatrix}\\]\n). ]\nThe observation model adds independent Gaussian noise to (f(X)), so [ y f(X) N(f(X), ^2 I_n). ]\n\n\n\nThe posterior distribution of (f_* := f(X_)) given data (y) is multivariate Normal: [ f_ y N(m_, ), ] where [ m_ = K^(K + ^2 I_n)^{-1} y, ] [ * = K{**} - K_^(K + ^2 I_n)^{-1} K_. ]\nProof: Use the conditional distribution formulas for multivariate Normal distributions, treating (y) as (f(X) + ).\n\n\n\n\nCovariance kernels often depend on hyperparameters (_k) (e.g., length-scales, output variance). Common approaches:\n\nEmpirical Bayes / Type II ML: Maximize the marginal likelihood (p(y _k, ^2)) with respect to (_k).\nFully Bayesian: Place priors on (_k) and use MCMC or other methods to sample from the joint posterior.\n\nThe marginal likelihood in GP regression is [ p(y k, ^2) = - y^(K+ ^2 I_n)^{-1} y - |K_+ ^2 I_n| - (2). ]\n\n\n\n\n\n\nComputing the Cholesky factorization of (K + ^2 I_n) costs (O(n^3)).\nStorage cost is (O(n^2)).\n\nThus exact GP regression becomes impractical for very large (n).\n\n\n\n\nInducing point methods: Introduce (m n) pseudo-inputs and approximate the GP via low-rank covariance structures.\nSparse approximations: Use low-rank plus diagonal covariance approximations.\nStructured kernels: Exploit Kronecker or Toeplitz structure when inputs lie on grids.\n\nThese methods reduce computational cost at the price of approximation error.\n\n\n\n\n\nGP Regression Derivation. Derive Theorem 10.2 in full detail by starting from the joint Gaussian distribution of ((f(X), f(X_*))) and applying the conditional multivariate Normal formula.\nRKHS Reproducing Property. Prove the reproducing property for the RKHS associated with a kernel (k), and discuss its implications for function evaluation and regularization.\nMarginal Likelihood Gradient. Derive the gradient of the GP marginal likelihood with respect to a kernel hyperparameter (k), expressing the result in terms of (K^{-1}) and derivatives of (K_).\nComputational Scaling. For an inducing point approximation with (m) inducing points, show how the computational cost scales in terms of (n) and (m). Discuss trade-offs between accuracy and efficiency.\nSample Path Regularity. For the squared exponential kernel, discuss the almost-sure smoothness of GP sample paths and contrast this with the Sobolev regularity implied by Matérn kernels.",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 10: Gaussian Processes"
+    ]
+  },
+  {
+    "objectID": "modules/module10-gp.html#gaussian-processes-as-distributions-over-functions",
+    "href": "modules/module10-gp.html#gaussian-processes-as-distributions-over-functions",
+    "title": "Module 10: Gaussian Processes",
+    "section": "",
+    "text": "Let () be an index set (e.g., (^d)). A stochastic process ({f(x) : x }) is a Gaussian process if for any finite collection of points (x_1, , x_n ), the random vector ((f(x_1), , f(x_n))) is multivariate Normal.\nA GP is characterized by its mean function (m: ) and covariance kernel (k: ): [ m(x) = [f(x)], k(x,x’) = (f(x), f(x’)). ] We write [ f (m, k). ]",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 10: Gaussian Processes"
+    ]
+  },
+  {
+    "objectID": "modules/module10-gp.html#covariance-kernels-and-rkhs",
+    "href": "modules/module10-gp.html#covariance-kernels-and-rkhs",
+    "title": "Module 10: Gaussian Processes",
+    "section": "",
+    "text": "A function (k: ) is a positive-definite kernel if for any finite set (x_1, , x_n) and coefficients (c_1, , c_n), [ {i=1}^n {j=1}^n c_i c_j k(x_i, x_j) . ]\n\n\n\nGiven a positive-definite kernel (k), there exists a unique Hilbert space (_k) of functions on () such that:\n\nFor each (x), the function (k(x, ) _k).\nReproducing property: For all (f k) and (x ), [ f(x) = f, k(x, ) {_k}. ]\n\nProof idea: Use the Moore–Aronszajn theorem to construct (_k) as the completion of finite linear combinations of kernel sections.\n\n\n\nWhile (_k) is not generally the support of the GP, there is a close relationship between sample path regularity and RKHS norms. For some kernels, GP sample paths almost surely lie outside the RKHS but are controlled by it.",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 10: Gaussian Processes"
+    ]
+  },
+  {
+    "objectID": "modules/module10-gp.html#gaussian-process-regression",
+    "href": "modules/module10-gp.html#gaussian-process-regression",
+    "title": "Module 10: Gaussian Processes",
+    "section": "",
+    "text": "Let (f (0, k)). Observations are [ y_i = f(x_i) + _i, i N(0, ^2), ] independent noise. Collect (y = (y_1, , y_n)^) and define the Gram matrix (K ^{n n}) with entries (K{ij} = k(x_i, x_j)).\nFor a set of test inputs (X_* = (x_^{(1)}, , x_^{(m)})), define:\n\n(K_* ^{n m}) with entries ((K_){i} = k(x_i, x^{()})),\n(K_{} ^{m m}) with entries ((K_{})_{‘} = k(x_^{()}, x_^{(’)})).\n\n\n\n\nThe joint prior for (f(X)) and (f(X_*)) is multivariate Normal: [\n\\[\\begin{pmatrix}\n  f(X) \\\\\n  f(X_*)\n\\end{pmatrix}\\]\nN( 0,\n\\[\\begin{pmatrix}\n  K & K_* \\\\\n  K_*^\\top & K_{**}\n\\end{pmatrix}\\]\n). ]\nThe observation model adds independent Gaussian noise to (f(X)), so [ y f(X) N(f(X), ^2 I_n). ]\n\n\n\nThe posterior distribution of (f_* := f(X_)) given data (y) is multivariate Normal: [ f_ y N(m_, ), ] where [ m_ = K^(K + ^2 I_n)^{-1} y, ] [ * = K{**} - K_^(K + ^2 I_n)^{-1} K_. ]\nProof: Use the conditional distribution formulas for multivariate Normal distributions, treating (y) as (f(X) + ).",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 10: Gaussian Processes"
+    ]
+  },
+  {
+    "objectID": "modules/module10-gp.html#hyperparameter-estimation",
+    "href": "modules/module10-gp.html#hyperparameter-estimation",
+    "title": "Module 10: Gaussian Processes",
+    "section": "",
+    "text": "Covariance kernels often depend on hyperparameters (_k) (e.g., length-scales, output variance). Common approaches:\n\nEmpirical Bayes / Type II ML: Maximize the marginal likelihood (p(y _k, ^2)) with respect to (_k).\nFully Bayesian: Place priors on (_k) and use MCMC or other methods to sample from the joint posterior.\n\nThe marginal likelihood in GP regression is [ p(y k, ^2) = - y^(K+ ^2 I_n)^{-1} y - |K_+ ^2 I_n| - (2). ]",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 10: Gaussian Processes"
+    ]
+  },
+  {
+    "objectID": "modules/module10-gp.html#computational-complexity-and-approximations",
+    "href": "modules/module10-gp.html#computational-complexity-and-approximations",
+    "title": "Module 10: Gaussian Processes",
+    "section": "",
+    "text": "Computing the Cholesky factorization of (K + ^2 I_n) costs (O(n^3)).\nStorage cost is (O(n^2)).\n\nThus exact GP regression becomes impractical for very large (n).\n\n\n\n\nInducing point methods: Introduce (m n) pseudo-inputs and approximate the GP via low-rank covariance structures.\nSparse approximations: Use low-rank plus diagonal covariance approximations.\nStructured kernels: Exploit Kronecker or Toeplitz structure when inputs lie on grids.\n\nThese methods reduce computational cost at the price of approximation error.",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 10: Gaussian Processes"
+    ]
+  },
+  {
+    "objectID": "modules/module10-gp.html#problem-set-10-representative-problems",
+    "href": "modules/module10-gp.html#problem-set-10-representative-problems",
+    "title": "Module 10: Gaussian Processes",
+    "section": "",
+    "text": "GP Regression Derivation. Derive Theorem 10.2 in full detail by starting from the joint Gaussian distribution of ((f(X), f(X_*))) and applying the conditional multivariate Normal formula.\nRKHS Reproducing Property. Prove the reproducing property for the RKHS associated with a kernel (k), and discuss its implications for function evaluation and regularization.\nMarginal Likelihood Gradient. Derive the gradient of the GP marginal likelihood with respect to a kernel hyperparameter (k), expressing the result in terms of (K^{-1}) and derivatives of (K_).\nComputational Scaling. For an inducing point approximation with (m) inducing points, show how the computational cost scales in terms of (n) and (m). Discuss trade-offs between accuracy and efficiency.\nSample Path Regularity. For the squared exponential kernel, discuss the almost-sure smoothness of GP sample paths and contrast this with the Sobolev regularity implied by Matérn kernels.",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 10: Gaussian Processes"
+    ]
+  },
+  {
+    "objectID": "modules/module05-mcmc-theory.html",
+    "href": "modules/module05-mcmc-theory.html",
+    "title": "Module 5: Markov Chain Monte Carlo (MCMC) Theory",
+    "section": "",
+    "text": "This module develops the theory of Markov chains on general state spaces, focusing on invariant distributions, detailed balance, ergodic theorems, and central limit theorems. These results underpin MCMC algorithms used in Bayesian computation.\n\n\n\n\nLet ((, )) be a measurable space. A Markov transition kernel is a map [ K: ] such that:\n\nFor each fixed (x ), the map (A K(x, A)) is a probability measure on ((, )).\nFor each fixed (A ), the map (x K(x, A)) is ()-measurable.\n\n\n\n\nA sequence of random variables ((X_n){n }) taking values in () is a Markov chain with kernel (K) if [ (X{n+1} A X_0, , X_n) = K(X_n, A) ] for all (n) and (A ), almost surely.\n\n\n\n\n\n\nA probability measure () on ((, )) is invariant for (K) if [ (A) = _ K(x, A), (dx), A . ]\n\n\n\nWe say (K) satisfies detailed balance with respect to () if, for all measurable sets (A, B ), [ _A (dx) K(x, B) = _B (dx) K(x, A). ] Equivalently, in kernel form, [ (dx) K(x, dy) = (dy) K(y, dx). ]\n\n\n\nIf (K) satisfies detailed balance with respect to (), then () is invariant for (K).\nProof: For any (A ), [ _ (dx) K(x, A) = _A (dx) K(x, ) = _A (dx) = (A), ] using detailed balance with (B = ) and the fact that (K(x, ) = 1).\n\n\n\nIf (K) satisfies detailed balance with (), then the Markov chain is reversible with respect to (); the time-reversed chain has the same transition probabilities.\n\n\n\n\n\n\nWe adopt the standard framework of Harris chains.\n\nIrreducibility: There exists a nontrivial measure () on ((, )) such that for each (A ) with ((A) &gt; 0) and each (x ), there exists (n) with (K^n(x, A) &gt; 0).\nHarris recurrence: The chain visits every set of positive ()-measure infinitely often with probability 1.\n\n\n\n\nLet ((X_n)) be an irreducible, aperiodic, positive Harris recurrent Markov chain with invariant distribution (). For any integrable function (f: ), [ _{k=1}^n f(X_k) f, d n . ]\nProof idea: Use the theory of Harris recurrent chains and ergodic theorems on general state spaces (see, e.g., Meyn & Tweedie). The invariant distribution () is unique under these conditions.\n\n\n\nTo obtain quantitative convergence rates, we use drift and minorization.\n\nDrift condition: There exist a function (V: [1, )), constants (&lt; 1), (b &lt; ), and a small set (C) such that [ K V(x) := V(y) K(x, dy) V(x) + b _C(x) x. ]\nMinorization condition: There exist (&gt;0), a probability measure (), and a small set (C) such that for all (x C) and (A ), [ K(x, A) (A). ]\n\n\n\n\nIf a Markov chain satisfies a suitable drift condition and minorization condition, then it is geometrically ergodic: there exist constants (M &lt; ) and ((0,1)) such that [ | K^n(x, ) - () |_{} M V(x) ^n, n, x. ]\nProof idea: Use Foster–Lyapunov criteria and coupling or regeneration methods.\n\n\n\n\n\n\nLet ((X_n)) be a geometrically ergodic Markov chain with invariant distribution (), and let (f: ) satisfy suitable moment and regularity conditions (e.g., (f L^{2+}()) and a drift condition). Then [ ( {k=1}^n f(X_k) - f ) N(0, f^2), ] where [ f^2 = (f(X_0)) + 2 {k=1}^(f(X_0), f(X_k)). ]\nProof idea: Apply martingale approximation techniques or use spectral theory for reversible chains.\n\n\n\nThe asymptotic variance (_f^2) determines the Monte Carlo error of ergodic averages. High autocorrelation increases (_f^2) and thus decreases efficiency.\n\n\n\n\nIn Bayesian computation, we typically design (K) to have invariant distribution equal to the posterior (). The theory above justifies:\n\nthe use of ergodic averages to estimate posterior expectations,\nassessment of convergence and mixing via geometric ergodicity,\nconstruction of Monte Carlo standard errors via CLTs.\n\n\n\n\n\nDetailed Balance and Invariance. Prove Lemma 5.3 in full measure-theoretic generality, carefully handling ()-algebras and integrals.\nSimple Geometric Ergodicity Check. Consider a random-walk Metropolis chain on () with Gaussian proposal and Gaussian target. Show that it satisfies a drift condition and deduce geometric ergodicity.\nNon-Geometric Ergodicity Example. Construct or study a heavy-tailed target distribution for which the corresponding random-walk Metropolis chain is not geometrically ergodic. Use drift condition failure as justification.\nCLT Verification. For a reversible Markov chain with compact state space and continuous transition density, outline a proof of Theorem 5.6 using spectral decomposition.\nAsymptotic Variance Estimation. Describe how to estimate (_f^2) from a finite MCMC sample using batch means or spectral variance estimators, and discuss consistency of these estimators.",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 5: Markov Chain Monte Carlo (MCMC) Theory"
+    ]
+  },
+  {
+    "objectID": "modules/module05-mcmc-theory.html#markov-chains-on-general-state-spaces",
+    "href": "modules/module05-mcmc-theory.html#markov-chains-on-general-state-spaces",
+    "title": "Module 5: Markov Chain Monte Carlo (MCMC) Theory",
+    "section": "",
+    "text": "Let ((, )) be a measurable space. A Markov transition kernel is a map [ K: ] such that:\n\nFor each fixed (x ), the map (A K(x, A)) is a probability measure on ((, )).\nFor each fixed (A ), the map (x K(x, A)) is ()-measurable.\n\n\n\n\nA sequence of random variables ((X_n){n }) taking values in () is a Markov chain with kernel (K) if [ (X{n+1} A X_0, , X_n) = K(X_n, A) ] for all (n) and (A ), almost surely.",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 5: Markov Chain Monte Carlo (MCMC) Theory"
+    ]
+  },
+  {
+    "objectID": "modules/module05-mcmc-theory.html#invariant-distributions-and-detailed-balance",
+    "href": "modules/module05-mcmc-theory.html#invariant-distributions-and-detailed-balance",
+    "title": "Module 5: Markov Chain Monte Carlo (MCMC) Theory",
+    "section": "",
+    "text": "A probability measure () on ((, )) is invariant for (K) if [ (A) = _ K(x, A), (dx), A . ]\n\n\n\nWe say (K) satisfies detailed balance with respect to () if, for all measurable sets (A, B ), [ _A (dx) K(x, B) = _B (dx) K(x, A). ] Equivalently, in kernel form, [ (dx) K(x, dy) = (dy) K(y, dx). ]\n\n\n\nIf (K) satisfies detailed balance with respect to (), then () is invariant for (K).\nProof: For any (A ), [ _ (dx) K(x, A) = _A (dx) K(x, ) = _A (dx) = (A), ] using detailed balance with (B = ) and the fact that (K(x, ) = 1).\n\n\n\nIf (K) satisfies detailed balance with (), then the Markov chain is reversible with respect to (); the time-reversed chain has the same transition probabilities.",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 5: Markov Chain Monte Carlo (MCMC) Theory"
+    ]
+  },
+  {
+    "objectID": "modules/module05-mcmc-theory.html#ergodicity-and-convergence",
+    "href": "modules/module05-mcmc-theory.html#ergodicity-and-convergence",
+    "title": "Module 5: Markov Chain Monte Carlo (MCMC) Theory",
+    "section": "",
+    "text": "We adopt the standard framework of Harris chains.\n\nIrreducibility: There exists a nontrivial measure () on ((, )) such that for each (A ) with ((A) &gt; 0) and each (x ), there exists (n) with (K^n(x, A) &gt; 0).\nHarris recurrence: The chain visits every set of positive ()-measure infinitely often with probability 1.\n\n\n\n\nLet ((X_n)) be an irreducible, aperiodic, positive Harris recurrent Markov chain with invariant distribution (). For any integrable function (f: ), [ _{k=1}^n f(X_k) f, d n . ]\nProof idea: Use the theory of Harris recurrent chains and ergodic theorems on general state spaces (see, e.g., Meyn & Tweedie). The invariant distribution () is unique under these conditions.\n\n\n\nTo obtain quantitative convergence rates, we use drift and minorization.\n\nDrift condition: There exist a function (V: [1, )), constants (&lt; 1), (b &lt; ), and a small set (C) such that [ K V(x) := V(y) K(x, dy) V(x) + b _C(x) x. ]\nMinorization condition: There exist (&gt;0), a probability measure (), and a small set (C) such that for all (x C) and (A ), [ K(x, A) (A). ]\n\n\n\n\nIf a Markov chain satisfies a suitable drift condition and minorization condition, then it is geometrically ergodic: there exist constants (M &lt; ) and ((0,1)) such that [ | K^n(x, ) - () |_{} M V(x) ^n, n, x. ]\nProof idea: Use Foster–Lyapunov criteria and coupling or regeneration methods.",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 5: Markov Chain Monte Carlo (MCMC) Theory"
+    ]
+  },
+  {
+    "objectID": "modules/module05-mcmc-theory.html#central-limit-theorems-for-markov-chains",
+    "href": "modules/module05-mcmc-theory.html#central-limit-theorems-for-markov-chains",
+    "title": "Module 5: Markov Chain Monte Carlo (MCMC) Theory",
+    "section": "",
+    "text": "Let ((X_n)) be a geometrically ergodic Markov chain with invariant distribution (), and let (f: ) satisfy suitable moment and regularity conditions (e.g., (f L^{2+}()) and a drift condition). Then [ ( {k=1}^n f(X_k) - f ) N(0, f^2), ] where [ f^2 = (f(X_0)) + 2 {k=1}^(f(X_0), f(X_k)). ]\nProof idea: Apply martingale approximation techniques or use spectral theory for reversible chains.\n\n\n\nThe asymptotic variance (_f^2) determines the Monte Carlo error of ergodic averages. High autocorrelation increases (_f^2) and thus decreases efficiency.",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 5: Markov Chain Monte Carlo (MCMC) Theory"
+    ]
+  },
+  {
+    "objectID": "modules/module05-mcmc-theory.html#relevance-to-bayesian-computation",
+    "href": "modules/module05-mcmc-theory.html#relevance-to-bayesian-computation",
+    "title": "Module 5: Markov Chain Monte Carlo (MCMC) Theory",
+    "section": "",
+    "text": "In Bayesian computation, we typically design (K) to have invariant distribution equal to the posterior (). The theory above justifies:\n\nthe use of ergodic averages to estimate posterior expectations,\nassessment of convergence and mixing via geometric ergodicity,\nconstruction of Monte Carlo standard errors via CLTs.",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 5: Markov Chain Monte Carlo (MCMC) Theory"
+    ]
+  },
+  {
+    "objectID": "modules/module05-mcmc-theory.html#problem-set-5-representative-problems",
+    "href": "modules/module05-mcmc-theory.html#problem-set-5-representative-problems",
+    "title": "Module 5: Markov Chain Monte Carlo (MCMC) Theory",
+    "section": "",
+    "text": "Detailed Balance and Invariance. Prove Lemma 5.3 in full measure-theoretic generality, carefully handling ()-algebras and integrals.\nSimple Geometric Ergodicity Check. Consider a random-walk Metropolis chain on () with Gaussian proposal and Gaussian target. Show that it satisfies a drift condition and deduce geometric ergodicity.\nNon-Geometric Ergodicity Example. Construct or study a heavy-tailed target distribution for which the corresponding random-walk Metropolis chain is not geometrically ergodic. Use drift condition failure as justification.\nCLT Verification. For a reversible Markov chain with compact state space and continuous transition density, outline a proof of Theorem 5.6 using spectral decomposition.\nAsymptotic Variance Estimation. Describe how to estimate (_f^2) from a finite MCMC sample using batch means or spectral variance estimators, and discuss consistency of these estimators.",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 5: Markov Chain Monte Carlo (MCMC) Theory"
+    ]
+  },
+  {
+    "objectID": "modules/module03-regression.html#posterior-for-beta-with-known-variance",
+    "href": "modules/module03-regression.html#posterior-for-beta-with-known-variance",
+    "title": "Module 3: Bayesian Regression",
+    "section": "",
+    "text": "Under the model above, the posterior distribution of \\(\\beta\\) given \\(y\\) is\n\\[\n\\beta \\mid y, X, \\sigma^2 \\sim N_p(m_n, V_n),\n\\]\nwhere\n\\[\nV_n^{-1} = V_0^{-1} + \\frac{1}{\\sigma^2} X^\\top X, \\qquad\nm_n = V_n \\left( V_0^{-1} m_0 + \\frac{1}{\\sigma^2} X^\\top y \\right).\n\\]\nProof. We derive the posterior kernel step by step. Write the prior density as\n\\[\n\\pi(\\beta)\n   = (2\\pi)^{-p/2} |V_0|^{-1/2}\n     \\exp\\Bigl\\{-\\tfrac12 (\\beta - m_0)^\\top V_0^{-1} (\\beta - m_0)\\Bigr\\}.\n\\]\nThe likelihood is\n\\[\np(y \\mid \\beta, \\sigma^2)\n   = (2\\pi \\sigma^2)^{-n/2}\n     \\exp\\Bigl\\{-\\tfrac{1}{2\\sigma^2} (y - X\\beta)^\\top (y - X\\beta)\\Bigr\\}.\n\\]\nIgnoring normalizing constants that do not depend on \\(\\beta\\), the joint density of \\((\\beta, y)\\) is proportional to\n\\[\n\\begin{aligned}\n\\pi(\\beta) p(y \\mid \\beta, \\sigma^2)\n&\\propto \\exp\\Bigl\\{-\\tfrac12 (\\beta - m_0)^\\top V_0^{-1} (\\beta - m_0)\n                    - \\tfrac{1}{2\\sigma^2} (y - X\\beta)^\\top (y - X\\beta)\\Bigr\\} \\\\\n&:= \\exp\\bigl\\{-\\tfrac12 Q(\\beta)\\bigr\\}.\n\\end{aligned}\n\\]\nWe now expand the quadratic form \\(Q(\\beta)\\). First term:\n\\[\n(\\beta - m_0)^\\top V_0^{-1} (\\beta - m_0)\n  = \\beta^\\top V_0^{-1} \\beta - 2 m_0^\\top V_0^{-1} \\beta + m_0^\\top V_0^{-1} m_0.\n\\]\nSecond term:\n\\[\n(y - X\\beta)^\\top (y - X\\beta)\n  = y^\\top y - 2 y^\\top X\\beta + \\beta^\\top X^\\top X \\beta.\n\\]\nHence\n\\[\n\\begin{aligned}\nQ(\\beta)\n&= (\\beta - m_0)^\\top V_0^{-1} (\\beta - m_0)\n    + \\frac{1}{\\sigma^2}(y - X\\beta)^\\top (y - X\\beta) \\\\\n&= \\beta^\\top\\bigl(V_0^{-1} + \\sigma^{-2} X^\\top X\\bigr)\\beta\n    - 2\\beta^\\top\\bigl(V_0^{-1} m_0 + \\sigma^{-2} X^\\top y\\bigr)\n    + \\text{const},\n\\end{aligned}\n\\]\nwhere “const” collects all terms not depending on \\(\\beta\\). Define\n\\[\nV_n^{-1} := V_0^{-1} + \\sigma^{-2} X^\\top X, \\qquad\nb_n := V_0^{-1} m_0 + \\sigma^{-2} X^\\top y.\n\\]\nThen\n\\[\nQ(\\beta) = \\beta^\\top V_n^{-1} \\beta - 2 \\beta^\\top b_n + \\text{const}.\n\\]\nComplete the square in \\(\\beta\\) by writing \\(\\beta^\\top V_n^{-1} \\beta - 2\\beta^\\top b_n\\) as\n\\[\n\\begin{aligned}\n\\beta^\\top V_n^{-1} \\beta - 2\\beta^\\top b_n\n&= (\\beta - m_n)^\\top V_n^{-1} (\\beta - m_n) - m_n^\\top V_n^{-1} m_n,\n\\end{aligned}\n\\]\nwhere we define\n\\[\nm_n := V_n b_n = V_n\\bigl(V_0^{-1} m_0 + \\sigma^{-2} X^\\top y\\bigr).\n\\]\nSubstituting back,\n\\[\nQ(\\beta) = (\\beta - m_n)^\\top V_n^{-1}(\\beta - m_n) + \\text{new const}.\n\\]\nTherefore\n\\[\n\\pi(\\beta) p(y \\mid \\beta, \\sigma^2)\n  \\propto \\exp\\Bigl\\{-\\tfrac12 (\\beta - m_n)^\\top V_n^{-1}(\\beta - m_n)\\Bigr\\},\n\\]\nwhich is precisely the kernel of a multivariate Normal density with mean \\(m_n\\) and covariance \\(V_n\\). This identifies the posterior \\(\\beta \\mid y, X, \\sigma^2\\) as \\(N_p(m_n, V_n)\\), as claimed. \\(\\square\\)\n\n\n\n\nIf \\(X^\\top X\\) is invertible (full column rank), then the likelihood is identifiable for \\(\\beta\\).\nIf \\(X^\\top X\\) is singular, the prior regularizes the posterior and ensures \\(V_n\\) is positive-definite provided \\(V_0\\) is.",
+    "crumbs": [
+      "Home",
+      "Modules",
+      "Module 3: Bayesian Regression"
+    ]
+  }
+]

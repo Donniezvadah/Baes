@@ -1,0 +1,345 @@
+---
+title: "Module 3: Bayesian Regression"
+page-layout: article
+---
+
+# Module 3: Bayesian Regression
+
+This module develops Bayesian linear regression in a measure-theoretic framework, with Gaussian priors on regression coefficients and (optionally) on the variance. We derive posterior and predictive distributions in closed form and relate ridge regression to MAP estimation.
+
+## 1. Model Specification
+
+Let $Y \in \mathbb{R}^n$ be the response vector, $X \in \mathbb{R}^{n \times p}$ the design matrix, and $\beta \in \mathbb{R}^p$ the regression coefficients.
+
+### 1.1 Likelihood
+
+Assume
+
+$$
+ Y \mid X, \beta, \sigma^2 \sim N_n(X \beta, \sigma^2 I_n).
+$$
+
+The corresponding density with respect to Lebesgue measure on $\mathbb{R}^n$ is
+
+$$
+ p(y \mid \beta, \sigma^2)
+   = (2\pi \sigma^2)^{-n/2}
+     \exp\left\{-\frac{1}{2\sigma^2} \lVert y - X\beta \rVert^2 \right\}.
+$$
+
+### 1.2 Prior on Coefficients (Known Variance)
+
+Assume initially that $\sigma^2$ is known and fixed. Place a multivariate normal prior on $\beta$:
+
+$$
+ \beta \sim N_p(m_0, V_0),
+$$
+
+with $V_0$ symmetric positive-definite.
+
+## 2. Posterior for $\beta$ with Known Variance
+
+### Theorem 3.1 (Posterior Distribution of $\beta$) {#thm-reg-posterior}
+
+Under the model above, the posterior distribution of $\beta$ given $y$ is
+
+$$
+ \beta \mid y, X, \sigma^2 \sim N_p(m_n, V_n),
+$$
+
+where
+
+$$
+ V_n^{-1} = V_0^{-1} + \frac{1}{\sigma^2} X^\top X, \qquad
+ m_n = V_n \left( V_0^{-1} m_0 + \frac{1}{\sigma^2} X^\top y \right).
+$$
+
+*Proof.* We derive the posterior kernel step by step. Write the prior density as
+
+$$
+ \pi(\beta)
+   = (2\pi)^{-p/2} |V_0|^{-1/2}
+     \exp\Bigl\{-\tfrac12 (\beta - m_0)^\top V_0^{-1} (\beta - m_0)\Bigr\}.
+$$
+
+The likelihood is
+
+$$
+ p(y \mid \beta, \sigma^2)
+   = (2\pi \sigma^2)^{-n/2}
+     \exp\Bigl\{-\tfrac{1}{2\sigma^2} (y - X\beta)^\top (y - X\beta)\Bigr\}.
+$$
+
+Ignoring normalizing constants that do not depend on $\beta$, the joint density of $(\beta, y)$ is proportional to
+
+$$
+\begin{aligned}
+\pi(\beta) p(y \mid \beta, \sigma^2)
+ &\propto \exp\Bigl\{-\tfrac12 (\beta - m_0)^\top V_0^{-1} (\beta - m_0)
+                    - \tfrac{1}{2\sigma^2} (y - X\beta)^\top (y - X\beta)\Bigr\} \\
+ &:= \exp\bigl\{-\tfrac12 Q(\beta)\bigr\}.
+\end{aligned}
+$$
+
+We now expand the quadratic form $Q(\beta)$. First term:
+
+$$
+(\beta - m_0)^\top V_0^{-1} (\beta - m_0)
+  = \beta^\top V_0^{-1} \beta - 2 m_0^\top V_0^{-1} \beta + m_0^\top V_0^{-1} m_0.
+$$
+
+Second term:
+
+$$
+(y - X\beta)^\top (y - X\beta)
+  = y^\top y - 2 y^\top X\beta + \beta^\top X^\top X \beta.
+$$
+
+Hence
+
+$$
+\begin{aligned}
+Q(\beta)
+ &= (\beta - m_0)^\top V_0^{-1} (\beta - m_0)
+    + \frac{1}{\sigma^2}(y - X\beta)^\top (y - X\beta) \\
+ &= \beta^\top\bigl(V_0^{-1} + \sigma^{-2} X^\top X\bigr)\beta
+    - 2\beta^\top\bigl(V_0^{-1} m_0 + \sigma^{-2} X^\top y\bigr)
+    + \text{const},
+\end{aligned}
+$$
+
+where "const" collects all terms not depending on $\beta$. Define
+
+$$
+ V_n^{-1} := V_0^{-1} + \sigma^{-2} X^\top X, \qquad
+ b_n := V_0^{-1} m_0 + \sigma^{-2} X^\top y.
+$$
+
+Then
+
+$$
+Q(\beta) = \beta^\top V_n^{-1} \beta - 2 \beta^\top b_n + \text{const}.
+$$
+
+Complete the square in $\beta$ by writing $\beta^\top V_n^{-1} \beta - 2\beta^\top b_n$ as
+
+$$
+\begin{aligned}
+\beta^\top V_n^{-1} \beta - 2\beta^\top b_n
+ &= (\beta - m_n)^\top V_n^{-1} (\beta - m_n) - m_n^\top V_n^{-1} m_n,
+\end{aligned}
+$$
+
+where we define
+
+$$
+ m_n := V_n b_n = V_n\bigl(V_0^{-1} m_0 + \sigma^{-2} X^\top y\bigr).
+$$
+
+Substituting back,
+
+$$
+Q(\beta) = (\beta - m_n)^\top V_n^{-1}(\beta - m_n) + \text{new const}.
+$$
+
+Therefore
+
+$$
+\pi(\beta) p(y \mid \beta, \sigma^2)
+  \propto \exp\Bigl\{-\tfrac12 (\beta - m_n)^\top V_n^{-1}(\beta - m_n)\Bigr\},
+$$
+
+which is precisely the kernel of a multivariate Normal density with mean $m_n$ and covariance $V_n$. This identifies the posterior $\beta \mid y, X, \sigma^2$ as $N_p(m_n, V_n)$, as claimed. $\square$
+
+### 2.1 Identifiability and Regularization
+
+- If $X^\top X$ is invertible (full column rank), then the likelihood is identifiable for $\beta$.
+- If $X^\top X$ is singular, the prior regularizes the posterior and ensures $V_n$ is positive-definite provided $V_0$ is.
+
+## 3. Unknown Variance: Normal–Inverse-Gamma Prior
+
+Place a conjugate prior on $(\beta,\sigma^2)$:
+
+- $\sigma^2 \sim \operatorname{Inverse\text{-}Gamma}(a_0, b_0)$,
+- $\beta \mid \sigma^2 \sim N_p(m_0, \sigma^2 V_0)$.
+
+### Theorem 3.2 (Joint Posterior for $(\beta, \sigma^2)$) {#thm-reg-joint}
+
+Under this prior and Gaussian likelihood, the posterior is
+
+$$
+ \sigma^2 \mid y \sim \operatorname{Inverse\text{-}Gamma}(a_n, b_n),
+$$
+
+$$
+ \beta \mid \sigma^2, y \sim N_p(m_n, \sigma^2 V_n),
+$$
+
+where
+
+$$
+ V_n^{-1} = V_0^{-1} + X^\top X,
+$$
+
+$$
+ m_n = V_n (V_0^{-1} m_0 + X^\top y),
+$$
+
+$$
+ a_n = a_0 + \frac{n}{2},
+$$
+
+$$
+ b_n = b_0 + \tfrac12 \bigl( y^\top y + m_0^\top V_0^{-1} m_0 - m_n^\top V_n^{-1} m_n \bigr).
+$$
+
+*Proof.* The joint prior density of $(\beta, \sigma^2)$ (up to normalization) is
+
+$$
+ \pi(\beta, \sigma^2)
+  \propto (\sigma^2)^{-(a_0+1)} \exp\Bigl\{-\frac{b_0}{\sigma^2}\Bigr\}
+          \cdot (\sigma^2)^{-p/2}
+              \exp\Bigl\{-\frac{1}{2\sigma^2} (\beta - m_0)^\top V_0^{-1}(\beta - m_0)\Bigr\}.
+$$
+
+The likelihood is
+
+$$
+ p(y \mid \beta, \sigma^2)
+  \propto (\sigma^2)^{-n/2}
+          \exp\Bigl\{-\frac{1}{2\sigma^2}(y - X\beta)^\top (y - X\beta)\Bigr\}.
+$$
+
+Multiplying prior and likelihood, the joint posterior kernel is
+
+$$
+\begin{aligned}
+\pi(\beta, \sigma^2 \mid y)
+ &\propto (\sigma^2)^{-(a_0 + 1 + p/2 + n/2)} \\
+ &\quad \times \exp\Bigl\{-\frac{1}{2\sigma^2}\Bigl[(\beta - m_0)^\top V_0^{-1}(\beta - m_0)
+                                   + (y - X\beta)^\top (y - X\beta)
+                                   + 2 b_0\Bigr]\Bigr\}.
+\end{aligned}
+$$
+
+Expanding the quadratic forms as in the proof of @thm-reg-posterior and collecting terms in $\beta$, we obtain
+
+$$
+ (\beta - m_0)^\top V_0^{-1}(\beta - m_0) + (y - X\beta)^\top (y - X\beta)
+ = (\beta - m_n)^\top V_n^{-1} (\beta - m_n)
+   + y^\top y + m_0^\top V_0^{-1} m_0 - m_n^\top V_n^{-1} m_n,
+$$
+
+with $V_n$ and $m_n$ as defined above. Thus the joint posterior kernel factors as
+
+$$
+\pi(\beta, \sigma^2 \mid y)
+ \propto (\sigma^2)^{-(a_n+1)}
+          \exp\Bigl\{-\frac{b_n}{\sigma^2}\Bigr\}
+          \cdot (\sigma^2)^{-p/2}
+          \exp\Bigl\{-\frac{1}{2\sigma^2} (\beta - m_n)^\top V_n^{-1}(\beta - m_n)\Bigr\},
+$$
+
+where $a_n$ and $b_n$ are as in the statement. Conditioned on $\sigma^2$, the kernel in $\beta$ is that of $N_p(m_n, \sigma^2 V_n)$. Integrating out $\beta$ contributes only a factor proportional to $(\sigma^2)^{p/2}|V_n|^{1/2}$, which is absorbed into the normalization of the Inverse-Gamma kernel in $\sigma^2$, yielding the stated marginals. $\square$
+
+### 3.1 Marginal Posterior of \(\beta\)
+
+Integrating out $\sigma^2$ yields a multivariate Student-t distribution for $\beta \mid y$, with center $m_n$ and scale related to $V_n$ and $b_n / a_n$.
+
+## 4. Ridge Regression as MAP Estimation
+
+### 4.1 Ridge Objective
+
+The ridge regression estimator is defined as
+
+$$
+ \hat{\beta}_{\text{ridge}}
+ = \arg\min_{\beta} \bigl\{ \lVert y - X\beta \rVert^2 + \lambda \lVert \beta \rVert^2 \bigr\},
+$$
+
+for $\lambda > 0$.
+
+### Proposition 3.3 (Ridge = MAP under Gaussian Prior) {#prop-ridge-map}
+
+Consider the likelihood with known $\sigma^2$ and prior $\beta \sim N_p(0, \tau^2 I_p)$. The MAP estimator of $\beta$ is
+
+$$
+ \hat{\beta}_{\text{MAP}} = (X^\top X + \lambda I_p)^{-1} X^\top y,
+$$
+
+with $\lambda = \sigma^2/\tau^2$, i.e. the ridge estimator with penalty parameter $\lambda$.
+
+*Proof.* The log-posterior (up to an additive constant) is
+
+$$
+\log \pi(\beta \mid y)
+  = -\frac{1}{2\sigma^2} \lVert y - X\beta \rVert^2
+    -\frac{1}{2\tau^2} \lVert \beta \rVert^2.
+$$
+
+Maximizing this is equivalent to minimizing
+
+$$
+ J(\beta)
+   := \lVert y - X\beta \rVert^2 + \lambda \lVert \beta \rVert^2,
+   \qquad \lambda = \sigma^2/\tau^2.
+$$
+
+The gradient of $J$ with respect to $\beta$ is
+
+$$
+ \nabla_\beta J(\beta)
+   = -2 X^\top (y - X\beta) + 2\lambda \beta
+   = 2(X^\top X + \lambda I_p)\beta - 2X^\top y.
+$$
+
+Setting $\nabla_\beta J(\beta) = 0$ yields the normal equations
+
+$$
+ (X^\top X + \lambda I_p) \hat{\beta}_{\text{MAP}} = X^\top y,
+$$
+
+which (since $X^\top X + \lambda I_p$ is positive-definite) has the unique solution
+
+$$
+ \hat{\beta}_{\text{MAP}} = (X^\top X + \lambda I_p)^{-1} X^\top y.
+$$
+
+This is exactly the ridge estimator. $\square$
+
+## 5. Posterior Predictive Distributions
+
+### 5.1 Known Variance
+
+For a new design matrix $X_{\text{new}} \in \mathbb{R}^{m \times p}$, define $Y_{\text{new}} \mid \beta, \sigma^2 \sim N_m(X_{\text{new}}\beta, \sigma^2 I_m)$. Under the posterior $\beta \mid y \sim N(m_n, V_n)$,
+
+$$
+ Y_{\text{new}} \mid y \sim N_m\bigl( X_{\text{new}} m_n,
+ \; X_{\text{new}} V_n X_{\text{new}}^\top + \sigma^2 I_m \bigr).
+$$
+
+### 5.2 Unknown Variance
+
+With the Normal–Inverse-Gamma prior, the predictive distribution of a single new observation $Y_{\text{new}}$ is a Student-t distribution, reflecting both parameter and noise uncertainty.
+
+## 6. Credible Intervals for Regression Coefficients
+
+Under the Normal posterior for $\beta$ (with known $\sigma^2$), component-wise credible intervals are obtained from the marginal Normal distributions of each coefficient:
+
+$$
+ \beta_j \mid y \sim N(m_{n,j}, (V_n)_{jj}).
+$$
+
+Under the Normal–Inverse-Gamma model, the marginal posterior of each $\beta_j$ is Student-t, and credible intervals are derived accordingly.
+
+## 7. Problem Set 3 (Representative Problems)
+
+1. **Posterior Derivation.** Prove Theorem @thm-reg-posterior in full detail by completing the square and carefully justifying all matrix manipulations (you may follow, but should not merely copy, the derivation in the text).
+
+2. **Normal–Inverse-Gamma Posterior.** Derive Theorem @thm-reg-joint by starting from the joint prior and likelihood, and show explicitly how the sufficient statistics enter the posterior hyperparameters.
+
+3. **Ridge = MAP.** For arbitrary $X$, derive the ridge estimator and show rigorously that it equals the MAP estimator under a spherical Gaussian prior (cf. Proposition @prop-ridge-map). Discuss what happens when $X^\top X$ is singular.
+
+4. **Posterior Predictive Variance Decomposition.** For the known-variance case, explicitly separate the predictive variance into a term due to noise (\(\sigma^2\)) and a term due to parameter uncertainty (involving \(V_n\)).
+
+5. **Misspecification.** Suppose the true errors are heavy-tailed (e.g., Student-t) while the model assumes Normal errors. Discuss qualitatively and, where possible, quantitatively how the posterior for \(\beta\) behaves and whether it still concentrates around a meaningful target.

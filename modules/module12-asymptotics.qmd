@@ -1,0 +1,112 @@
+---
+title: "Module 12: Asymptotic Theory and Consistency"
+page-layout: article
+---
+
+# Module 12: Asymptotic Theory and Consistency
+
+This module develops asymptotic properties of Bayesian procedures: posterior consistency, behavior under model misspecification, posterior contraction rates, and frequentist coverage of Bayesian credible sets.
+
+## 1. Posterior Consistency
+
+### 1.1 Setup
+
+Let \(X_1, X_2, \dots\) be i.i.d. from a distribution \(P_{\theta_0}\) in a model \(\{P_\theta : \theta \in \Theta\}\). Let \(\Pi\) be a prior on \(\Theta\), and \(\Pi(\cdot \mid X_1, \dots, X_n)\) the posterior.
+
+### Definition 12.1 (Posterior Consistency)
+
+The posterior is **(weakly) consistent** at \(\theta_0\) if for every weak neighborhood \(U\) of \(\theta_0\),
+5959
+ \Pi(U^c \mid X_1, \dots, X_n) \to 0
+5959
+\(P_{\theta_0}\)-almost surely as \(n \to \infty\).
+
+Stronger modes of consistency (e.g., in total variation or Hellinger distance) can also be defined.
+
+### 1.2 Kullback–Leibler Support and Schwartz's Theorem
+
+Define the Kullback–Leibler divergence
+5959
+ K(P_{\theta_0}, P_\theta) = \int \log \frac{p_{\theta_0}(x)}{p_\theta(x)} \, P_{\theta_0}(dx).
+5959
+
+### Theorem 12.2 (Schwartz's Theorem, Informal)
+
+If the prior \(\Pi\) assigns positive mass to all Kullback–Leibler neighborhoods of \(\theta_0\), i.e.,
+5959
+ \Pi\big(\{\theta : K(P_{\theta_0}, P_\theta) < \varepsilon\}\big) > 0 \quad \forall \varepsilon > 0,
+5959
+then the posterior is weakly consistent at \(\theta_0\) under suitable measurability and separability conditions.
+
+*Idea of proof:* Use tests separating \(\theta_0\) from complement sets and control the posterior mass assigned to these sets via likelihood ratios and prior mass in Kullback–Leibler neighborhoods.
+
+## 2. Misspecified Models
+
+### 2.1 Pseudo-True Parameter
+
+If the true distribution \(P_0\) is not in the model \(\{P_\theta\}\), the posterior may still concentrate around a **pseudo-true parameter** \(\theta^*\) defined as
+5959
+ \theta^* \in \arg\min_{\theta \in \Theta} K(P_0, P_\theta).
+5959
+
+### Theorem 12.3 (Posterior Concentration under Misspecification, Informal)
+
+Under regularity conditions, the posterior concentrates in neighborhoods of \(\theta^*\), i.e., for any neighborhood \(U\) of \(\theta^*\),
+5959
+ \Pi(U^c \mid X_1, \dots, X_n) \to 0
+5959
+\(P_0\)-almost surely as \(n \to \infty\).
+
+*Idea of proof:* Similar to Schwartz's theorem but centered at \(\theta^*\) instead of a true parameter in the model; use generalized likelihood ratio arguments.
+
+## 3. Posterior Contraction Rates
+
+### 3.1 Definition
+
+Let \(d\) be a metric on \(\Theta\) (e.g., Hellinger distance between \(P_\theta\) and \(P_{\theta_0}\)). A sequence \(\varepsilon_n \to 0\) is a **contraction rate** if there exists a sequence of sets \(B_n\) such that
+5959
+ \Pi(B_n^c \mid X_1, \dots, X_n) \to 0
+5959
+\(P_{\theta_0}\)-almost surely and
+5959
+ B_n \subseteq \{\theta : d(\theta, \theta_0) \le M \varepsilon_n\}
+5959
+for some constant \(M\).
+
+### 3.2 Sufficient Conditions
+
+Ghosal, Ghosh, and van der Vaart give general sufficient conditions for contraction at rate \(\varepsilon_n\):
+
+1. Existence of tests separating \(\theta_0\) from "far" alternatives.
+2. Prior mass condition: \(\Pi\) assigns enough mass to Kullback–Leibler neighborhoods of \(\theta_0\) of size \(\varepsilon_n\).
+3. Entropy conditions on the model complexity.
+
+In parametric models, the typical rate is \(\varepsilon_n = n^{-1/2}\); in nonparametric models, slower rates occur.
+
+## 4. Frequentist Coverage of Bayesian Procedures
+
+### 4.1 Bernstein–von Mises Revisited
+
+In regular finite-dimensional parametric models, the Bernstein–von Mises theorem implies that posterior credible sets asymptotically behave like frequentist confidence sets.
+
+### 4.2 Coverage Issues in Nonparametric and High-Dimensional Settings
+
+In more complex models, Bayesian credible sets may:
+
+- undercover (actual frequentist coverage < nominal),
+- overcover (conservative),
+- or have shape properties (e.g., adaptivity) that do not align with standard frequentist intervals.
+
+Analyses of coverage require detailed control of posterior contraction, shape of posterior distributions, and prior influence.
+
+## 5. Problem Set 12 (Representative Problems)
+
+1. **Schwartz's Theorem Sketch.** State Schwartz's theorem rigorously (including topological and measurability conditions) and sketch its proof, emphasizing the construction of tests and the use of Kullback–Leibler neighborhoods.
+
+2. **Consistency in Exponential Families.** For a regular exponential family, verify the Kullback–Leibler support condition for a prior with a continuous positive density on \(\Theta\), and conclude posterior consistency.
+
+3. **Misspecification Example.** Consider data from a heavy-tailed distribution (e.g., Student-t) while the model assumes Normality. Identify the pseudo-true parameter and discuss posterior concentration around it.
+
+4. **Contraction Rate in Gaussian Sequence Model.** In a Gaussian sequence model with appropriate priors (e.g., Gaussian with shrinking variances), derive the posterior contraction rate and compare it to minimax rates.
+
+5. **Coverage Analysis.** Analyze the frequentist coverage of Bayesian credible intervals for a simple nonparametric problem (e.g., estimating a density with a Dirichlet process mixture prior), summarizing known results and highlighting phenomena such as undercoverage.

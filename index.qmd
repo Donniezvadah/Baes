@@ -1,0 +1,67 @@
+---
+title: "Bayesian Statistics and Inference"
+page-layout: article
+---
+
+# Bayesian Statistics and Inference (Graduate / Early PhD)
+
+This site contains lecture notes, syllabus, and problem sets for a mathematically rigorous, measure-theoretic course in Bayesian Statistics and Bayesian Inference.
+
+The course is designed for graduate or early PhD students with strong backgrounds in:
+
+- Probability theory (measure-theoretic)
+- Linear algebra
+- Real analysis (including modes of convergence and basic functional analysis flavor)
+
+The emphasis is theory-first:
+
+- All major algorithms are derived from first principles.
+- Prior, likelihood, and posterior are treated as measures.
+- Bayesian inference is grounded in decision theory.
+- Computational methods (MCMC, variational inference, optimization) are analyzed with proofs of correctness, convergence, and asymptotic behavior.
+
+## Learning Outcomes
+
+By the end of the course, students should be able to:
+
+- Formally derive Bayes' theorem via the Radon–Nikodym theorem and work with priors, likelihoods, and posteriors as measures.
+- Analyze identifiability, posterior propriety, posterior consistency, and convergence properties of Bayesian models and algorithms.
+- Derive from first principles:
+  - Conjugate posterior formulas and predictive distributions.
+  - Regression posteriors and approximate posteriors in generalized linear models.
+  - MCMC algorithms (Metropolis–Hastings, Gibbs, HMC, MALA) and prove invariance and convergence results.
+  - Variational inference updates via ELBO optimization.
+  - Gaussian Process regression posteriors and their asymptotic properties.
+- Evaluate Bayesian procedures from both Bayesian and frequentist perspectives (decision-theoretic risk, Bernstein–von Mises, coverage).
+- Critically assess models via posterior predictive checks and sensitivity / robustness analyses.
+
+## References
+
+Primary references:
+
+- Bernardo, J. M., & Smith, A. F. M. (1994). *Bayesian Theory*.
+- Robert, C. P., & Casella, G. (2004). *Monte Carlo Statistical Methods*.
+- Gelman, A., Carlin, J. B., Stern, H. S., Dunson, D. B., Vehtari, A., & Rubin, D. B. (2013). *Bayesian Data Analysis*.
+- Ghosh, J. K., & Ramamoorthi, R. V. (2003). *Bayesian Nonparametrics*.
+- Rasmussen, C. E., & Williams, C. K. I. (2006). *Gaussian Processes for Machine Learning*.
+- van der Vaart, A. W. (1998). *Asymptotic Statistics*.
+
+## Course Structure
+
+The course is organized into 13 modules:
+
+1. Foundations of Bayesian Inference
+2. Conjugate Models and Exact Inference
+3. Bayesian Regression
+4. Bayesian Generalized Linear Models
+5. Markov Chain Monte Carlo (MCMC) Theory
+6. Metropolis–Hastings Algorithm
+7. Gibbs Sampling
+8. Advanced MCMC Methods
+9. Variational Inference
+10. Gaussian Processes
+11. Optimization in Bayesian Inference
+12. Asymptotic Theory and Consistency
+13. Model Checking and Criticism
+
+Use the sidebar or navigation bar to access detailed notes for each module.

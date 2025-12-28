@@ -1,0 +1,47 @@
+{
+  "index.qmd": {
+    "index.html": "9fb221e9"
+  },
+  "syllabus.qmd": {
+    "syllabus.html": "ce3f193d"
+  },
+  "modules/module09-vi.qmd": {
+    "module09-vi.html": "4713cfa9"
+  },
+  "modules/module08-advanced-mcmc.qmd": {
+    "module08-advanced-mcmc.html": "5e924111"
+  },
+  "modules/module07-gibbs.qmd": {
+    "module07-gibbs.html": "fb082a1d"
+  },
+  "modules/module11-optimization.qmd": {
+    "module11-optimization.html": "95308bef"
+  },
+  "modules/module01-foundations.qmd": {
+    "module01-foundations.html": "3a434108"
+  },
+  "modules/module06-mh.qmd": {
+    "module06-mh.html": "c66d64f9"
+  },
+  "modules/module04-glm.qmd": {
+    "module04-glm.html": "637c08e0"
+  },
+  "modules/module12-asymptotics.qmd": {
+    "module12-asymptotics.html": "4ddafb7e"
+  },
+  "modules/module02-conjugate.qmd": {
+    "module02-conjugate.html": "0f3a1421"
+  },
+  "modules/module10-gp.qmd": {
+    "module10-gp.html": "76c04e8c"
+  },
+  "modules/module13-checking.qmd": {
+    "module13-checking.html": "88f7a36e"
+  },
+  "modules/module05-mcmc-theory.qmd": {
+    "module05-mcmc-theory.html": "1f34c7c4"
+  },
+  "modules/module03-regression.qmd": {
+    "module03-regression.html": "0e9b2729"
+  }
+}

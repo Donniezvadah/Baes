@@ -1,0 +1,93 @@
+---
+title: "Module 13: Model Checking and Criticism"
+page-layout: article
+---
+
+# Module 13: Model Checking and Criticism
+
+This module focuses on tools for assessing the adequacy of Bayesian models: posterior predictive checks, sensitivity to priors, prior elicitation, and robustness analyses.
+
+## 1. Posterior Predictive Checks
+
+### 1.1 Posterior Predictive Distribution
+
+Given data \(x\), prior \(\Pi\), and likelihood \(p(x \mid \theta)\), the **posterior predictive distribution** for replicated data \(X_{\text{rep}}\) is
+5959
+ p(x_{\text{rep}} \mid x) = \int p(x_{\text{rep}} \mid \theta) \, \Pi(d\theta \mid x).
+5959
+
+### 1.2 Test Statistics and Discrepancy Measures
+
+Choose a test statistic or discrepancy function \(T(x, \theta)\) capturing aspects of the data or model of interest (e.g., tail behavior, dispersion).
+
+The posterior predictive p-value is
+5959
+ p_{\text{ppc}} = \mathbb{P}( T(X_{\text{rep}}, \theta) \ge T(x, \theta) \mid x ),
+5959
+where the probability is with respect to the joint posterior predictive distribution of \((X_{\text{rep}}, \theta)\).
+
+### 1.3 Interpretation
+
+Posterior predictive p-values close to 0 or 1 indicate potential model misfit along the chosen dimension. They are not uniform under the null and tend to be conservative.
+
+## 2. Sensitivity to Priors and Bayesian Robustness
+
+### 2.1 Local Sensitivity
+
+Consider posterior expectations \(\mathbb{E}_\Pi[g(\theta) \mid x]\) as functions of prior hyperparameters \(\eta\). Local sensitivity analysis studies derivatives
+5959
+ \frac{\partial}{\partial \eta} \mathbb{E}[g(\theta) \mid x; \eta].
+5959
+
+These derivatives can be expressed in terms of posterior covariances between \(g(\theta)\) and score functions of the prior.
+
+### 2.2 Global Sensitivity and Robust Priors
+
+- **\(\varepsilon\)-contamination priors:**
+  5959
+   \Pi_\varepsilon = (1-\varepsilon) \Pi_0 + \varepsilon Q,
+  5959
+  where \(Q\) represents a contaminating distribution.
+- Study the range of posterior summaries as \(\varepsilon\) varies, assessing robustness to prior perturbations.
+
+### 2.3 Robustness Criteria
+
+Robustness can be assessed via:
+
+- Bounded influence of prior tails on posterior summaries,
+- Stability of posterior in Kullback–Leibler neighborhood of the prior,
+- Existence of worst-case priors within specified classes.
+
+## 3. Prior Elicitation
+
+### 3.1 Principles
+
+Prior elicitation aims to translate substantive knowledge or beliefs into a prior distribution. Strategies include:
+
+- Matching prior moments or quantiles to expert judgments,
+- Using conjugate priors with interpretable hyperparameters (e.g., pseudo-count interpretations),
+- Ensuring that elicited priors place reasonable mass on plausible parameter regions.
+
+### 3.2 Elicitation in Conjugate Models
+
+In Beta–Binomial, interpret \((\alpha, \beta)\) as prior success and failure counts. In Normal–Normal models, interpret prior mean and variance as prior guess and uncertainty about the parameter.
+
+## 4. Example: Overdispersion in Poisson Models
+
+Consider \(X_i \mid \lambda \sim \operatorname{Poisson}(\lambda)\) with Gamma prior on \(\lambda\).
+
+- Use posterior predictive checks to assess whether data are overdispersed relative to the Poisson assumption.
+- Compare observed variance to posterior predictive variance.
+- If overdispersion is detected, consider alternative models (e.g., Negative Binomial) or hierarchical extensions.
+
+## 5. Problem Set 13 (Representative Problems)
+
+1. **Posterior Predictive Check for Poisson.** For a Poisson–Gamma model, derive the posterior predictive distribution and construct a test statistic sensitive to overdispersion. Analyze how the posterior predictive p-value behaves when data are generated from an overdispersed process.
+
+2. **Local Sensitivity Derivative.** Let the prior density be \(\pi(\theta \mid \eta)\). Derive an expression for \(\partial/\partial \eta\, \mathbb{E}[g(\theta) \mid x; \eta]\) in terms of posterior expectations and derivatives of \(\log \pi(\theta \mid \eta)\).
+
+3. **\(\varepsilon\)-Contamination Analysis.** Implement an \(\varepsilon\)-contamination analysis in a simple Normal model with unknown mean and known variance. Study how posterior means and credible intervals change as \(\varepsilon\) varies.
+
+4. **Robust Prior Construction.** Propose a heavy-tailed prior for a location parameter (e.g., Cauchy) and analyze its robustness properties compared to a Normal prior, particularly in the presence of outliers.
+
+5. **Prior Elicitation Exercise.** In a Beta–Binomial context, suppose an expert believes the success probability lies between 0.3 and 0.7 with high probability and that 10 pseudo-observations are appropriate. Derive hyperparameters \((\alpha, \beta)\) consistent with these beliefs and discuss the resulting prior density.

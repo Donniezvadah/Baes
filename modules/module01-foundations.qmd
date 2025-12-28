@@ -1,0 +1,201 @@
+---
+title: "Module 1: Foundations of Bayesian Inference"
+page-layout: article
+---
+
+# Module 1: Foundations of Bayesian Inference
+
+This module develops the measure-theoretic foundations of Bayesian inference.
+
+We treat priors, likelihoods, and posteriors as measures, and formulate Bayes' theorem as a Radon–Nikodym identity. We then introduce Bayesian decision theory, Bayes estimators, and the Bernstein–von Mises theorem.
+
+## 1. Probability Spaces and Conditional Expectation
+
+### Definition 1.1 (Probability Space)
+
+A **probability space** is a triple \((\Omega, \mathcal{F}, \mathbb{P})\) where:
+
+- \(\Omega\) is a sample space,
+- \(\mathcal{F}\) is a \(\sigma\)-algebra of subsets of \(\Omega\),
+- \(\mathbb{P}: \mathcal{F} \to [0,1]\) is a probability measure with \(\mathbb{P}(\Omega)=1\).
+
+### Definition 1.2 (Random Variable)
+
+Let \((\Omega, \mathcal{F}, \mathbb{P})\) be a probability space and \((S, \mathcal{S})\) a measurable space. A map
+5959
+X: (\Omega, \mathcal{F}) \to (S, \mathcal{S})
+5959
+is a **random variable** if it is measurable: for all \(A \in \mathcal{S}\), \(X^{-1}(A) \in \mathcal{F}\).
+
+### Definition 1.3 (Conditional Expectation)
+
+Let \(X \in L^1(\Omega, \mathcal{F}, \mathbb{P})\) and \(\mathcal{G} \subseteq \mathcal{F}\) be a sub-\(\sigma\)-algebra. A random variable \(Y\) is called the **conditional expectation** of \(X\) given \(\mathcal{G}\), written \(Y = \mathbb{E}[X \mid \mathcal{G}]\), if:
+
+1. \(Y\) is \(\mathcal{G}\)-measurable, and
+2. For all \(G \in \mathcal{G}\),
+   5959
+   \int_G Y \, d\mathbb{P} = \int_G X \, d\mathbb{P}.
+   5959
+
+### Theorem 1.1 (Existence and Uniqueness of Conditional Expectation)
+
+Let \(X \in L^1(\Omega, \mathcal{F}, \mathbb{P})\) and \(\mathcal{G}\) a sub-\(\sigma\)-algebra. Then there exists a \(\mathcal{G}\)-measurable random variable \(Y\) satisfying the defining property of conditional expectation. Moreover, \(Y\) is unique up to \(\mathbb{P}\)-almost sure equality.
+
+*Proof sketch:* Use the Radon–Nikodym theorem applied to the finite signed measure \(\nu(G) = \int_G X \, d\mathbb{P}\) on \(\mathcal{G}\).
+
+## 2. Conditional Probabilities and Regular Conditional Distributions
+
+### Definition 1.4 (Regular Conditional Probability)
+
+Let \(X: \Omega \to S\), \(Y: \Omega \to T\) be random variables with \(S, T\) standard Borel spaces. A **regular conditional distribution** of \(Y\) given \(X\) is a Markov kernel
+5959
+K: S \times \mathcal{T} \to [0,1]
+5959
+such that for all \(B \in \mathcal{T}\),
+5959
+\mathbb{P}(Y \in B \mid X)(\omega) = K(X(\omega), B) \quad \text{a.s.}
+5959
+
+### Theorem 1.2 (Existence of Regular Conditional Distributions)
+
+If \(S\) and \(T\) are standard Borel spaces, there exists a regular conditional distribution \(K(\cdot, \cdot)\) of \(Y\) given \(X\).
+
+*Proof idea:* Use disintegration of measures on product spaces and the existence of regular conditional probabilities on standard Borel spaces.
+
+## 3. Bayes' Theorem as Radon–Nikodym Identity
+
+### 3.1 Setup
+
+- Parameter space: \((\Theta, \mathcal{T})\), data space: \((\mathcal{X}, \mathcal{B})\), both standard Borel.
+- Prior: a probability measure \(\Pi\) on \((\Theta, \mathcal{T})\).
+- Likelihood: a Markov kernel \(P(\cdot \mid \theta)\) from \(\Theta\) to \((\mathcal{X}, \mathcal{B})\).
+
+Define the joint measure on \(\Theta \times \mathcal{X}\) by
+5959
+\mathbb{P}(A \times B) = \int_A P(B \mid \theta)\, \Pi(d\theta), \quad A \in \mathcal{T}, B \in \mathcal{B}.
+5959
+
+The marginal law of \(X\) is \(\mathbb{P}_X(B) = \mathbb{P}(\Theta \times B)\).
+
+### Definition 1.5 (Posterior as Conditional Measure)
+
+A **posterior** is a Markov kernel \(\Pi(\cdot \mid x)\) from \(\mathcal{X}\) to \((\Theta, \mathcal{T})\) such that for all \(A \in \mathcal{T}\) and \(B \in \mathcal{B}\),
+5959
+\mathbb{P}(A \times B) = \int_B \Pi(A \mid x)\, \mathbb{P}_X(dx).
+5959
+
+### 3.2 Absolute Continuity and Densities
+
+Assume that for each \(\theta \in \Theta\), \(P(\cdot \mid \theta)\) is absolutely continuous with respect to a \(\sigma\)-finite measure \(\lambda\) on \((\mathcal{X}, \mathcal{B})\):
+5959
+P(B \mid \theta) = \int_B p(x \mid \theta)\, \lambda(dx),
+5959
+for some nonnegative measurable density \(p(x \mid \theta)\).
+
+Define the **marginal density**
+5959
+m(x) = \int_\Theta p(x \mid \theta)\, \Pi(d\theta).
+5959
+
+### Theorem 1.3 (Bayes' Theorem via Radon–Nikodym)
+
+Assume \(0 < m(x) < \infty\) for \(\lambda\)-almost all \(x\). Then the posterior measure \(\Pi(\cdot \mid x)\) exists and is given for \(\lambda\)-a.e. \(x\) by
+5959
+\Pi(A \mid x) = \frac{\int_A p(x \mid \theta)\, \Pi(d\theta)}{m(x)}, \quad A \in \mathcal{T}.
+5959
+
+*Proof sketch:* Consider the joint density \(f(\theta,x) = p(x \mid \theta)\) with respect to \(\Pi \otimes \lambda\). The marginal of \(X\) has density \(m(x)\). For fixed \(x\), define a finite measure \(\nu_x(A) = \int_A f(\theta,x)\, \Pi(d\theta)\). Then \(\nu_x\) is absolutely continuous with respect to \(\Pi\), with total mass \(m(x)\). The Radon–Nikodym derivative \(d\nu_x/d\Pi\) yields the posterior kernel.
+
+### Definition 1.6 (Posterior Propriety)
+
+The posterior \(\Pi(\cdot \mid x)\) is **proper** if, for \(\mathbb{P}_X\)-almost all \(x\), \(\Pi(\cdot \mid x)\) is a probability measure (total mass 1). This requires \(0 < m(x) < \infty\) almost everywhere.
+
+## 4. Bayesian Decision Theory
+
+### 4.1 Basic Setup
+
+- Parameter space: \(\Theta\).
+- Action (decision) space: \(\mathcal{A}\).
+- Loss function: \(L: \Theta \times \mathcal{A} \to [0, \infty)\).
+- Decision rule: measurable map \(\delta: \mathcal{X} \to \mathcal{A}\).
+
+### Definition 1.7 (Bayes Risk and Bayes Estimator)
+
+Given prior \(\Pi\), the **Bayes risk** of \(\delta\) is
+5959
+r(\Pi, \delta) = \int_\Theta \int_\mathcal{X} L(\theta, \delta(x))\, P(dx \mid \theta)\, \Pi(d\theta).
+5959
+
+A decision rule \(\delta^*\) is a **Bayes estimator** (w.r.t. \(\Pi\)) if
+5959
+r(\Pi, \delta^*) = \inf_\delta r(\Pi, \delta).
+5959
+
+### Theorem 1.4 (Posterior Expected Loss Representation)
+
+Under integrability conditions permitting Fubini's theorem,
+5959
+r(\Pi, \delta) = \int_\mathcal{X} \left( \int_\Theta L(\theta, \delta(x))\, \Pi(d\theta \mid x) \right) \mathbb{P}_X(dx).
+5959
+
+In particular, any Bayes rule \(\delta^*\) satisfies
+5959
+\delta^*(x) \in \arg\min_{a \in \mathcal{A}} \int_\Theta L(\theta, a)\, \Pi(d\theta \mid x) \quad \text{for } \mathbb{P}_X\text{-almost all } x.
+5959
+
+*Proof:* Express \(r(\Pi,\delta)\) using the joint measure on \(\Theta \times \mathcal{X}\), then condition on \(X\) using the posterior kernel.
+
+### Corollary 1.5 (Quadratic Loss)
+
+For scalar \(\theta\) and quadratic loss \(L(\theta,a)=(\theta-a)^2\), any Bayes estimator satisfies
+5959
+\delta^*(x) = \mathbb{E}[\theta \mid x],
+5959
+provided the posterior mean exists.
+
+## 5. Credible Intervals, Confidence Intervals, and Bernstein–von Mises
+
+### 5.1 Credible vs Confidence Intervals
+
+- A **\((1-\alpha)\)-credible set** \(C_\alpha(x)\) satisfies
+  5959
+  \Pi(C_\alpha(x) \mid x) \ge 1 - \alpha.
+  5959
+
+- A **\((1-\alpha)\)-confidence set** \(C_\alpha(X)\) satisfies
+  5959
+  \inf_{\theta \in \Theta} \mathbb{P}_\theta(\theta \in C_\alpha(X)) \ge 1 - \alpha.
+  5959
+
+These notions generally differ for finite samples; they are connected asymptotically by the Bernstein–von Mises theorem.
+
+### 5.2 Bernstein–von Mises Theorem (Informal Statement)
+
+Consider i.i.d. data \(X_1, \dots, X_n\) from a parametric family \(\{P_\theta: \theta \in \Theta \subset \mathbb{R}^d\}\) with true parameter \(\theta_0\). Under standard regularity conditions (identifiability, smoothness, non-degenerate Fisher information, prior density positive and continuous near \(\theta_0\)), the posterior distribution of
+5959
+\sqrt{n}(\theta - \hat{\theta}_n)
+5959
+converges in total variation to a multivariate normal distribution \(N(0, I(\theta_0)^{-1})\), where \(\hat{\theta}_n\) is the MLE and \(I(\theta_0)\) is the Fisher information.
+
+**Consequence:** Bayesian credible sets asymptotically coincide with frequentist confidence sets and have asymptotically correct coverage.
+
+*Proof sketch:* Use local asymptotic normality of the log-likelihood (LAN) and Laplace approximation for the posterior, combining the likelihood expansion with the prior density near \(\theta_0\).
+
+## 6. Subjective vs Objective Bayes
+
+- **Subjective Bayes:** Priors represent personal or expert beliefs about parameters; coherence arguments (e.g. de Finetti) justify Bayesian updating as the unique coherent updating rule.
+- **Objective Bayes:** Priors chosen to satisfy formal criteria (invariance, reference priors, Jeffreys priors), aiming to reduce subjectivity while retaining Bayesian coherence.
+
+The course emphasizes the formal measure-theoretic and decision-theoretic structure, applicable in both interpretations.
+
+## 7. Problem Set 1 (Representative Problems)
+
+1. **Bayes via Radon–Nikodym.** Prove Theorem 1.3 under the given assumptions, explicitly invoking the Radon–Nikodym theorem and checking all measurability requirements.
+
+2. **Posterior Propriety Counterexample.** Construct an example of an improper prior such that the resulting posterior is improper. Show that the marginal density \(m(x)\) is infinite on a set of positive \(\lambda\)-measure.
+
+3. **Bayes Estimators under General Loss.** For a general convex loss function \(L(\theta,a)\), prove that any Bayes estimator must minimize the posterior expected loss and analyze conditions for uniqueness.
+
+4. **Credible vs Confidence Intervals in Normal–Normal Model.** In the normal–normal model with known variance, show that the 95% equal-tailed credible interval coincides with the classical 95% confidence interval. Explain why this equivalence is special to the conjugate Gaussian setting.
+
+5. **LAN and BvM in Exponential Families.** For a regular exponential family, verify the LAN expansion and outline how it leads to the Bernstein–von Mises conclusion.

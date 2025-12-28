@@ -1,0 +1,144 @@
+---
+title: "Module 10: Gaussian Processes"
+page-layout: article
+---
+
+# Module 10: Gaussian Processes
+
+This module introduces Gaussian processes (GPs) as distributions over functions, discusses covariance kernels and their connection to reproducing kernel Hilbert spaces (RKHS), and derives the exact posterior for GP regression. We also address hyperparameter estimation and computational complexity.
+
+## 1. Gaussian Processes as Distributions over Functions
+
+### Definition 10.1 (Gaussian Process)
+
+Let \(\mathcal{X}\) be an index set (e.g., \(\mathbb{R}^d\)). A stochastic process \(\{f(x) : x \in \mathcal{X}\}\) is a **Gaussian process** if for any finite collection of points \(x_1, \dots, x_n \in \mathcal{X}\), the random vector \((f(x_1), \dots, f(x_n))\) is multivariate Normal.
+
+A GP is characterized by its mean function \(m: \mathcal{X} \to \mathbb{R}\) and covariance kernel \(k: \mathcal{X} \times \mathcal{X} \to \mathbb{R}\):
+5959
+ m(x) = \mathbb{E}[f(x)], \quad k(x,x') = \operatorname{Cov}(f(x), f(x')).
+5959
+We write
+5959
+ f \sim \operatorname{GP}(m, k).
+5959
+
+## 2. Covariance Kernels and RKHS
+
+### 2.1 Positive Definiteness
+
+A function \(k: \mathcal{X} \times \mathcal{X} \to \mathbb{R}\) is a **positive-definite kernel** if for any finite set \(x_1, \dots, x_n\) and coefficients \(c_1, \dots, c_n\),
+5959
+ \sum_{i=1}^n \sum_{j=1}^n c_i c_j k(x_i, x_j) \ge 0.
+5959
+
+### 2.2 RKHS Associated with a Kernel
+
+Given a positive-definite kernel \(k\), there exists a unique Hilbert space \(\mathcal{H}_k\) of functions on \(\mathcal{X}\) such that:
+
+1. For each \(x\), the function \(k(x, \cdot) \in \mathcal{H}_k\).
+2. **Reproducing property:** For all \(f \in \mathcal{H}_k\) and \(x \in \mathcal{X}\),
+   5959
+    f(x) = \langle f, k(x, \cdot) \rangle_{\mathcal{H}_k}.
+   5959
+
+*Proof idea:* Use the Moore–Aronszajn theorem to construct \(\mathcal{H}_k\) as the completion of finite linear combinations of kernel sections.
+
+### 2.3 GP Sample Paths and RKHS
+
+While \(\mathcal{H}_k\) is not generally the support of the GP, there is a close relationship between sample path regularity and RKHS norms. For some kernels, GP sample paths almost surely lie outside the RKHS but are controlled by it.
+
+## 3. Gaussian Process Regression
+
+### 3.1 Model Setup
+
+Let \(f \sim \operatorname{GP}(0, k)\). Observations are
+5959
+ y_i = f(x_i) + \varepsilon_i, \quad \varepsilon_i \sim N(0, \sigma^2),
+5959
+independent noise. Collect \(y = (y_1, \dots, y_n)^\top\) and define the Gram matrix \(K \in \mathbb{R}^{n \times n}\) with entries \(K_{ij} = k(x_i, x_j)\).
+
+For a set of test inputs \(X_* = (x_*^{(1)}, \dots, x_*^{(m)})\), define:
+
+- \(K_* \in \mathbb{R}^{n \times m}\) with entries \((K_*)_{i\ell} = k(x_i, x_*^{(\ell)})\),
+- \(K_{**} \in \mathbb{R}^{m \times m}\) with entries \((K_{**})_{\ell \ell'} = k(x_*^{(\ell)}, x_*^{(\ell')})\).
+
+### 3.2 Joint Prior and Posterior
+
+The joint prior for \(f(X)\) and \(f(X_*)\) is multivariate Normal:
+5959
+ \begin{pmatrix}
+  f(X) \\
+  f(X_*)
+ \end{pmatrix}
+ \sim N\left( 0,
+ \begin{pmatrix}
+  K & K_* \\
+  K_*^\top & K_{**}
+ \end{pmatrix}
+ \right).
+5959
+
+The observation model adds independent Gaussian noise to \(f(X)\), so
+5959
+ y \mid f(X) \sim N(f(X), \sigma^2 I_n).
+5959
+
+### Theorem 10.2 (GP Regression Posterior)
+
+The posterior distribution of \(f_* := f(X_*)\) given data \(y\) is multivariate Normal:
+5959
+ f_* \mid y \sim N(m_*, \Sigma_*),
+5959
+where
+5959
+ m_* = K_*^\top (K + \sigma^2 I_n)^{-1} y,
+5959
+5959
+ \Sigma_* = K_{**} - K_*^\top (K + \sigma^2 I_n)^{-1} K_*.
+5959
+
+*Proof:* Use the conditional distribution formulas for multivariate Normal distributions, treating \(y\) as \(f(X) + \varepsilon\).
+
+## 4. Hyperparameter Estimation
+
+Covariance kernels often depend on hyperparameters \(\theta_k\) (e.g., length-scales, output variance). Common approaches:
+
+- **Empirical Bayes / Type II ML:** Maximize the marginal likelihood \(p(y \mid \theta_k, \sigma^2)\) with respect to \(\theta_k\).
+- **Fully Bayesian:** Place priors on \(\theta_k\) and use MCMC or other methods to sample from the joint posterior.
+
+The marginal likelihood in GP regression is
+5959
+ \log p(y \mid \theta_k, \sigma^2)
+ = -\tfrac12 y^\top (K_\theta + \sigma^2 I_n)^{-1} y
+   - \tfrac12 \log |K_\theta + \sigma^2 I_n|
+   - \tfrac{n}{2} \log (2\pi).
+5959
+
+## 5. Computational Complexity and Approximations
+
+### 5.1 Exact Complexity
+
+- Computing the Cholesky factorization of \(K + \sigma^2 I_n\) costs \(O(n^3)\).
+- Storage cost is \(O(n^2)\).
+
+Thus exact GP regression becomes impractical for very large \(n\).
+
+### 5.2 Approximation Techniques
+
+- **Inducing point methods:** Introduce \(m \ll n\) pseudo-inputs and approximate the GP via low-rank covariance structures.
+- **Sparse approximations:** Use low-rank plus diagonal covariance approximations.
+- **Structured kernels:** Exploit Kronecker or Toeplitz structure when inputs lie on grids.
+
+These methods reduce computational cost at the price of approximation error.
+
+## 6. Problem Set 10 (Representative Problems)
+
+1. **GP Regression Derivation.** Derive Theorem 10.2 in full detail by starting from the joint Gaussian distribution of \((f(X), f(X_*))\) and applying the conditional multivariate Normal formula.
+
+2. **RKHS Reproducing Property.** Prove the reproducing property for the RKHS associated with a kernel \(k\), and discuss its implications for function evaluation and regularization.
+
+3. **Marginal Likelihood Gradient.** Derive the gradient of the GP marginal likelihood with respect to a kernel hyperparameter \(\theta_k\), expressing the result in terms of \(K_\theta^{-1}\) and derivatives of \(K_\theta\).
+
+4. **Computational Scaling.** For an inducing point approximation with \(m\) inducing points, show how the computational cost scales in terms of \(n\) and \(m\). Discuss trade-offs between accuracy and efficiency.
+
+5. **Sample Path Regularity.** For the squared exponential kernel, discuss the almost-sure smoothness of GP sample paths and contrast this with the Sobolev regularity implied by Matérn kernels.

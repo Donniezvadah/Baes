@@ -1,0 +1,177 @@
+---
+title: "Module 2: Conjugate Models and Exact Inference"
+page-layout: article
+---
+
+# Module 2: Conjugate Models and Exact Inference
+
+This module develops the theory of conjugate priors, with a focus on exponential family models and exact posterior calculations. We treat conjugacy as a structural property of prior–likelihood pairs and derive posterior and predictive distributions, as well as marginal likelihoods and Bayes factors.
+
+## 1. Exponential Family Models
+
+### Definition 2.1 (Canonical Exponential Family)
+
+Let \((\mathcal{X}, \mathcal{B}, \lambda)\) be a measure space. A family of densities \(\{p_\theta : \theta \in \Theta\}\) with respect to \(\lambda\) is a **(canonical) exponential family** if there exist:
+
+- a measurable statistic \(T: \mathcal{X} \to \mathbb{R}^k\),
+- a natural parameter space \(\Theta \subseteq \mathbb{R}^k\),
+- a log-partition function \(A: \Theta \to \mathbb{R}\),
+- a base density \(h: \mathcal{X} \to [0,\infty)\),
+
+such that
+5959
+ p_\theta(x) = h(x) \exp\{ \theta^\top T(x) - A(\theta) \}, \quad \theta \in \Theta, \; x \in \mathcal{X}.
+5959
+
+We assume \(A(\theta) < \infty\) for \(\theta \in \Theta\) and that \(\Theta\) is open.
+
+### Proposition 2.2 (Moments via Log-Partition Function)
+
+Assume differentiability of \(A\). Then
+5959
+ \nabla A(\theta) = \mathbb{E}_\theta[T(X)], \quad \nabla^2 A(\theta) = \operatorname{Var}_\theta(T(X)).
+5959
+
+*Proof idea:* Differentiate the normalizing identity \(\int p_\theta(x)\,\lambda(dx) = 1\) with respect to \(\theta\).
+
+## 2. Conjugate Priors in Exponential Families
+
+### Definition 2.3 (Conjugate Prior)
+
+Let \(\{P_\theta: \theta \in \Theta\}\) be a parametric family of distributions on \((\mathcal{X}, \mathcal{B})\). A family of priors \(\{\Pi_{\eta}: \eta \in H\}\) on \((\Theta, \mathcal{T})\) is **conjugate** for \(\{P_\theta\}\) if for any prior \(\Pi_{\eta}\) and observed data \(x\), the posterior \(\Pi(\cdot \mid x)\) is again in the same family, i.e. equals \(\Pi_{\eta'}\) for some updated hyperparameter \(\eta'\).
+
+### Theorem 2.4 (General Conjugate Prior for Exponential Families)
+
+Consider an exponential family \(p_\theta(x) = h(x)\exp\{\theta^\top T(x) - A(\theta)\}\). For hyperparameters \(\eta_0 \in \mathbb{R}^k\) and \(\tau_0 > 0\), define a prior density on \(\Theta\) with respect to some reference measure \(\nu\) by
+5959
+ \pi(\theta \mid \eta_0, \tau_0) \propto \exp\{ \eta_0^\top \theta - \tau_0 A(\theta) \}.
+5959
+
+Let \(X_1, \dots, X_n\) be conditionally i.i.d. given \(\theta\) from \(p_\theta\). Then the posterior density is
+5959
+ \pi(\theta \mid x_{1:n}) \propto \exp\big\{ (\eta_0 + \textstyle\sum_{i=1}^n T(x_i))^\top \theta - (\tau_0 + n) A(\theta) \big\},
+5959
+i.e. the same functional form with updated hyperparameters
+5959
+ \eta_n = \eta_0 + \sum_{i=1}^n T(x_i), \quad \tau_n = \tau_0 + n.
+5959
+
+*Proof:* Compute the joint density of \((\theta, x_{1:n})\) up to normalizing constants:
+5959
+ \pi(\theta \mid \eta_0, \tau_0) \prod_{i=1}^n p_\theta(x_i)
+ \propto \exp\big\{ \eta_0^\top \theta - \tau_0 A(\theta) + \sum_{i=1}^n (\theta^\top T(x_i) - A(\theta)) \big\}.
+5959
+Group terms in \(\theta\) and \(A(\theta)\) to obtain the posterior kernel.
+
+### Assumptions
+
+- \(\Theta\) open and \(A\) finite on \(\Theta\).
+- Prior normalizing constant finite (posterior propriety requires further integrability conditions).
+- Identifiability of the parameter \(\theta\) from \(P_\theta\) for interpretability of posterior updates.
+
+## 3. Classical Conjugate Pairs
+
+### 3.1 Beta–Binomial Model
+
+- Likelihood: \(X \mid p \sim \operatorname{Binomial}(n,p)\),
+  5959
+   \mathbb{P}(X=x \mid p) = \binom{n}{x} p^x(1-p)^{n-x}, \quad x=0,1,\dots,n.
+  5959
+- Prior: \(p \sim \operatorname{Beta}(\alpha, \beta)\), density
+  5959
+  \pi(p) = \frac{1}{B(\alpha, \beta)} p^{\alpha-1}(1-p)^{\beta-1}, \quad 0<p<1.
+  5959
+
+**Theorem 2.5 (Beta–Binomial Conjugacy).** The posterior is
+5959
+ p \mid x \sim \operatorname{Beta}(\alpha + x, \beta + n - x).
+5959
+
+*Proof:* Combine likelihood and prior, collect exponents of \(p\) and \(1-p\), and read off the Beta kernel.
+
+**Posterior Predictive Distribution.** For a new count \(X_{\text{new}} \mid p \sim \operatorname{Binomial}(m,p)\), the posterior predictive mass function is
+5959
+ \mathbb{P}(X_{\text{new}} = k \mid x)
+ = \int_0^1 \binom{m}{k} p^k(1-p)^{m-k} \, \operatorname{Beta}(p \mid \alpha+x, \beta + n - x)\, dp.
+5959
+This integral evaluates to a Beta–Binomial distribution; compute explicitly using Beta function identities.
+
+### 3.2 Gamma–Poisson Model
+
+- Likelihood: \(X_i \mid \lambda \sim \operatorname{Poisson}(\lambda)\) i.i.d.,
+  \(\mathbb{P}(X_i=k \mid \lambda) = e^{-\lambda} \lambda^k / k!\).
+- Prior: \(\lambda \sim \operatorname{Gamma}(\alpha, \beta)\) (shape–rate), density
+  5959
+   \pi(\lambda) = \frac{\beta^{\alpha}}{\Gamma(\alpha)} \lambda^{\alpha-1} e^{-\beta \lambda}, \quad \lambda>0.
+  5959
+
+**Theorem 2.6 (Gamma–Poisson Conjugacy).** If \(X_1,\dots,X_n \mid \lambda\) i.i.d. Poisson, the posterior is
+5959
+ \lambda \mid x_{1:n} \sim \operatorname{Gamma}\Big(\alpha + \sum_{i=1}^n x_i,\; \beta + n\Big).
+5959
+
+**Posterior Predictive.** For future count \(X_{\text{new}} \mid \lambda \sim \operatorname{Poisson}(\lambda)\), derive the Negative Binomial predictive distribution by integrating out \(\lambda\).
+
+### 3.3 Normal–Normal Models
+
+We treat two cases:
+
+1. Known variance \(\sigma^2\).
+2. Unknown variance with inverse-gamma prior.
+
+#### Known Variance
+
+- Likelihood: \(Y_i \mid \mu \sim N(\mu, \sigma^2)\) i.i.d.
+- Prior: \(\mu \sim N(m_0, v_0)\).
+
+**Theorem 2.7 (Normal–Normal Conjugacy, Known Variance).** The posterior for \(\mu\) is
+5959
+ \mu \mid y_{1:n} \sim N(m_n, v_n),
+5959
+where
+5959
+ v_n^{-1} = v_0^{-1} + \frac{n}{\sigma^2},
+ \quad m_n = v_n \Big( v_0^{-1} m_0 + \frac{n \bar{y}}{\sigma^2} \Big).
+5959
+
+*Proof:* Complete the square in the exponent of the joint density of \(\mu\) and \(y_{1:n}\).
+
+## 4. Marginal Likelihood and Bayes Factors
+
+### Definition 2.8 (Marginal Likelihood)
+
+Given prior \(\Pi\) and likelihood \(p(x \mid \theta)\), the **marginal likelihood** (or evidence) is
+5959
+ m(x) = \int_\Theta p(x \mid \theta)\, \Pi(d\theta).
+5959
+
+This normalizing constant appears in Bayes' theorem and is central to model comparison.
+
+### Definition 2.9 (Bayes Factor)
+
+For two models \(M_1, M_2\) with priors \(\Pi_1, \Pi_2\) and marginal likelihoods \(m_1(x), m_2(x)\), the **Bayes factor** in favor of \(M_1\) over \(M_2\) is
+5959
+ BF_{12}(x) = \frac{m_1(x)}{m_2(x)}.
+5959
+
+### Example 2.10 (Beta–Binomial Model Comparison)
+
+Consider two Beta priors on the same Binomial likelihood, \(\operatorname{Beta}(\alpha_1, \beta_1)\) and \(\operatorname{Beta}(\alpha_2, \beta_2)\). Compute the Bayes factor between the corresponding models by integrating the Binomial likelihood under each prior, using Beta function identities.
+
+## 5. Assumptions and Discussion
+
+- **Proper priors and propriety of posteriors:** Conjugate forms give closed-form kernels, but proper posteriors require integrability conditions on hyperparameters (e.g., \(\alpha,\beta>0\) in Beta–Binomial).
+- **Identifiability:** Exponential family structure typically yields identifiability, but degenerate designs or constraints can break it.
+- **Interpretability of hyperparameters:** Conjugate priors often admit clear interpretations (e.g., Beta parameters as pseudo-counts), useful for elicitation and sensitivity analysis.
+
+## 6. Problem Set 2 (Representative Problems)
+
+1. **General Conjugacy in Exponential Families.** Prove Theorem 2.4 in full detail, including the case of multiple observations and verifying all measurability conditions.
+
+2. **Beta–Binomial Predictive Distribution.** Derive the Beta–Binomial posterior predictive distribution explicitly and compute its mean and variance. Compare these to the plug-in predictive distribution using the posterior mean of \(p\).
+
+3. **Gamma–Poisson Predictive and Overdispersion.** Show that the Gamma–Poisson predictive distribution is Negative Binomial and analyze its overdispersion relative to a Poisson with parameter equal to the posterior mean of \(\lambda\).
+
+4. **Normal–Normal with Unknown Variance.** For the Normal model with unknown variance and conjugate Normal–Inverse-Gamma prior, derive the joint posterior of \((\mu,\sigma^2)\) and the marginal posterior of \(\mu\). Identify the Student-t predictive distribution for future observations.
+
+5. **Bayes Factors with Conjugate Priors.** In a normal mean testing problem with known variance, compute analytically the Bayes factor for testing \(H_0: \mu=0\) vs \(H_1: \mu \neq 0\) using a Normal prior under \(H_1\). Compare the resulting evidence measure to the classical z-test p-value.

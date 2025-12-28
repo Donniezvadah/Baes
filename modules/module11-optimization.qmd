@@ -1,0 +1,105 @@
+---
+title: "Module 11: Optimization in Bayesian Inference"
+page-layout: article
+---
+
+# Module 11: Optimization in Bayesian Inference
+
+This module focuses on optimization problems arising in Bayesian inference, especially Maximum A Posteriori (MAP) estimation. We study gradient-based optimization methods, Newton and quasi-Newton methods, convexity vs non-convexity of posteriors, and relationships between optimization and sampling.
+
+## 1. MAP Estimation
+
+### 1.1 Definition
+
+Let \(\pi(\theta \mid x)\) denote the posterior density of \(\theta\) given data \(x\). A **MAP estimator** is
+5959
+ \hat{\theta}_{\text{MAP}} \in \arg\max_{\theta} \pi(\theta \mid x).
+5959
+Equivalently, it minimizes the negative log-posterior:
+5959
+ \hat{\theta}_{\text{MAP}} \in \arg\min_{\theta} \{-\log \pi(\theta \mid x)\}.
+5959
+
+### 1.2 Relation to MLE
+
+If the prior is flat (improper uniform) or weakly informative, the MAP estimator can coincide with or closely approximate the maximum likelihood estimator (MLE).
+
+In exponential family models with conjugate priors, the MAP often has a closed-form expression involving prior pseudo-counts.
+
+## 2. Gradient-Based Optimization
+
+### 2.1 First-Order Methods
+
+Let
+5959
+ L(\theta) = -\log \pi(\theta \mid x)
+5959
+be the objective function. Gradient descent iterations are given by
+5959
+ \theta_{k+1} = \theta_k - \eta_k \nabla L(\theta_k),
+5959
+where \(\eta_k > 0\) is a step size.
+
+Under standard conditions (Lipschitz gradient, suitable step-size schedule), gradient descent converges to a local minimum of \(L\).
+
+### 2.2 Stochastic Optimization
+
+For large data sets, one may approximate \(\nabla L(\theta)\) using mini-batches, leading to stochastic gradient descent (SGD) and its variants. Care is required to ensure convergence to stationary points.
+
+## 3. Newton and Quasi-Newton Methods
+
+### 3.1 Newton's Method
+
+Newton's method uses second-order information:
+5959
+ \theta_{k+1} = \theta_k - H(\theta_k)^{-1} \nabla L(\theta_k),
+5959
+where \(H(\theta) = \nabla^2 L(\theta)\) is the Hessian.
+
+Under conditions of local strong convexity and smoothness, Newton's method converges quadratically to a local minimizer.
+
+### 3.2 Quasi-Newton Methods
+
+Quasi-Newton methods (e.g., BFGS, L-BFGS) construct approximations \(B_k \approx H(\theta_k)^{-1}\) using gradient evaluations. They can be more efficient in high dimensions where computing or inverting the Hessian is infeasible.
+
+### 3.3 Example: Logistic Regression Posterior
+
+For the logistic regression posterior with Gaussian prior, the negative log-posterior is convex, and the Hessian is given by
+5959
+ H(\beta) = X^\top W(\beta) X + V_0^{-1},
+5959
+where \(W(\beta)\) is the diagonal matrix of Bernoulli variances. Newton's method converges rapidly to the MAP under mild conditions.
+
+## 4. Convexity, Non-Convexity, and Multiple Modes
+
+### 4.1 Convex Posteriors
+
+In some models (e.g., logistic regression with Gaussian prior), the negative log-posterior is convex, so any local minimum is global, and optimization is relatively straightforward.
+
+### 4.2 Non-Convex Posteriors
+
+In mixture models, hierarchical models, and models with latent discrete structure, the posterior can be highly non-convex with multiple modes.
+
+- MAP estimation may depend strongly on initialization.
+- Optimization can become trapped in local modes.
+
+### 4.3 Relationship to Sampling
+
+Optimization-based methods (MAP, Laplace approximation) provide local summaries of the posterior near a mode. Sampling-based methods (MCMC) attempt to explore the full posterior, including multiple modes and heavy tails.
+
+The two approaches can be combined:
+
+- Use optimization to find good initial states for MCMC.
+- Use Hessian information around the MAP to construct better proposals (e.g., preconditioned MH, Riemannian HMC).
+
+## 5. Problem Set 11 (Representative Problems)
+
+1. **MAP vs MLE.** In an exponential family model with conjugate prior, derive conditions under which the MAP estimator equals the MLE. Provide explicit examples where they differ and analyze the influence of hyperparameters.
+
+2. **Newton's Method for Logistic Regression.** Derive the Newton update for the logistic regression posterior with Gaussian prior. Prove local quadratic convergence under appropriate regularity conditions (e.g., strong convexity near the optimum).
+
+3. **Quasi-Newton Convergence.** Outline a convergence proof for BFGS under assumptions of smooth, strongly convex objective functions. Discuss how these conditions relate to typical Bayesian posteriors.
+
+4. **Non-Convex Posterior Example.** Consider a simple Gaussian mixture model with a symmetric prior over component labels. Show that the posterior has multiple symmetric modes and analyze how MAP estimation depends on initialization.
+
+5. **Optimization–Sampling Interaction.** Discuss how Laplace approximations around the MAP can be used to construct efficient proposals for MH (e.g., independence samplers), and analyze conditions under which such proposals lead to geometrically ergodic chains.

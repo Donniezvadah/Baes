@@ -1,0 +1,123 @@
+---
+title: "Syllabus"
+page-layout: article
+---
+
+# Syllabus
+
+## Course Description
+
+This course is a mathematically rigorous introduction to Bayesian Statistics and Bayesian Inference, aimed at graduate and early PhD students. The course emphasizes measure-theoretic probability, Bayesian decision theory, and the derivation of computational methods from first principles.
+
+The course assumes familiarity with probability theory at the level of measure spaces and random variables, linear algebra, and real analysis. The primary focus is on theory: definitions, theorems, lemmas, propositions, and proofs. Applications and software are discussed only as secondary illustrations.
+
+## Prerequisites
+
+- Measure-theoretic probability
+- Real analysis (convergence, continuity, basic functional analysis flavor)
+- Linear algebra
+
+## Topics by Module
+
+1. **Foundations of Bayesian Inference**
+   - Probability spaces and random variables
+   - Conditional probability and conditional expectation
+   - Bayes' theorem as a statement about Radon–Nikodym derivatives
+   - Prior, likelihood, posterior as measures
+   - Posterior propriety and absolute continuity
+   - Bayesian decision theory and loss functions
+   - Bayes estimators and admissibility
+   - Credible intervals vs confidence intervals
+   - Bernstein–von Mises theorem (statement and proof sketch)
+
+2. **Conjugate Models and Exact Inference**
+   - Exponential family distributions
+   - General theory of conjugate priors
+   - Beta–Binomial, Gamma–Poisson, Normal–Normal conjugate pairs
+   - Posterior moments and predictive distributions
+   - Marginal likelihood and Bayes factors
+
+3. **Bayesian Regression**
+   - Bayesian linear regression with Gaussian priors
+   - Posterior distributions of coefficients and variance
+   - Ridge regression as MAP estimation
+   - Posterior predictive distributions
+   - Credible intervals for regression coefficients
+
+4. **Bayesian Generalized Linear Models**
+   - Logistic regression in a Bayesian framework
+   - Non-conjugacy and implications
+   - Laplace approximation for non-conjugate models
+   - Identifiability and separation issues
+   - Posterior geometry and curvature
+
+5. **Markov Chain Monte Carlo (MCMC) Theory**
+   - Markov chains on general state spaces
+   - Invariant distributions and detailed balance
+   - Reversibility and stationarity
+   - Ergodicity and convergence theorems
+   - Central limit theorems for Markov chains
+
+6. **Metropolis–Hastings Algorithm**
+   - Derivation from detailed balance
+   - Proposal distributions and acceptance probabilities
+   - Proof of stationarity
+   - Optimal scaling results in high dimensions
+   - Pathologies and failure modes
+
+7. **Gibbs Sampling**
+   - Conditional distributions and block sampling
+   - Gibbs as a special case of MH
+   - Convergence properties and irreducibility
+   - Proofs of correctness
+   - Data augmentation
+
+8. **Advanced MCMC Methods**
+   - Hamiltonian Monte Carlo (HMC)
+   - Langevin dynamics and MALA
+   - No-U-Turn Sampler (NUTS)
+   - Slice sampling
+   - Adaptive MCMC
+   - Theoretical guarantees and limitations
+
+9. **Variational Inference**
+   - KL divergence minimization
+   - Evidence Lower Bound (ELBO)
+   - Mean-field approximations
+   - Coordinate ascent variational inference (CAVI)
+   - Comparison with MCMC (bias vs variance)
+
+10. **Gaussian Processes**
+    - Gaussian processes as distributions over functions
+    - Covariance kernels and RKHS connections
+    - GP regression (exact inference)
+    - Posterior mean and covariance derivation
+    - Hyperparameter estimation
+    - Computational complexity and approximations
+
+11. **Optimization in Bayesian Inference**
+    - MAP estimation
+    - Gradient-based optimization
+    - Newton and quasi-Newton methods
+    - Convexity and non-convexity of posteriors
+    - Relationship between optimization and sampling
+
+12. **Asymptotic Theory and Consistency**
+    - Posterior consistency
+    - Misspecified models
+    - Posterior concentration rates
+    - Frequentist coverage of Bayesian procedures
+
+13. **Model Checking and Criticism**
+    - Posterior predictive checks
+    - Sensitivity to priors
+    - Prior elicitation
+    - Bayesian robustness
+
+## Assessment (Template)
+
+- Problem sets (proof-based): 40%
+- Midterm exam (theory): 25%
+- Final exam or project (theory and synthesis): 35%
+
+Problem sets emphasize derivations, convergence proofs, construction of counterexamples, and rigorous analysis of Bayesian procedures and algorithms.

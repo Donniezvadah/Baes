@@ -1,0 +1,142 @@
+---
+title: "Module 4: Bayesian Generalized Linear Models"
+page-layout: article
+---
+
+# Module 4: Bayesian Generalized Linear Models
+
+This module introduces Bayesian generalized linear models (GLMs), focusing on logistic regression as a canonical example. We study non-conjugacy, Laplace approximations, identifiability and separation, and the geometry of the posterior.
+
+## 1. Logistic Regression Model
+
+Let \(Y_i \in \{0,1\}\) and covariates \(x_i \in \mathbb{R}^p\), collected in design matrix \(X \in \mathbb{R}^{n \times p}\).
+
+### 1.1 Likelihood
+
+Assume conditionally independent responses with
+5959
+ \mathbb{P}(Y_i = 1 \mid x_i, \beta) = \sigma(x_i^\top \beta) := \frac{1}{1 + e^{-x_i^\top \beta}},
+5959
+5959
+ \mathbb{P}(Y_i = 0 \mid x_i, \beta) = 1 - \sigma(x_i^\top \beta).
+5959
+
+The log-likelihood is
+5959
+ \ell(\beta) = \sum_{i=1}^n \big( y_i x_i^\top \beta - \log(1 + e^{x_i^\top \beta}) \big).
+5959
+
+### 1.2 Prior on \(\beta\)
+
+Consider a Gaussian prior
+5959
+ \beta \sim N_p(m_0, V_0).
+5959
+
+The posterior has density
+5959
+ \pi(\beta \mid y) \propto \exp\{ \ell(\beta) \} \cdot \exp\Big\{ -\tfrac12 (\beta - m_0)^\top V_0^{-1} (\beta - m_0) \Big\}.
+5959
+
+## 2. Non-Conjugacy
+
+Unlike Gaussian linear regression, no finite-dimensional parametric family of priors on \(\beta\) is conjugate to the logistic likelihood.
+
+### Proposition 4.1 (Non-Existence of Finite-Dimensional Conjugate Family)
+
+There is no finite-dimensional parametric family of priors \(\{\Pi_\eta\}\) on \(\mathbb{R}^p\) such that for all data \(y\), the posterior \(\Pi(\cdot \mid y)\) remains in \(\{\Pi_\eta\}\).
+
+*Idea of proof:* The logistic likelihood yields a log-posterior that is not quadratic in \(\beta\), and its functional form changes with the data in ways that cannot be represented by a fixed-dimensional parameterization (outside of trivial degenerate cases).
+
+This non-conjugacy motivates approximation methods such as Laplace approximations, variational inference, or MCMC.
+
+## 3. Laplace Approximation for the Posterior
+
+### 3.1 General Setup
+
+Let
+5959
+ \log \pi(\beta \mid y) = f(\beta) + C,
+5959
+where
+5959
+ f(\beta) = \ell(\beta) - \tfrac12 (\beta - m_0)^\top V_0^{-1} (\beta - m_0)
+5959
+and \(C\) is a constant independent of \(\beta\).
+
+Let \(\hat{\beta}\) denote a maximizer of \(f(\beta)\) (the MAP estimator). Let
+5959
+ H(\hat{\beta}) = -\nabla^2 f(\hat{\beta})
+5959
+be the negative Hessian at the mode.
+
+### Theorem 4.2 (Laplace Approximation of the Posterior)
+
+Under regularity conditions (twice differentiability of \(f\), strict local maximum at \(\hat{\beta}\), positive-definite Hessian), the posterior can be approximated by
+5959
+ \pi(\beta \mid y) \approx \tilde{\pi}(\beta \mid y) := N_p(\hat{\beta}, H(\hat{\beta})^{-1}).
+5959
+
+Moreover, the marginal likelihood admits the approximation
+5959
+ \log m(y) \approx f(\hat{\beta}) + C + \frac{p}{2}\log(2\pi) - \frac12 \log |H(\hat{\beta})|.
+5959
+
+*Proof idea:* Apply Laplace's method to the integral defining the normalizing constant of the posterior and to the marginal likelihood integral, expanding \(f\) to second order around \(\hat{\beta}\).
+
+### 3.2 Hessian of the Logistic Log-Posterior
+
+For logistic regression, the negative Hessian of the log-likelihood is
+5959
+ -\nabla^2 \ell(\beta) = X^\top W(\beta) X,
+5959
+where \(W(\beta)\) is the diagonal matrix with entries \(w_i(\beta) = \sigma(x_i^\top \beta) (1 - \sigma(x_i^\top \beta))\). Including the Gaussian prior, the posterior negative Hessian is
+5959
+ H(\beta) = X^\top W(\beta) X + V_0^{-1}.
+5959
+
+## 4. Identifiability and Separation
+
+### 4.1 Identifiability
+
+The logistic regression model is identifiable under standard conditions when the design matrix \(X\) has full column rank and the covariates span a sufficiently rich subspace.
+
+### Definition 4.3 (Complete and Quasi-Complete Separation)
+
+- **Complete separation:** There exists \(\beta\) such that
+  5959
+  x_i^\top \beta > 0 \quad \text{for all } i \text{ with } y_i=1, \quad
+  x_i^\top \beta < 0 \quad \text{for all } i \text{ with } y_i=0.
+  5959
+
+- **Quasi-complete separation:** Inequalities hold with \(\ge 0\) and \(\le 0\), with at least one equality.
+
+### Proposition 4.4 (Separation and MLE)
+
+In the presence of complete or quasi-complete separation, the logistic regression MLE does not exist as a finite vector; some components diverge to \(\pm \infty\).
+
+*Proof idea:* Show that the log-likelihood can be increased without bound along certain directions in parameter space.
+
+### 4.2 Impact on the Bayesian Posterior
+
+With a proper prior (e.g., Gaussian), the posterior remains proper even under separation, but may place most mass on large-magnitude coefficients, reflecting near-deterministic classification.
+
+## 5. Posterior Geometry and Curvature
+
+The geometry of the posterior in logistic regression is governed by the curvature of \(f(\beta)\):
+
+- The Hessian \(H(\beta)\) reflects local certainty about \(\beta\).
+- Near separation, \(W(\beta)\) becomes nearly singular, leading to flat directions and heavy posterior tails.
+- Laplace approximations may be inaccurate in such regimes, motivating MCMC or more robust approximations.
+
+## 6. Problem Set 4 (Representative Problems)
+
+1. **Non-Conjugacy.** Provide a rigorous argument that no finite-dimensional parametric family of priors on \(\beta\) is conjugate to the logistic likelihood, except in trivial degeneracies.
+
+2. **Laplace Approximation Derivation.** Derive the Laplace approximation for the posterior of \(\beta\) in logistic regression, starting from the second-order Taylor expansion of \(f(\beta)\), and write down the approximate marginal likelihood.
+
+3. **Hessian and Curvature.** Derive the explicit form of \(H(\hat{\beta})\) for logistic regression with Gaussian prior and discuss how it depends on the data and prior. Show that \(H(\hat{\beta})\) is positive-definite when \(V_0\) is.
+
+4. **Separation Example.** Construct a small dataset exhibiting complete separation. Show that the MLE does not exist, and analyze the form of the posterior under a Gaussian prior. Comment on the accuracy of Laplace approximations in this regime.
+
+5. **Posterior Geometry and Identifiability.** Give an example where collinearity in the covariates leads to near non-identifiability of certain directions in \(\beta\). Analyze the posterior covariance structure and discuss how prior information can restore effective identifiability.

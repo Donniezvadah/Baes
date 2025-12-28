@@ -1,0 +1,139 @@
+---
+title: "Module 8: Advanced MCMC Methods"
+page-layout: article
+---
+
+# Module 8: Advanced MCMC Methods
+
+This module introduces advanced MCMC algorithms: Hamiltonian Monte Carlo (HMC), Langevin dynamics (MALA), the No-U-Turn Sampler (NUTS), slice sampling, and adaptive MCMC. We emphasize the measure-theoretic foundations of their invariance properties and discuss theoretical guarantees and limitations.
+
+## 1. Hamiltonian Monte Carlo (HMC)
+
+### 1.1 Extended State Space and Hamiltonian Dynamics
+
+Let \(\theta \in \mathbb{R}^d\) denote parameters of interest with target density \(\pi(\theta)\). Introduce auxiliary momentum variables \(p \in \mathbb{R}^d\) with density \(N(0, M)\), where \(M\) is a positive-definite mass matrix.
+
+Define the Hamiltonian
+5959
+ H(\theta, p) = U(\theta) + K(p) = -\log \pi(\theta) + \tfrac12 p^\top M^{-1} p + \text{const}.
+5959
+
+Hamilton's equations are
+5959
+ \frac{d\theta}{dt} = \nabla_p H(\theta,p) = M^{-1} p,
+ \quad
+ \frac{dp}{dt} = -\nabla_\theta H(\theta,p) = -\nabla U(\theta).
+5959
+
+### Proposition 8.1 (Volume Preservation and Energy Conservation)
+
+The exact Hamiltonian flow \(\Phi_t: (\theta,p) \mapsto (\theta_t, p_t)\) is volume-preserving (Jacobian determinant 1) and conserves \(H(\theta,p)\).
+
+*Idea of proof:* Use Liouville's theorem (divergence-free Hamiltonian vector field) and differentiability of \(H\).
+
+### 1.2 HMC Transition Kernel
+
+A typical HMC iteration:
+
+1. Sample \(p \sim N(0, M)\) independently of current \(\theta\).
+2. Approximate Hamiltonian flow for a time \(L \epsilon\) using a symplectic integrator (e.g., leapfrog) to obtain proposal \((\theta', p')\).
+3. Accept or reject \((\theta', p')\) using an MH step with acceptance probability
+   5959
+    \alpha = \min\{1, \exp(-H(\theta',p') + H(\theta,p))\}.
+   5959
+4. Return \(\theta'\) if accepted, otherwise retain \(\theta\).
+
+The exact flow would preserve the joint density \(\propto e^{-H(\theta,p)}\); the Metropolis correction accounts for numerical integration error.
+
+## 2. Langevin Dynamics and MALA
+
+### 2.1 Overdamped Langevin Diffusion
+
+Consider the SDE
+5959
+ d\Theta_t = \frac12 \nabla \log \pi(\Theta_t) \, dt + dB_t,
+5959
+where \(B_t\) is a standard Brownian motion. Under suitable conditions, \(\pi\) is the invariant distribution of this diffusion.
+
+### 2.2 Unadjusted Langevin Algorithm (ULA)
+
+Discretize the SDE with step size \(\epsilon > 0\):
+5959
+ \Theta_{k+1} = \Theta_k + \frac{\epsilon}{2} \nabla \log \pi(\Theta_k) + \sqrt{\epsilon} Z_k,
+5959
+where \(Z_k \sim N(0, I_d)\) i.i.d. ULA does not exactly preserve \(\pi\), but can approximate it under small \(\epsilon\).
+
+### 2.3 Metropolis-Adjusted Langevin Algorithm (MALA)
+
+Use the ULA proposal within MH:
+
+- Proposal density:
+  5959
+   q(\theta, \theta') = N\left( \theta + \frac{\epsilon}{2} \nabla \log \pi(\theta),\; \epsilon I_d \right).
+  5959
+- Acceptance probability as in MH to correct discretization bias.
+
+Under regularity conditions, MALA is reversible with invariant distribution \(\pi\).
+
+## 3. NUTS and Adaptive Path Length
+
+The No-U-Turn Sampler (NUTS) adaptively selects trajectory lengths in HMC to avoid wasteful backtracking.
+
+- Conceptually explores forward and backward along the Hamiltonian trajectory until a "U-turn" criterion is met.
+- Maintains reversibility and detailed balance through careful construction of a binary tree of candidate states and a symmetric selection rule.
+
+Rigorous convergence analyses are more involved but build on the invariance of the joint \((\theta,p)\) measure and conditions on step-size adaptation.
+
+## 4. Slice Sampling
+
+### 4.1 Basic Idea
+
+Given target density \(\pi(\theta)\), introduce an auxiliary variable \(u \in (0, \pi(\theta))\). The joint density is
+5959
+ f(\theta,u) \propto \mathbf{1}\{0 < u < \pi(\theta)\}.
+5959
+
+Gibbs sampling in \((\theta,u)\) space:
+
+1. Sample \(u \mid \theta \sim \operatorname{Uniform}(0, \pi(\theta))\).
+2. Sample \(\theta \mid u\) uniformly from the "slice" \(\{\theta : \pi(\theta) > u\}\).
+
+The marginal of \(\theta\) is \(\pi\), making slice sampling an exact MCMC method.
+
+### 4.2 Practical Implementations
+
+Exact sampling from slices is often impossible; one uses interval expansion and shrinking procedures (e.g., stepping-out and shrinkage) that maintain invariance if constructed carefully.
+
+## 5. Adaptive MCMC
+
+### 5.1 Time-Inhomogeneous Chains
+
+Adaptive MCMC updates the transition kernel over time, e.g., adjusting proposal covariance in MH. The resulting chain is no longer Markov with a fixed kernel, complicating convergence analysis.
+
+### 5.2 Diminishing Adaptation and Containment
+
+A common set of sufficient conditions for convergence to \(\pi\):
+
+1. **Diminishing adaptation:** The difference between successive kernels goes to zero:
+   5959
+    \sup_x \| K_{n+1}(x, \cdot) - K_n(x, \cdot) \|_{\text{TV}} \to 0.
+   5959
+2. **Containment:** A uniform bound on convergence times across the adaptive sequence.
+
+### Theorem 8.2 (Convergence of Adaptive MCMC, Informal)
+
+If the family of kernels \(\{K_n\}\) used in the adaptive algorithm all admit \(\pi\) as invariant distribution, and if diminishing adaptation and a suitable containment condition hold, then the adaptive chain converges to \(\pi\) in distribution.
+
+*Idea of proof:* Use coupling arguments and perturbation bounds on Markov operators to control the effect of adaptation.
+
+## 6. Problem Set 8 (Representative Problems)
+
+1. **HMC Invariance.** Show that the exact Hamiltonian flow preserves the extended density \(\propto e^{-H(\theta,p)}\). Then argue why the Metropolis correction step yields a Markov chain with invariant distribution \(\pi(\theta)\).
+
+2. **MALA Detailed Balance.** Derive the MALA acceptance probability and verify detailed balance with respect to \(\pi\) in the general case.
+
+3. **Slice Sampling Correctness.** Prove that the basic slice sampling scheme with exact slice sampling has \(\pi\) as invariant distribution.
+
+4. **Adaptive MH Example.** Consider an adaptive random-walk MH algorithm that updates the proposal covariance based on the empirical covariance of past samples. Discuss conditions under which diminishing adaptation holds and potential violations of containment.
+
+5. **HMC Step-Size Tuning.** Discuss how step size and number of leapfrog steps in HMC affect acceptance rates, energy error, and effective exploration, relating your discussion to the theory of symplectic integrators and of optimal scaling.

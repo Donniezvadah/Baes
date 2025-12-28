@@ -1,0 +1,69 @@
+project:
+  type: website
+  output-dir: _site
+
+website:
+  title: "Bayesian Statistics and Inference"
+  navbar:
+    left:
+      - text: "Home"
+        href: index.qmd
+      - text: "Syllabus"
+        href: syllabus.qmd
+      - text: "Modules"
+        menu:
+          - text: "1. Foundations of Bayesian Inference"
+            href: modules/module01-foundations.qmd
+          - text: "2. Conjugate Models and Exact Inference"
+            href: modules/module02-conjugate.qmd
+          - text: "3. Bayesian Regression"
+            href: modules/module03-regression.qmd
+          - text: "4. Bayesian GLMs"
+            href: modules/module04-glm.qmd
+          - text: "5. MCMC Theory"
+            href: modules/module05-mcmc-theory.qmd
+          - text: "6. Metropolis-Hastings"
+            href: modules/module06-mh.qmd
+          - text: "7. Gibbs Sampling"
+            href: modules/module07-gibbs.qmd
+          - text: "8. Advanced MCMC"
+            href: modules/module08-advanced-mcmc.qmd
+          - text: "9. Variational Inference"
+            href: modules/module09-vi.qmd
+          - text: "10. Gaussian Processes"
+            href: modules/module10-gp.qmd
+          - text: "11. Optimization"
+            href: modules/module11-optimization.qmd
+          - text: "12. Asymptotics and Consistency"
+            href: modules/module12-asymptotics.qmd
+          - text: "13. Model Checking and Criticism"
+            href: modules/module13-checking.qmd
+  sidebar:
+    style: "docked"
+    search: true
+    contents:
+      - index.qmd
+      - syllabus.qmd
+      - section: "Modules"
+        contents:
+          - modules/module01-foundations.qmd
+          - modules/module02-conjugate.qmd
+          - modules/module03-regression.qmd
+          - modules/module04-glm.qmd
+          - modules/module05-mcmc-theory.qmd
+          - modules/module06-mh.qmd
+          - modules/module07-gibbs.qmd
+          - modules/module08-advanced-mcmc.qmd
+          - modules/module09-vi.qmd
+          - modules/module10-gp.qmd
+          - modules/module11-optimization.qmd
+          - modules/module12-asymptotics.qmd
+          - modules/module13-checking.qmd
+
+format:
+  html:
+    theme: cosmo
+    toc: true
+    toc-depth: 3
+    css: styles.css
+    include-after-body: scripts.html

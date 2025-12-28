@@ -1,0 +1,241 @@
+:root {
+  --bg: #050816;
+  --bg-alt: #0b1020;
+  --accent: #5ac8fa;
+  --accent-soft: rgba(90, 200, 250, 0.15);
+  --accent-strong: #4f9cff;
+  --text-main: #f5f7ff;
+  --text-muted: #a6b0cf;
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --card-radius: 14px;
+  --shadow-soft: 0 22px 40px rgba(0, 0, 0, 0.6);
+  --transition-fast: 150ms ease-out;
+  --transition-med: 220ms ease-out;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", sans-serif;
+  background: radial-gradient(circle at top, #151b3c 0, #050816 40%, #02030a 100%);
+  color: var(--text-main);
+}
+
+main.content, .page-layout-article .content {
+  max-width: min(1200px, 100% - 3.5rem);
+  margin-inline: auto;
+}
+
+/* Navbar styling */
+
+.navbar {
+  backdrop-filter: blur(18px);
+  background: linear-gradient(to right, rgba(5, 8, 22, 0.9), rgba(6, 13, 34, 0.85));
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.navbar.navbar-scrolled {
+  box-shadow: 0 18px 30px rgba(0, 0, 0, 0.55);
+  border-bottom-color: rgba(90, 200, 250, 0.4);
+}
+
+.navbar-brand, .navbar-nav .nav-link {
+  font-weight: 500;
+}
+
+.navbar-nav .nav-link {
+  transition: color var(--transition-fast), transform var(--transition-fast);
+}
+
+.navbar-nav .nav-link:hover {
+  color: var(--accent);
+  transform: translateY(-1px);
+}
+
+/* Sidebar styling */
+
+.sidebar {
+  border-right: 1px solid var(--border-subtle);
+  background: radial-gradient(circle at top left, rgba(90, 200, 250, 0.08), transparent 55%),
+              linear-gradient(to bottom, rgba(5, 8, 22, 0.96), rgba(5, 8, 22, 0.98));
+}
+
+.sidebar .sidebar-title {
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.sidebar .sidebar-item {
+  border-radius: 8px;
+  transition: background-color var(--transition-med), transform var(--transition-fast);
+}
+
+.sidebar .sidebar-item:hover {
+  background-color: rgba(255, 255, 255, 0.06);
+  transform: translateX(2px);
+}
+
+/* Card-like article styling */
+
+.page-layout-article .content {
+  background: radial-gradient(circle at top left, rgba(90, 200, 250, 0.12), transparent 65%),
+              linear-gradient(145deg, rgba(17, 24, 48, 0.96), rgba(7, 12, 27, 0.98));
+  border-radius: 20px;
+  box-shadow: var(--shadow-soft);
+  padding: 2.4rem 2.7rem 2.5rem 2.7rem;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  margin-block: 2.2rem 2.6rem;
+}
+
+.page-layout-article h1.title {
+  font-family: "SF Pro Display", system-ui, sans-serif;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-size: 1.55rem;
+  color: #f9fbff;
+}
+
+.page-layout-article h1:not(.title) {
+  font-size: 1.8rem;
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+}
+
+.page-layout-article h2 {
+  font-size: 1.35rem;
+  margin-top: 1.8rem;
+  margin-bottom: 0.9rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 0.3rem;
+}
+
+.page-layout-article h3 {
+  font-size: 1.05rem;
+  text-transform: none;
+  letter-spacing: 0.01em;
+  margin-top: 1.3rem;
+  margin-bottom: 0.4rem;
+}
+
+p, li {
+  color: var(--text-main);
+  line-height: 1.6;
+}
+
+p strong, li strong {
+  color: #ffffff;
+}
+
+/* Math styling */
+
+.math.display, .katex-display {
+  padding: 0.4rem 0.9rem;
+  margin-block: 0.8rem 1.2rem;
+  background: radial-gradient(circle at top, rgba(8, 26, 60, 0.85), rgba(3, 9, 22, 0.95));
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.math.inline, .katex-inline {
+  padding-inline: 0.1rem;
+}
+
+/* Theorem-like blocks (use headings + emphasis) */
+
+.theorem, .lemma, .definition, .proposition {
+  border-radius: var(--card-radius);
+  padding: 0.9rem 1.1rem;
+  margin-block: 1rem 1.2rem;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  background: radial-gradient(circle at top left, rgba(90, 200, 250, 0.14), rgba(3, 7, 18, 0.96));
+}
+
+.theorem-title, .definition-title {
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  color: var(--accent);
+  margin-bottom: 0.25rem;
+}
+
+/* Code blocks */
+
+pre code {
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+pre {
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: radial-gradient(circle at top left, rgba(36, 99, 235, 0.15), rgba(3, 7, 18, 0.96));
+}
+
+/* Links and inline aesthetics */
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: color var(--transition-fast), border-color var(--transition-fast);
+}
+
+a:hover {
+  color: var(--accent-strong);
+  border-color: rgba(90, 200, 250, 0.7);
+}
+
+/* Subtle animations */
+
+.fade-section {
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+}
+
+.fade-section.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.page-layout-article .content {
+  animation: cardFadeIn 0.6s var(--transition-med);
+}
+
+@keyframes cardFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Table of contents styling */
+
+.sidebar .toc-active > a,
+.sidebar .sidebar-item a[aria-current="page"] {
+  background: linear-gradient(to right, rgba(90, 200, 250, 0.28), rgba(90, 200, 250, 0.08));
+  border-radius: 8px;
+}
+
+.sidebar .toc-active > a {
+  font-weight: 600;
+}
+
+/* Small screens */
+
+@media (max-width: 991px) {
+  .page-layout-article .content {
+    margin-inline: 0.75rem;
+    padding: 1.6rem 1.4rem 1.8rem 1.4rem;
+  }
+}
