@@ -385,10 +385,10 @@ window.Quarto = {
 <p>This module presents Gibbs sampling as a special case of Metropolis–Hastings, based on sampling from full conditional distributions. We study correctness, convergence properties, irreducibility, and data augmentation.</p>
 <section id="full-conditional-distributions" class="level2">
 <h2 class="anchored" data-anchor-id="full-conditional-distributions">1. Full Conditional Distributions</h2>
-<p>Let (X = (X_1, , X_d)) take values in a product space ( = _1 _d) with joint density ((x)) with respect to a product reference measure.</p>
+<p>Let <span class="math inline">\(X = (X_1, \dots, X_d)\)</span> take values in a product space <span class="math inline">\(\mathsf{X} = \mathsf{X}_1 \times \dots \times \mathsf{X}_d\)</span> with joint density <span class="math inline">\(\pi(x)\)</span> with respect to a product reference measure.</p>
 <section id="def-gibbs-full-conditional" class="level3">
 <h3 class="anchored" data-anchor-id="def-gibbs-full-conditional">Definition 7.1 (Full Conditional Distribution)</h3>
-<p>The <strong>full conditional distribution</strong> of component (X_j) given the others is <span class="math display">\[
+<p>The <strong>full conditional distribution</strong> of component <span class="math inline">\(X_j\)</span> given the others is <span class="math display">\[
 \pi(x_j \mid x_{-j}) = \frac{\pi(x_j, x_{-j})}{\int_{\mathsf{X}_j} \pi(x_j', x_{-j})\, dx_j'},
 \]</span> whenever the denominator is finite and nonzero.</p>
 </section>
@@ -397,11 +397,11 @@ window.Quarto = {
 <h2 class="anchored" data-anchor-id="gibbs-sampler-construction">2. Gibbs Sampler Construction</h2>
 <section id="single-site-gibbs" class="level3">
 <h3 class="anchored" data-anchor-id="single-site-gibbs">2.1 Single-Site Gibbs</h3>
-<p>Given current state (x^{(t)} = (x_1^{(t)}, , x_d^{(t)})), a single sweep of the Gibbs sampler updates components sequentially:</p>
+<p>Given current state <span class="math inline">\(x^{(t)} = (x_1^{(t)}, \dots, x_d^{(t)})\)</span>, a single sweep of the Gibbs sampler updates components sequentially:</p>
 <ol type="1">
-<li>Sample (X_1^{(t+1)} (X_{-1}^{(t)})).</li>
-<li>Sample (X_2^{(t+1)} (X_1^{(t+1)}, X_{3:d}^{(t)})).</li>
-<li>Continue updating each component in turn until (X_d^{(t+1)}).</li>
+<li>Sample <span class="math inline">\(X_1^{(t+1)} \sim \pi(\cdot \mid X_{-1}^{(t)})\)</span>.</li>
+<li>Sample <span class="math inline">\(X_2^{(t+1)} \sim \pi(\cdot \mid X_1^{(t+1)}, X_{3:d}^{(t)})\)</span>.</li>
+<li>Continue updating each component in turn until <span class="math inline">\(X_d^{(t+1)}\)</span>.</li>
 </ol>
 <p>The resulting Markov kernel is the composition of the kernels corresponding to each full conditional update.</p>
 </section>
@@ -414,12 +414,12 @@ window.Quarto = {
 <h2 class="anchored" data-anchor-id="gibbs-as-metropolishastings">3. Gibbs as Metropolis–Hastings</h2>
 <section id="prop-gibbs-mh" class="level3">
 <h3 class="anchored" data-anchor-id="prop-gibbs-mh">Proposition 7.2 (Gibbs Update as MH with Acceptance Probability 1)</h3>
-<p>Consider updating (X_j) given (X_{-j}) by proposing (Y_j (x_{-j})) and setting the new state to ((Y_j, x_{-j})). This is a Metropolis–Hastings step with acceptance probability equal to 1.</p>
-<p><em>Proof.</em> The MH acceptance ratio for moving from (x=(x_j,x_{-j})) to (y=(y_j,x_{-j})) is</p>
+<p>Consider updating <span class="math inline">\(X_j\)</span> given <span class="math inline">\(X_{-j}\)</span> by proposing <span class="math inline">\(Y_j \sim \pi(\cdot \mid x_{-j})\)</span> and setting the new state to <span class="math inline">\((Y_j, x_{-j})\)</span>. This is a Metropolis–Hastings step with acceptance probability equal to 1.</p>
+<p><em>Proof.</em> The MH acceptance ratio for moving from <span class="math inline">\(x=(x_j,x_{-j})\)</span> to <span class="math inline">\(y=(y_j,x_{-j})\)</span> is</p>
 <p><span class="math display">\[
 \alpha(x,y) = \min\left\{1, \frac{\pi(y) \, q(y,x)}{\pi(x) \, q(x,y)} \right\}.
 \]</span></p>
-<p>Here, the proposal kernel updates only the (j)-th coordinate while keeping the others fixed, so with respect to the underlying product reference measure we may write</p>
+<p>Here, the proposal kernel updates only the <span class="math inline">\(j\)</span>-th coordinate while keeping the others fixed, so with respect to the underlying product reference measure we may write</p>
 <p><span class="math display">\[
 q(x,y) = \pi(y_j \mid x_{-j}), \qquad
 q(y,x) = \pi(x_j \mid x_{-j}).
@@ -439,7 +439,7 @@ q(y,x) = \pi(x_j \mid x_{-j}).
           {\pi(x_j, x_{-j}) \, \pi(y_j \mid x_{-j})}
    = 1.
 \]</span></p>
-<p>Thus the acceptance probability is ((x,y) = 1) for all pairs with positive joint density, and the Gibbs update is an MH step with automatic acceptance. </p>
+<p>Thus the acceptance probability is <span class="math inline">\(\alpha(x,y) = 1\)</span> for all pairs with positive joint density, and the Gibbs update is an MH step with automatic acceptance. </p>
 </section>
 </section>
 <section id="convergence-and-irreducibility" class="level2">
@@ -448,17 +448,17 @@ q(y,x) = \pi(x_j \mid x_{-j}).
 <h3 class="anchored" data-anchor-id="irreducibility-conditions">4.1 Irreducibility Conditions</h3>
 <p>The Gibbs sampler is irreducible if the full conditional distributions allow movement throughout the support of the joint distribution. Sufficient conditions include:</p>
 <ul>
-<li>The joint density () is strictly positive on a connected subset of ().</li>
+<li>The joint density <span class="math inline">\(\pi\)</span> is strictly positive on a connected subset of <span class="math inline">\(\mathsf{X}\)</span>.</li>
 <li>Full conditionals have full support on their respective coordinate spaces, given typical conditioning values.</li>
 </ul>
 </section>
 <section id="convergence-to-stationarity" class="level3">
 <h3 class="anchored" data-anchor-id="convergence-to-stationarity">4.2 Convergence to Stationarity</h3>
-<p>Under appropriate irreducibility and aperiodicity conditions, the Gibbs sampler converges to () in total variation. The convergence rate depends on the dependence structure among components and the blocking scheme.</p>
+<p>Under appropriate irreducibility and aperiodicity conditions, the Gibbs sampler converges to <span class="math inline">\(\pi\)</span> in total variation. The convergence rate depends on the dependence structure among components and the blocking scheme.</p>
 </section>
 <section id="reducibility-examples" class="level3">
 <h3 class="anchored" data-anchor-id="reducibility-examples">4.3 Reducibility Examples</h3>
-<p>It is possible to construct examples where the Gibbs sampler is reducible even though the target () is not—for instance, if certain conditional distributions restrict movement to submanifolds.</p>
+<p>It is possible to construct examples where the Gibbs sampler is reducible even though the target <span class="math inline">\(\pi\)</span> is not—for instance, if certain conditional distributions restrict movement to submanifolds.</p>
 </section>
 </section>
 <section id="data-augmentation" class="level2">
@@ -468,13 +468,13 @@ q(y,x) = \pi(x_j \mid x_{-j}).
 <h3 class="anchored" data-anchor-id="ex-probit-da">Example 7.3 (Probit Regression with Latent Gaussian Variables)</h3>
 <p>Consider the probit model <span class="math display">\[
 Y_i = \mathbf{1}\{ Z_i &gt; 0 \}, \quad Z_i = x_i^\top \beta + \varepsilon_i, \quad \varepsilon_i \sim N(0,1),
-\]</span> with prior (N_p(m_0, V_0)).</p>
-<p>Introduce latent variables (Z_i). The full conditionals are:</p>
+\]</span> with prior <span class="math inline">\(\beta \sim N_p(m_0, V_0)\)</span>.</p>
+<p>Introduce latent variables <span class="math inline">\(Z_i\)</span>. The full conditionals are:</p>
 <ul>
-<li>(Z_i Y_i, N(x_i^, 1)) truncated above or below 0 depending on (Y_i).</li>
-<li>(Z N_p(m_n, V_n)) with updated parameters as in linear regression.</li>
+<li><span class="math inline">\(Z_i \mid Y_i, \beta \sim N(x_i^\top \beta, 1)\)</span> truncated above or below 0 depending on <span class="math inline">\(Y_i\)</span>.</li>
+<li><span class="math inline">\(\beta \mid Z \sim N_p(m_n, V_n)\)</span> with updated parameters as in linear regression.</li>
 </ul>
-<p>Gibbs sampling alternates between sampling (Z) and (), both from tractable distributions.</p>
+<p>Gibbs sampling alternates between sampling <span class="math inline">\(Z\)</span> and <span class="math inline">\(\beta\)</span>, both from tractable distributions.</p>
 </section>
 </section>
 <section id="problem-set-7-representative-problems" class="level2">
@@ -482,8 +482,8 @@ Y_i = \mathbf{1}\{ Z_i &gt; 0 \}, \quad Z_i = x_i^\top \beta + \varepsilon_i, \q
 <ol type="1">
 <li><p><strong>Gibbs as MH.</strong> Prove Proposition <span class="citation" data-cites="prop-gibbs-mh">@prop-gibbs-mh</span> carefully, including measurability considerations, and generalize to block Gibbs updates.</p></li>
 <li><p><strong>Irreducibility Conditions.</strong> For a bivariate normal target with correlation, analyze the Gibbs sampler that alternately samples from the full conditionals of each component. Show that the chain is irreducible and converges to the target.</p></li>
-<li><p><strong>Reducible Gibbs Example.</strong> Construct an example of a joint density ((x_1,x_2)) for which the Gibbs sampler that alternately samples full conditionals is reducible, even though () has connected support.</p></li>
-<li><p><strong>Data Augmentation for Probit.</strong> Derive the full conditional distributions in the probit example (Example <span class="citation" data-cites="ex-probit-da">@ex-probit-da</span>), including the truncated Normal distribution for (Z_i). Show how the Gibbs sampler simplifies Bayesian computation compared to directly sampling () from its non-conjugate posterior.</p></li>
+<li><p><strong>Reducible Gibbs Example.</strong> Construct an example of a joint density <span class="math inline">\(\pi(x_1,x_2)\)</span> for which the Gibbs sampler that alternately samples full conditionals is reducible, even though <span class="math inline">\(\pi\)</span> has connected support.</p></li>
+<li><p><strong>Data Augmentation for Probit.</strong> Derive the full conditional distributions in the probit example (Example <span class="citation" data-cites="ex-probit-da">@ex-probit-da</span>), including the truncated Normal distribution for <span class="math inline">\(Z_i\)</span>. Show how the Gibbs sampler simplifies Bayesian computation compared to directly sampling <span class="math inline">\(\beta\)</span> from its non-conjugate posterior.</p></li>
 <li><p><strong>Blocking Strategies.</strong> Discuss how blocking correlated components in a multivariate Normal target can improve Gibbs sampler convergence, and provide a simple two-block example illustrating the effect on autocorrelations.</p></li>
 </ol>
 

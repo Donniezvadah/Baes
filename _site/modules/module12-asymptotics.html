@@ -386,13 +386,13 @@ window.Quarto = {
 <h2 class="anchored" data-anchor-id="posterior-consistency">1. Posterior Consistency</h2>
 <section id="setup" class="level3">
 <h3 class="anchored" data-anchor-id="setup">1.1 Setup</h3>
-<p>Let (X_1, X_2, ) be i.i.d. from a distribution (P_{<em>0}) in a model ({P</em>: }). Let () be a prior on (), and ((X_1, , X_n)) the posterior.</p>
+<p>Let <span class="math inline">\(X_1, X_2, \dots\)</span> be i.i.d. from a distribution <span class="math inline">\(P_{\theta_0}\)</span> in a model <span class="math inline">\(\{P_\theta : \theta \in \Theta\}\)</span>. Let <span class="math inline">\(\Pi\)</span> be a prior on <span class="math inline">\(\Theta\)</span>, and <span class="math inline">\(\Pi(\cdot \mid X_1, \dots, X_n)\)</span> the posterior.</p>
 </section>
 <section id="def-posterior-consistency" class="level3">
 <h3 class="anchored" data-anchor-id="def-posterior-consistency">Definition 12.1 (Posterior Consistency)</h3>
-<p>The posterior is <strong>(weakly) consistent</strong> at (_0) if for every weak neighborhood (U) of (<em>0), <span class="math display">\[
+<p>The posterior is <strong>(weakly) consistent</strong> at <span class="math inline">\(\theta_0\)</span> if for every weak neighborhood <span class="math inline">\(U\)</span> of <span class="math inline">\(\theta_0\)</span>, <span class="math display">\[
 \Pi(U^c \mid X_1, \dots, X_n) \to 0
-\]</span> (P</em>{_0})-almost surely as (n ).</p>
+\]</span> <span class="math inline">\(P_{\theta_0}\)</span>-almost surely as <span class="math inline">\(n \to \infty\)</span>.</p>
 <p>Stronger modes of consistency (e.g., in total variation or Hellinger distance) can also be defined.</p>
 </section>
 <section id="kullbackleibler-support-and-schwartzs-theorem" class="level3">
@@ -403,47 +403,47 @@ K(P_{\theta_0}, P_\theta) = \int \log \frac{p_{\theta_0}(x)}{p_\theta(x)} \, P_{
 </section>
 <section id="thm-schwartz" class="level3">
 <h3 class="anchored" data-anchor-id="thm-schwartz">Theorem 12.2 (Schwartz’s Theorem, Informal)</h3>
-<p>If the prior () assigns positive mass to all Kullback–Leibler neighborhoods of (_0), i.e., <span class="math display">\[
+<p>If the prior <span class="math inline">\(\Pi\)</span> assigns positive mass to all Kullback–Leibler neighborhoods of <span class="math inline">\(\theta_0\)</span>, i.e., <span class="math display">\[
 \Pi\big(\{\theta : K(P_{\theta_0}, P_\theta) &lt; \varepsilon\}\big) &gt; 0 \quad \forall \varepsilon &gt; 0,
-\]</span> then the posterior is weakly consistent at (_0) under suitable measurability and separability conditions.</p>
-<p><em>Idea of proof:</em> Fix a neighborhood (U) of (_0) and consider its complement (U^c). For suitable subsets of (U^c), construct uniformly consistent hypothesis tests separating (_0) from those alternatives. The Kullback–Leibler support condition guarantees that the prior assigns positive mass to small KL-neighborhoods around (<em>0), which control likelihood ratios via the law of large numbers. Combining these ingredients, one shows that the posterior mass of (U^c) must vanish almost surely under (P</em>{_0}) as (n ). A rigorous proof uses coverings of (U^c), existence of tests with exponentially decaying type II error, and exponential bounds on marginal likelihood ratios.</p>
+\]</span> then the posterior is weakly consistent at <span class="math inline">\(\theta_0\)</span> under suitable measurability and separability conditions.</p>
+<p><em>Idea of proof:</em> Fix a neighborhood <span class="math inline">\(U\)</span> of <span class="math inline">\(\theta_0\)</span> and consider its complement <span class="math inline">\(U^c\)</span>. For suitable subsets of <span class="math inline">\(U^c\)</span>, construct uniformly consistent hypothesis tests separating <span class="math inline">\(\theta_0\)</span> from those alternatives. The Kullback–Leibler support condition guarantees that the prior assigns positive mass to small KL-neighborhoods around <span class="math inline">\(\theta_0\)</span>, which control likelihood ratios via the law of large numbers. Combining these ingredients, one shows that the posterior mass of <span class="math inline">\(U^c\)</span> must vanish almost surely under <span class="math inline">\(P_{\theta_0}\)</span> as <span class="math inline">\(n \to \infty\)</span>. A rigorous proof uses coverings of <span class="math inline">\(U^c\)</span>, existence of tests with exponentially decaying type II error, and exponential bounds on marginal likelihood ratios.</p>
 </section>
 </section>
 <section id="misspecified-models" class="level2">
 <h2 class="anchored" data-anchor-id="misspecified-models">2. Misspecified Models</h2>
 <section id="pseudo-true-parameter" class="level3">
 <h3 class="anchored" data-anchor-id="pseudo-true-parameter">2.1 Pseudo-True Parameter</h3>
-<p>If the true distribution (P_0) is not in the model ({P_}), the posterior may still concentrate around a <strong>pseudo-true parameter</strong> (^*) defined as <span class="math display">\[
+<p>If the true distribution <span class="math inline">\(P_0\)</span> is not in the model <span class="math inline">\(\{P_\theta\}\)</span>, the posterior may still concentrate around a <strong>pseudo-true parameter</strong> <span class="math inline">\(\theta^*\)</span> defined as <span class="math display">\[
 \theta^* \in \arg\min_{\theta \in \Theta} K(P_0, P_\theta).
 \]</span></p>
 </section>
 <section id="thm-misspecification" class="level3">
 <h3 class="anchored" data-anchor-id="thm-misspecification">Theorem 12.3 (Posterior Concentration under Misspecification, Informal)</h3>
-<p>Under regularity conditions, the posterior concentrates in neighborhoods of (^<em>), i.e., for any neighborhood (U) of (^</em>), <span class="math display">\[
+<p>Under regularity conditions, the posterior concentrates in neighborhoods of <span class="math inline">\(\theta^*\)</span>, i.e., for any neighborhood <span class="math inline">\(U\)</span> of <span class="math inline">\(\theta^*\)</span>, <span class="math display">\[
 \Pi(U^c \mid X_1, \dots, X_n) \to 0
-\]</span> (P_0)-almost surely as (n ).</p>
-<p><em>Idea of proof:</em> Replace (P_{_0}) by the true distribution (P_0) and work with the pseudo-true parameter (^<em>) minimizing (K(P_0, P_)). Under regularity conditions ensuring existence and local uniqueness of (^</em>), likelihood ratios still obey a law of large numbers with limit given by KL-divergence. One then constructs tests separating neighborhoods of (^<em>) from distant alternatives (in terms of KL or Hellinger distance) and shows, via generalized likelihood ratio bounds and prior mass conditions near (^</em>), that the posterior probability assigned to sets bounded away from (^*) tends to zero (P_0)-almost surely.</p>
+\]</span> <span class="math inline">\(P_0\)</span>-almost surely as <span class="math inline">\(n \to \infty\)</span>.</p>
+<p><em>Idea of proof:</em> Replace <span class="math inline">\(P_{\theta_0}\)</span> by the true distribution <span class="math inline">\(P_0\)</span> and work with the pseudo-true parameter <span class="math inline">\(\theta^*\)</span> minimizing <span class="math inline">\(K(P_0, P_\theta)\)</span>. Under regularity conditions ensuring existence and local uniqueness of <span class="math inline">\(\theta^*\)</span>, likelihood ratios still obey a law of large numbers with limit given by KL-divergence. One then constructs tests separating neighborhoods of <span class="math inline">\(\theta^*\)</span> from distant alternatives (in terms of KL or Hellinger distance) and shows, via generalized likelihood ratio bounds and prior mass conditions near <span class="math inline">\(\theta^*\)</span>, that the posterior probability assigned to sets bounded away from <span class="math inline">\(\theta^*\)</span> tends to zero <span class="math inline">\(P_0\)</span>-almost surely.</p>
 </section>
 </section>
 <section id="posterior-contraction-rates" class="level2">
 <h2 class="anchored" data-anchor-id="posterior-contraction-rates">3. Posterior Contraction Rates</h2>
 <section id="definition" class="level3">
 <h3 class="anchored" data-anchor-id="definition">3.1 Definition</h3>
-<p>Let (d) be a metric on () (e.g., Hellinger distance between (P_) and (P_{_0})). A sequence (<em>n ) is a <strong>contraction rate</strong> if there exists a sequence of sets (B_n) such that <span class="math display">\[
+<p>Let <span class="math inline">\(d\)</span> be a metric on <span class="math inline">\(\Theta\)</span> (e.g., Hellinger distance between <span class="math inline">\(P_\theta\)</span> and <span class="math inline">\(P_{\theta_0}\)</span>). A sequence <span class="math inline">\(\varepsilon_n \to 0\)</span> is a <strong>contraction rate</strong> if there exists a sequence of sets <span class="math inline">\(B_n\)</span> such that <span class="math display">\[
 \Pi(B_n^c \mid X_1, \dots, X_n) \to 0
-\]</span> (P</em>{_0})-almost surely and <span class="math display">\[
+\]</span> <span class="math inline">\(P_{\theta_0}\)</span>-almost surely and <span class="math display">\[
 B_n \subseteq \{\theta : d(\theta, \theta_0) \le M \varepsilon_n\}
-\]</span> for some constant (M).</p>
+\]</span> for some constant <span class="math inline">\(M\)</span>.</p>
 </section>
 <section id="sufficient-conditions" class="level3">
 <h3 class="anchored" data-anchor-id="sufficient-conditions">3.2 Sufficient Conditions</h3>
-<p>Ghosal, Ghosh, and van der Vaart give general sufficient conditions for contraction at rate (_n):</p>
+<p>Ghosal, Ghosh, and van der Vaart give general sufficient conditions for contraction at rate <span class="math inline">\(\varepsilon_n\)</span>:</p>
 <ol type="1">
-<li>Existence of tests separating (_0) from “far” alternatives.</li>
-<li>Prior mass condition: () assigns enough mass to Kullback–Leibler neighborhoods of (_0) of size (_n).</li>
+<li>Existence of tests separating <span class="math inline">\(\theta_0\)</span> from “far” alternatives.</li>
+<li>Prior mass condition: <span class="math inline">\(\Pi\)</span> assigns enough mass to Kullback–Leibler neighborhoods of <span class="math inline">\(\theta_0\)</span> of size <span class="math inline">\(\varepsilon_n\)</span>.</li>
 <li>Entropy conditions on the model complexity.</li>
 </ol>
-<p>In parametric models, the typical rate is (_n = n^{-1/2}); in nonparametric models, slower rates occur.</p>
+<p>In parametric models, the typical rate is <span class="math inline">\(\varepsilon_n = n^{-1/2}\)</span>; in nonparametric models, slower rates occur.</p>
 </section>
 </section>
 <section id="frequentist-coverage-of-bayesian-procedures" class="level2">
@@ -467,7 +467,7 @@ B_n \subseteq \{\theta : d(\theta, \theta_0) \le M \varepsilon_n\}
 <h2 class="anchored" data-anchor-id="problem-set-12-representative-problems">5. Problem Set 12 (Representative Problems)</h2>
 <ol type="1">
 <li><p><strong>Schwartz’s Theorem Sketch.</strong> State Schwartz’s theorem (Theorem <strong>?@thm-schwartz</strong>) rigorously (including topological and measurability conditions) and sketch its proof, emphasizing the construction of tests and the use of Kullback–Leibler neighborhoods.</p></li>
-<li><p><strong>Consistency in Exponential Families.</strong> For a regular exponential family, verify the Kullback–Leibler support condition for a prior with a continuous positive density on (), and conclude posterior consistency via Definition <strong>?@def-posterior-consistency</strong> and Theorem <strong>?@thm-schwartz</strong>.</p></li>
+<li><p><strong>Consistency in Exponential Families.</strong> For a regular exponential family, verify the Kullback–Leibler support condition for a prior with a continuous positive density on <span class="math inline">\(\Theta\)</span>, and conclude posterior consistency via Definition <strong>?@def-posterior-consistency</strong> and Theorem <strong>?@thm-schwartz</strong>.</p></li>
 <li><p><strong>Misspecification Example.</strong> Consider data from a heavy-tailed distribution (e.g., Student-t) while the model assumes Normality. Identify the pseudo-true parameter and discuss posterior concentration around it, relating your conclusions to Theorem <strong>?@thm-misspecification</strong>.</p></li>
 <li><p><strong>Contraction Rate in Gaussian Sequence Model.</strong> In a Gaussian sequence model with appropriate priors (e.g., Gaussian with shrinking variances), derive the posterior contraction rate and compare it to minimax rates, making explicit use of the testing and prior mass conditions in Section 3.</p></li>
 <li><p><strong>Coverage Analysis.</strong> Analyze the frequentist coverage of Bayesian credible intervals for a simple nonparametric problem (e.g., estimating a density with a Dirichlet process mixture prior), summarizing known results and highlighting phenomena such as undercoverage in light of posterior contraction rates and deviations from Bernstein–von Mises behavior.</p></li>

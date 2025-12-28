@@ -333,7 +333,7 @@ window.Quarto = {
   <li><a href="#logistic-regression-model" id="toc-logistic-regression-model" class="nav-link" data-scroll-target="#logistic-regression-model">1. Logistic Regression Model</a>
   <ul class="collapse">
   <li><a href="#likelihood" id="toc-likelihood" class="nav-link" data-scroll-target="#likelihood">1.1 Likelihood</a></li>
-  <li><a href="#prior-on" id="toc-prior-on" class="nav-link" data-scroll-target="#prior-on">1.2 Prior on ()</a></li>
+  <li><a href="#prior-on-beta" id="toc-prior-on-beta" class="nav-link" data-scroll-target="#prior-on-beta">1.2 Prior on <span class="math inline">\(\beta\)</span></a></li>
   </ul></li>
   <li><a href="#non-conjugacy" id="toc-non-conjugacy" class="nav-link" data-scroll-target="#non-conjugacy">2. Non-Conjugacy</a>
   <ul class="collapse">
@@ -385,7 +385,7 @@ window.Quarto = {
 <p>This module introduces Bayesian generalized linear models (GLMs), focusing on logistic regression as a canonical example. We study non-conjugacy, Laplace approximations, identifiability and separation, and the geometry of the posterior.</p>
 <section id="logistic-regression-model" class="level2">
 <h2 class="anchored" data-anchor-id="logistic-regression-model">1. Logistic Regression Model</h2>
-<p>Let (Y_i {0,1}) and covariates (x_i ^p), collected in design matrix (X ^{n p}).</p>
+<p>Let <span class="math inline">\(Y_i \in \{0,1\}\)</span> and covariates <span class="math inline">\(x_i \in \mathbb{R}^p\)</span>, collected in design matrix <span class="math inline">\(X \in \mathbb{R}^{n \times p}\)</span>.</p>
 <section id="likelihood" class="level3">
 <h3 class="anchored" data-anchor-id="likelihood">1.1 Likelihood</h3>
 <p>Assume conditionally independent responses with <span class="math display">\[
@@ -397,8 +397,8 @@ window.Quarto = {
 \ell(\beta) = \sum_{i=1}^n \big( y_i x_i^\top \beta - \log(1 + e^{x_i^\top \beta}) \big).
 \]</span></p>
 </section>
-<section id="prior-on" class="level3">
-<h3 class="anchored" data-anchor-id="prior-on">1.2 Prior on ()</h3>
+<section id="prior-on-beta" class="level3">
+<h3 class="anchored" data-anchor-id="prior-on-beta">1.2 Prior on <span class="math inline">\(\beta\)</span></h3>
 <p>Consider a Gaussian prior <span class="math display">\[
 \beta \sim N_p(m_0, V_0).
 \]</span></p>
@@ -409,20 +409,20 @@ window.Quarto = {
 </section>
 <section id="non-conjugacy" class="level2">
 <h2 class="anchored" data-anchor-id="non-conjugacy">2. Non-Conjugacy</h2>
-<p>Unlike Gaussian linear regression, no finite-dimensional parametric family of priors on () is conjugate to the logistic likelihood.</p>
+<p>Unlike Gaussian linear regression, no finite-dimensional parametric family of priors on <span class="math inline">\(\beta\)</span> is conjugate to the logistic likelihood.</p>
 <section id="prop-logistic-nonconjugate" class="level3">
 <h3 class="anchored" data-anchor-id="prop-logistic-nonconjugate">Proposition 4.1 (Non-Existence of Finite-Dimensional Conjugate Family)</h3>
-<p>There is no finite-dimensional parametric family of priors ({<em>}) on (^p) such that for all data (y), the posterior ((y)) remains in ({</em>}).</p>
-<p><em>Proof sketch:</em> Suppose, for contradiction, that such a conjugate family exists with parameter (^k), and that updating from prior () with data ((x_i, y_i)<em>{i=1}^n) produces an updated parameter (T(; x</em>{1:n}, y_{1:n})) in the same (k)-dimensional space. The (log-)posterior density is <span class="math display">\[
+<p>There is no finite-dimensional parametric family of priors <span class="math inline">\(\{\Pi_\eta\}\)</span> on <span class="math inline">\(\mathbb{R}^p\)</span> such that for all data <span class="math inline">\(y\)</span>, the posterior <span class="math inline">\(\Pi(\cdot \mid y)\)</span> remains in <span class="math inline">\(\{\Pi_\eta\}\)</span>.</p>
+<p><em>Proof sketch:</em> Suppose, for contradiction, that such a conjugate family exists with parameter <span class="math inline">\(\eta \in \mathbb{R}^k\)</span>, and that updating from prior <span class="math inline">\(\eta\)</span> with data <span class="math inline">\((x_i, y_i)_{i=1}^n\)</span> produces an updated parameter <span class="math inline">\(T(\eta; x_{1:n}, y_{1:n})\)</span> in the same <span class="math inline">\(k\)</span>-dimensional space. The (log-)posterior density is <span class="math display">\[
 \log \pi(\beta \mid y)
   = \sum_{i=1}^n \big( y_i x_i^\top \beta - \log(1 + e^{x_i^\top \beta}) \big)
     + \log \pi_\eta(\beta) + C.
-\]</span> Conjugacy would require that, as a function of (), this log-density can be written in the same functional form as (_()) with updated hyperparameters depending on the sufficient statistics of the data. In exponential families this means that the dependence on () must be linear in a fixed, finite set of functions of ().</p>
+\]</span> Conjugacy would require that, as a function of <span class="math inline">\(\beta\)</span>, this log-density can be written in the same functional form as <span class="math inline">\(\log \pi_\eta(\beta)\)</span> with updated hyperparameters depending on the sufficient statistics of the data. In exponential families this means that the dependence on <span class="math inline">\(\beta\)</span> must be linear in a fixed, finite set of functions of <span class="math inline">\(\beta\)</span>.</p>
 <p>However, the logistic log-likelihood introduces the term <span class="math display">\[
 - \sum_{i=1}^n \log(1 + e^{x_i^\top \beta}),
-\]</span> whose dependence on () cannot in general be expressed using a fixed finite collection of basis functions independent of the sample size and design (except in trivial cases where the design takes only finitely many patterns and the prior is allowed to depend on them). As (n) grows and the (x_i) explore more directions, the map <span class="math display">\[
+\]</span> whose dependence on <span class="math inline">\(\beta\)</span> cannot in general be expressed using a fixed finite collection of basis functions independent of the sample size and design (except in trivial cases where the design takes only finitely many patterns and the prior is allowed to depend on them). As <span class="math inline">\(n\)</span> grows and the <span class="math inline">\(x_i\)</span> explore more directions, the map <span class="math display">\[
 \beta \mapsto \big( \log(1 + e^{x_1^\top \beta}), \dots, \log(1 + e^{x_n^\top \beta}) \big)
-\]</span> generates increasingly rich nonlinear structure, which cannot be encoded by a fixed-dimensional parameter (). Thus no finite-dimensional family can absorb the effect of arbitrary data through a finite-dimensional hyperparameter update, and a genuinely conjugate family would have to be infinite-dimensional. ()</p>
+\]</span> generates increasingly rich nonlinear structure, which cannot be encoded by a fixed-dimensional parameter <span class="math inline">\(\eta\)</span>. Thus no finite-dimensional family can absorb the effect of arbitrary data through a finite-dimensional hyperparameter update, and a genuinely conjugate family would have to be infinite-dimensional. <span class="math inline">\(\square\)</span></p>
 <p>This non-conjugacy motivates approximation methods such as Laplace approximations, variational inference, or MCMC.</p>
 </section>
 </section>
@@ -434,14 +434,14 @@ window.Quarto = {
 \log \pi(\beta \mid y) = f(\beta) + C,
 \]</span> where <span class="math display">\[
 f(\beta) = \ell(\beta) - \tfrac12 (\beta - m_0)^\top V_0^{-1} (\beta - m_0)
-\]</span> and (C) is a constant independent of ().</p>
-<p>Let () denote a maximizer of (f()) (the MAP estimator). Let <span class="math display">\[
+\]</span> and <span class="math inline">\(C\)</span> is a constant independent of <span class="math inline">\(\beta\)</span>.</p>
+<p>Let <span class="math inline">\(\hat{\beta}\)</span> denote a maximizer of <span class="math inline">\(f(\beta)\)</span> (the MAP estimator). Let <span class="math display">\[
 H(\hat{\beta}) = -\nabla^2 f(\hat{\beta})
 \]</span> be the negative Hessian at the mode.</p>
 </section>
 <section id="thm-laplace-logistic" class="level3">
 <h3 class="anchored" data-anchor-id="thm-laplace-logistic">Theorem 4.2 (Laplace Approximation of the Posterior)</h3>
-<p>Under regularity conditions (twice differentiability of (f), strict local maximum at (), positive-definite Hessian), the posterior can be approximated by <span class="math display">\[
+<p>Under regularity conditions (twice differentiability of <span class="math inline">\(f\)</span>, strict local maximum at <span class="math inline">\(\hat{\beta}\)</span>, positive-definite Hessian), the posterior can be approximated by <span class="math display">\[
 \pi(\beta \mid y) \approx \tilde{\pi}(\beta \mid y) := N_p(\hat{\beta}, H(\hat{\beta})^{-1}).
 \]</span></p>
 <p>Moreover, the marginal likelihood admits the approximation <span class="math display">\[
@@ -449,25 +449,25 @@ H(\hat{\beta}) = -\nabla^2 f(\hat{\beta})
 \]</span></p>
 <p><em>Proof sketch:</em> Write the (unnormalized) posterior density as <span class="math display">\[
 \pi(\beta \mid y) \propto \exp\{ f(\beta) \},
-\]</span> where (f) attains a strict local maximum at () and is twice continuously differentiable. A second-order Taylor expansion around () yields <span class="math display">\[
+\]</span> where <span class="math inline">\(f\)</span> attains a strict local maximum at <span class="math inline">\(\hat{\beta}\)</span> and is twice continuously differentiable. A second-order Taylor expansion around <span class="math inline">\(\hat{\beta}\)</span> yields <span class="math display">\[
 f(\beta) \approx f(\hat{\beta})
   - \tfrac12 (\beta - \hat{\beta})^\top H(\hat{\beta}) (\beta - \hat{\beta}),
-\]</span> since (f() = 0) and (H() = -^2 f()) is positive-definite. Substituting into the exponential gives the Gaussian approximation <span class="math display">\[
+\]</span> since <span class="math inline">\(\nabla f(\hat{\beta}) = 0\)</span> and <span class="math inline">\(H(\hat{\beta}) = -\nabla^2 f(\hat{\beta})\)</span> is positive-definite. Substituting into the exponential gives the Gaussian approximation <span class="math display">\[
 \pi(\beta \mid y)
   \approx \exp\{ f(\hat{\beta}) \}
        \exp\Bigl\{ -\tfrac12 (\beta - \hat{\beta})^\top H(\hat{\beta}) (\beta - \hat{\beta}) \Bigr\},
-\]</span> which, after normalization, corresponds to a Normal distribution with mean () and covariance (H()^{-1}).</p>
+\]</span> which, after normalization, corresponds to a Normal distribution with mean <span class="math inline">\(\hat{\beta}\)</span> and covariance <span class="math inline">\(H(\hat{\beta})^{-1}\)</span>.</p>
 <p>For the marginal likelihood, <span class="math display">\[
 m(y) = \int \exp\{ f(\beta) + C \} d\beta,
 \]</span> Laplace’s method applied to this integral gives <span class="math display">\[
 \log m(y) \approx f(\hat{\beta}) + C + \frac{p}{2}\log(2\pi) - \frac12 \log |H(\hat{\beta})|,
-\]</span> where the (|H()|) term arises from the determinant of the quadratic form in the Gaussian integral. ()</p>
+\]</span> where the <span class="math inline">\(\log |H(\hat{\beta})|\)</span> term arises from the determinant of the quadratic form in the Gaussian integral. <span class="math inline">\(\square\)</span></p>
 </section>
 <section id="hessian-of-the-logistic-log-posterior" class="level3">
 <h3 class="anchored" data-anchor-id="hessian-of-the-logistic-log-posterior">3.2 Hessian of the Logistic Log-Posterior</h3>
 <p>For logistic regression, the negative Hessian of the log-likelihood is <span class="math display">\[
 -\nabla^2 \ell(\beta) = X^\top W(\beta) X,
-\]</span> where (W()) is the diagonal matrix with entries (w_i() = (x_i^) (1 - (x_i^))). Including the Gaussian prior, the posterior negative Hessian is <span class="math display">\[
+\]</span> where <span class="math inline">\(W(\beta)\)</span> is the diagonal matrix with entries <span class="math inline">\(w_i(\beta) = \sigma(x_i^\top \beta) (1 - \sigma(x_i^\top \beta))\)</span>. Including the Gaussian prior, the posterior negative Hessian is <span class="math display">\[
 H(\beta) = X^\top W(\beta) X + V_0^{-1}.
 \]</span></p>
 </section>
@@ -476,24 +476,24 @@ H(\beta) = X^\top W(\beta) X + V_0^{-1}.
 <h2 class="anchored" data-anchor-id="identifiability-and-separation">4. Identifiability and Separation</h2>
 <section id="identifiability" class="level3">
 <h3 class="anchored" data-anchor-id="identifiability">4.1 Identifiability</h3>
-<p>The logistic regression model is identifiable under standard conditions when the design matrix (X) has full column rank and the covariates span a sufficiently rich subspace.</p>
+<p>The logistic regression model is identifiable under standard conditions when the design matrix <span class="math inline">\(X\)</span> has full column rank and the covariates span a sufficiently rich subspace.</p>
 </section>
 <section id="def-separation" class="level3">
 <h3 class="anchored" data-anchor-id="def-separation">Definition 4.3 (Complete and Quasi-Complete Separation)</h3>
 <ul>
-<li><p><strong>Complete separation:</strong> There exists () such that <span class="math display">\[
+<li><p><strong>Complete separation:</strong> There exists <span class="math inline">\(\beta\)</span> such that <span class="math display">\[
 x_i^\top \beta &gt; 0 \quad \text{for all } i \text{ with } y_i=1, \quad
 x_i^\top \beta &lt; 0 \quad \text{for all } i \text{ with } y_i=0.
 \]</span></p></li>
-<li><p><strong>Quasi-complete separation:</strong> Inequalities hold with () and (), with at least one equality.</p></li>
+<li><p><strong>Quasi-complete separation:</strong> Inequalities hold with <span class="math inline">\(\ge 0\)</span> and <span class="math inline">\(\le 0\)</span>, with at least one equality.</p></li>
 </ul>
 </section>
 <section id="prop-separation-mle" class="level3">
 <h3 class="anchored" data-anchor-id="prop-separation-mle">Proposition 4.4 (Separation and MLE)</h3>
-<p>In the presence of complete or quasi-complete separation, the logistic regression MLE does not exist as a finite vector; some components diverge to ().</p>
-<p><em>Proof sketch:</em> Under complete separation, there exists () such that (x_i^&gt; 0) for all (y_i = 1) and (x_i^&lt; 0) for all (y_i = 0). Consider the ray (t t ). Then for (y_i = 1), (x_i^(t) +) as (t +), so <span class="math display">\[
+<p>In the presence of complete or quasi-complete separation, the logistic regression MLE does not exist as a finite vector; some components diverge to <span class="math inline">\(\pm \infty\)</span>.</p>
+<p><em>Proof sketch:</em> Under complete separation, there exists <span class="math inline">\(\beta\)</span> such that <span class="math inline">\(x_i^\top \beta &gt; 0\)</span> for all <span class="math inline">\(y_i = 1\)</span> and <span class="math inline">\(x_i^\top \beta &lt; 0\)</span> for all <span class="math inline">\(y_i = 0\)</span>. Consider the ray <span class="math inline">\(t \mapsto t \beta\)</span>. Then for <span class="math inline">\(y_i = 1\)</span>, <span class="math inline">\(x_i^\top (t\beta) \to +\infty\)</span> as <span class="math inline">\(t \to +\infty\)</span>, so <span class="math display">\[
 \log(1 + e^{x_i^\top (t\beta)}) \sim x_i^\top (t\beta),
-\]</span> and the contribution (y_i x_i^(t) - (1 + e<sup>{x_i</sup>(t)})) tends to 0. For (y_i = 0), (x_i^(t) -), so ((1 + e<sup>{x_i</sup>(t)}) ) and the contribution also tends to 0. By perturbing along suitable directions one can construct sequences (_t) for which the log-likelihood increases without bound, showing that no finite maximizer exists. Quasi-complete separation is handled by similar arguments, with some components diverging while leaving certain linear predictors approximately constant. ()</p>
+\]</span> and the contribution <span class="math inline">\(y_i x_i^\top (t\beta) - \log(1 + e^{x_i^\top (t\beta)})\)</span> tends to 0. For <span class="math inline">\(y_i = 0\)</span>, <span class="math inline">\(x_i^\top (t\beta) \to -\infty\)</span>, so <span class="math inline">\(\log(1 + e^{x_i^\top (t\beta)}) \to 0\)</span> and the contribution also tends to 0. By perturbing along suitable directions one can construct sequences <span class="math inline">\(\beta_t\)</span> for which the log-likelihood increases without bound, showing that no finite maximizer exists. Quasi-complete separation is handled by similar arguments, with some components diverging while leaving certain linear predictors approximately constant. <span class="math inline">\(\square\)</span></p>
 </section>
 <section id="impact-on-the-bayesian-posterior" class="level3">
 <h3 class="anchored" data-anchor-id="impact-on-the-bayesian-posterior">4.2 Impact on the Bayesian Posterior</h3>
@@ -502,21 +502,21 @@ x_i^\top \beta &lt; 0 \quad \text{for all } i \text{ with } y_i=0.
 </section>
 <section id="posterior-geometry-and-curvature" class="level2">
 <h2 class="anchored" data-anchor-id="posterior-geometry-and-curvature">5. Posterior Geometry and Curvature</h2>
-<p>The geometry of the posterior in logistic regression is governed by the curvature of (f()):</p>
+<p>The geometry of the posterior in logistic regression is governed by the curvature of <span class="math inline">\(f(\beta)\)</span>:</p>
 <ul>
-<li>The Hessian (H()) reflects local certainty about ().</li>
-<li>Near separation, (W()) becomes nearly singular, leading to flat directions and heavy posterior tails.</li>
+<li>The Hessian <span class="math inline">\(H(\beta)\)</span> reflects local certainty about <span class="math inline">\(\beta\)</span>.</li>
+<li>Near separation, <span class="math inline">\(W(\beta)\)</span> becomes nearly singular, leading to flat directions and heavy posterior tails.</li>
 <li>Laplace approximations may be inaccurate in such regimes, motivating MCMC or more robust approximations.</li>
 </ul>
 </section>
 <section id="problem-set-4-representative-problems" class="level2">
 <h2 class="anchored" data-anchor-id="problem-set-4-representative-problems">6. Problem Set 4 (Representative Problems)</h2>
 <ol type="1">
-<li><p><strong>Non-Conjugacy.</strong> Provide a rigorous argument that no finite-dimensional parametric family of priors on () is conjugate to the logistic likelihood (cf.&nbsp;Proposition <span class="citation" data-cites="prop-logistic-nonconjugate">@prop-logistic-nonconjugate</span>), except in trivial degeneracies.</p></li>
-<li><p><strong>Laplace Approximation Derivation.</strong> Derive the Laplace approximation for the posterior of () in logistic regression, starting from the second-order Taylor expansion of (f()) and justifying each step in Theorem <strong>?@thm-laplace-logistic</strong>. Write down the corresponding approximate marginal likelihood.</p></li>
-<li><p><strong>Hessian and Curvature.</strong> Derive the explicit form of (H()) for logistic regression with Gaussian prior and discuss how it depends on the data and prior. Show that (H()) is positive-definite when (V_0) is, and interpret this in terms of local posterior geometry.</p></li>
+<li><p><strong>Non-Conjugacy.</strong> Provide a rigorous argument that no finite-dimensional parametric family of priors on <span class="math inline">\(\beta\)</span> is conjugate to the logistic likelihood (cf.&nbsp;Proposition <span class="citation" data-cites="prop-logistic-nonconjugate">@prop-logistic-nonconjugate</span>), except in trivial degeneracies.</p></li>
+<li><p><strong>Laplace Approximation Derivation.</strong> Derive the Laplace approximation for the posterior of <span class="math inline">\(\beta\)</span> in logistic regression, starting from the second-order Taylor expansion of <span class="math inline">\(f(\beta)\)</span> and justifying each step in Theorem <strong>?@thm-laplace-logistic</strong>. Write down the corresponding approximate marginal likelihood.</p></li>
+<li><p><strong>Hessian and Curvature.</strong> Derive the explicit form of <span class="math inline">\(H(\hat{\beta})\)</span> for logistic regression with Gaussian prior and discuss how it depends on the data and prior. Show that <span class="math inline">\(H(\hat{\beta})\)</span> is positive-definite when <span class="math inline">\(V_0\)</span> is, and interpret this in terms of local posterior geometry.</p></li>
 <li><p><strong>Separation Example.</strong> Construct a small dataset exhibiting complete separation (Definition <strong>?@def-separation</strong>). Show that the MLE does not exist, and analyze the form of the posterior under a Gaussian prior, connecting to Proposition <span class="citation" data-cites="prop-separation-mle">@prop-separation-mle</span>. Comment on the accuracy of Laplace approximations in this regime.</p></li>
-<li><p><strong>Posterior Geometry and Identifiability.</strong> Give an example where collinearity in the covariates leads to near non-identifiability of certain directions in (). Analyze the posterior covariance structure and discuss how prior information can restore effective identifiability.</p></li>
+<li><p><strong>Posterior Geometry and Identifiability.</strong> Give an example where collinearity in the covariates leads to near non-identifiability of certain directions in <span class="math inline">\(\beta\)</span>. Analyze the posterior covariance structure and discuss how prior information can restore effective identifiability.</p></li>
 </ol>
 
 

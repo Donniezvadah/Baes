@@ -11,7 +11,7 @@ This module focuses on optimization problems arising in Bayesian inference, espe
 
 ### Definition 11.1 (MAP Estimator) {#def-map}
 
-Let \(\pi(\theta \mid x)\) denote the posterior density of \(\theta\) given data \(x\). A **MAP estimator** is
+Let $\pi(\theta \mid x)$ denote the posterior density of $\theta$ given data $x$. A **MAP estimator** is
 $$
  \hat{\theta}_{\text{MAP}} \in \arg\max_{\theta} \pi(\theta \mid x).
 $$
@@ -38,13 +38,13 @@ be the objective function. Gradient descent iterations are given by
 $$
  \theta_{k+1} = \theta_k - \eta_k \nabla L(\theta_k),
 $$
-where \(\eta_k > 0\) is a step size.
+where $\eta_k > 0$ is a step size.
 
-Under standard conditions (Lipschitz gradient, suitable step-size schedule), gradient descent converges to a local minimum of \(L\).
+Under standard conditions (Lipschitz gradient, suitable step-size schedule), gradient descent converges to a local minimum of $L$.
 
 ### 2.2 Stochastic Optimization
 
-For large data sets, one may approximate \(\nabla L(\theta)\) using mini-batches, leading to stochastic gradient descent (SGD) and its variants. Care is required to ensure convergence to stationary points.
+For large data sets, one may approximate $\nabla L(\theta)$ using mini-batches, leading to stochastic gradient descent (SGD) and its variants. Care is required to ensure convergence to stationary points.
 
 ## 3. Newton and Quasi-Newton Methods
 
@@ -54,39 +54,39 @@ Newton's method uses second-order information:
 $$
  \theta_{k+1} = \theta_k - H(\theta_k)^{-1} \nabla L(\theta_k),
 $$
-where \(H(\theta) = \nabla^2 L(\theta)\) is the Hessian.
+where $H(\theta) = \nabla^2 L(\theta)$ is the Hessian.
 
 Under conditions of local strong convexity and smoothness, Newton's method converges quadratically to a local minimizer.
 
 ::: {.theorem #thm-newton-quadratic}
 **Theorem 11.1 (Local Quadratic Convergence of Newton's Method).**
 
-Let \(L: \mathbb{R}^d \to \mathbb{R}\) be twice continuously differentiable, and suppose that:
+Let $L: \mathbb{R}^d \to \mathbb{R}$ be twice continuously differentiable, and suppose that:
 
-- there exists a minimizer \(\theta^*\) of \(L\) such that \(\nabla L(\theta^*) = 0\),
-- the Hessian \(H(\theta^*) = \nabla^2 L(\theta^*)\) is positive-definite,
-- \(\nabla^2 L(\theta)\) is Lipschitz continuous in a neighborhood of \(\theta^*\).
+- there exists a minimizer $\theta^*$ of $L$ such that $\nabla L(\theta^*) = 0$,
+- the Hessian $H(\theta^*) = \nabla^2 L(\theta^*)$ is positive-definite,
+- $\nabla^2 L(\theta)$ is Lipschitz continuous in a neighborhood of $\theta^*$.
 
-Then there exists a neighborhood \(U\) of \(\theta^*\) such that for any initial point \(\theta_0 \in U\), the Newton iterates
+Then there exists a neighborhood $U$ of $\theta^*$ such that for any initial point $\theta_0 \in U$, the Newton iterates
 $$
  \theta_{k+1} = \theta_k - H(\theta_k)^{-1} \nabla L(\theta_k)
 $$
-are well-defined, remain in \(U\), and converge quadratically to \(\theta^*\): there exists a constant \(C>0\) such that for all large \(k\),
+are well-defined, remain in $U$, and converge quadratically to $\theta^*$: there exists a constant $C>0$ such that for all large $k$,
 $$
  \|\theta_{k+1} - \theta^*\| \le C \|\theta_k - \theta^*\|^2.
 $$
 
-*Proof sketch:* Expand \(\nabla L\) around \(\theta^*\) using a first-order Taylor expansion and use the Lipschitz continuity of \(\nabla^2 L\) to control the remainder term. In a sufficiently small neighborhood of \(\theta^*\), the Newton update can be written as
+*Proof sketch:* Expand $\nabla L$ around $\theta^*$ using a first-order Taylor expansion and use the Lipschitz continuity of $\nabla^2 L$ to control the remainder term. In a sufficiently small neighborhood of $\theta^*$, the Newton update can be written as
 $$
  \theta_{k+1} - \theta^*
   = -H(\theta_k)^{-1}\bigl( \nabla L(\theta_k) - \nabla L(\theta^*) \bigr),
 $$
-and a further expansion shows that this difference is approximately quadratic in \(\theta_k - \theta^*\). Bounding \(H(\theta_k)^{-1}\) uniformly using positive-definiteness of \(H(\theta^*)\) and its continuity yields the stated inequality. Standard references in numerical optimization give a detailed proof. \(\square\)
+and a further expansion shows that this difference is approximately quadratic in $\theta_k - \theta^*$. Bounding $H(\theta_k)^{-1}$ uniformly using positive-definiteness of $H(\theta^*)$ and its continuity yields the stated inequality. Standard references in numerical optimization give a detailed proof. $\square$
 :::
 
 ### 3.2 Quasi-Newton Methods
 
-Quasi-Newton methods (e.g., BFGS, L-BFGS) construct approximations \(B_k \approx H(\theta_k)^{-1}\) using gradient evaluations. They can be more efficient in high dimensions where computing or inverting the Hessian is infeasible.
+Quasi-Newton methods (e.g., BFGS, L-BFGS) construct approximations $B_k \approx H(\theta_k)^{-1}$ using gradient evaluations. They can be more efficient in high dimensions where computing or inverting the Hessian is infeasible.
 
 ### 3.3 Example: Logistic Regression Posterior
 
@@ -94,7 +94,7 @@ For the logistic regression posterior with Gaussian prior, the negative log-post
 $$
  H(\beta) = X^\top W(\beta) X + V_0^{-1},
 $$
-where \(W(\beta)\) is the diagonal matrix of Bernoulli variances. Newton's method converges rapidly to the MAP under mild conditions.
+where $W(\beta)$ is the diagonal matrix of Bernoulli variances. Newton's method converges rapidly to the MAP under mild conditions.
 
 ## 4. Convexity, Non-Convexity, and Multiple Modes
 

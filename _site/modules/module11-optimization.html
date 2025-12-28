@@ -386,7 +386,7 @@ window.Quarto = {
 <h2 class="anchored" data-anchor-id="map-estimation">1. MAP Estimation</h2>
 <section id="def-map" class="level3">
 <h3 class="anchored" data-anchor-id="def-map">Definition 11.1 (MAP Estimator)</h3>
-<p>Let ((x)) denote the posterior density of () given data (x). A <strong>MAP estimator</strong> is <span class="math display">\[
+<p>Let <span class="math inline">\(\pi(\theta \mid x)\)</span> denote the posterior density of <span class="math inline">\(\theta\)</span> given data <span class="math inline">\(x\)</span>. A <strong>MAP estimator</strong> is <span class="math display">\[
 \hat{\theta}_{\text{MAP}} \in \arg\max_{\theta} \pi(\theta \mid x).
 \]</span> Equivalently, it minimizes the negative log-posterior: <span class="math display">\[
 \hat{\theta}_{\text{MAP}} \in \arg\min_{\theta} \{-\log \pi(\theta \mid x)\}.
@@ -406,12 +406,12 @@ window.Quarto = {
 L(\theta) = -\log \pi(\theta \mid x)
 \]</span> be the objective function. Gradient descent iterations are given by <span class="math display">\[
 \theta_{k+1} = \theta_k - \eta_k \nabla L(\theta_k),
-\]</span> where (_k &gt; 0) is a step size.</p>
-<p>Under standard conditions (Lipschitz gradient, suitable step-size schedule), gradient descent converges to a local minimum of (L).</p>
+\]</span> where <span class="math inline">\(\eta_k &gt; 0\)</span> is a step size.</p>
+<p>Under standard conditions (Lipschitz gradient, suitable step-size schedule), gradient descent converges to a local minimum of <span class="math inline">\(L\)</span>.</p>
 </section>
 <section id="stochastic-optimization" class="level3">
 <h3 class="anchored" data-anchor-id="stochastic-optimization">2.2 Stochastic Optimization</h3>
-<p>For large data sets, one may approximate (L()) using mini-batches, leading to stochastic gradient descent (SGD) and its variants. Care is required to ensure convergence to stationary points.</p>
+<p>For large data sets, one may approximate <span class="math inline">\(\nabla L(\theta)\)</span> using mini-batches, leading to stochastic gradient descent (SGD) and its variants. Care is required to ensure convergence to stationary points.</p>
 </section>
 </section>
 <section id="newton-and-quasi-newton-methods" class="level2">
@@ -420,36 +420,36 @@ L(\theta) = -\log \pi(\theta \mid x)
 <h3 class="anchored" data-anchor-id="newtons-method">3.1 Newton’s Method</h3>
 <p>Newton’s method uses second-order information: <span class="math display">\[
 \theta_{k+1} = \theta_k - H(\theta_k)^{-1} \nabla L(\theta_k),
-\]</span> where (H() = ^2 L()) is the Hessian.</p>
+\]</span> where <span class="math inline">\(H(\theta) = \nabla^2 L(\theta)\)</span> is the Hessian.</p>
 <p>Under conditions of local strong convexity and smoothness, Newton’s method converges quadratically to a local minimizer.</p>
 <div id="thm-newton-quadratic" class="theorem">
 <p><span class="theorem-title"><strong>Theorem 1</strong></span> <strong>Theorem 11.1 (Local Quadratic Convergence of Newton’s Method).</strong></p>
-<p>Let (L: ^d ) be twice continuously differentiable, and suppose that:</p>
+<p>Let <span class="math inline">\(L: \mathbb{R}^d \to \mathbb{R}\)</span> be twice continuously differentiable, and suppose that:</p>
 <ul>
-<li>there exists a minimizer (^<em>) of (L) such that (L(^</em>) = 0),</li>
-<li>the Hessian (H(^<em>) = ^2 L(^</em>)) is positive-definite,</li>
-<li>(^2 L()) is Lipschitz continuous in a neighborhood of (^*).</li>
+<li>there exists a minimizer <span class="math inline">\(\theta^*\)</span> of <span class="math inline">\(L\)</span> such that <span class="math inline">\(\nabla L(\theta^*) = 0\)</span>,</li>
+<li>the Hessian <span class="math inline">\(H(\theta^*) = \nabla^2 L(\theta^*)\)</span> is positive-definite,</li>
+<li><span class="math inline">\(\nabla^2 L(\theta)\)</span> is Lipschitz continuous in a neighborhood of <span class="math inline">\(\theta^*\)</span>.</li>
 </ul>
-<p>Then there exists a neighborhood (U) of (^*) such that for any initial point (_0 U), the Newton iterates <span class="math display">\[
+<p>Then there exists a neighborhood <span class="math inline">\(U\)</span> of <span class="math inline">\(\theta^*\)</span> such that for any initial point <span class="math inline">\(\theta_0 \in U\)</span>, the Newton iterates <span class="math display">\[
 \theta_{k+1} = \theta_k - H(\theta_k)^{-1} \nabla L(\theta_k)
-\]</span> are well-defined, remain in (U), and converge quadratically to (^*): there exists a constant (C&gt;0) such that for all large (k), <span class="math display">\[
+\]</span> are well-defined, remain in <span class="math inline">\(U\)</span>, and converge quadratically to <span class="math inline">\(\theta^*\)</span>: there exists a constant <span class="math inline">\(C&gt;0\)</span> such that for all large <span class="math inline">\(k\)</span>, <span class="math display">\[
 \|\theta_{k+1} - \theta^*\| \le C \|\theta_k - \theta^*\|^2.
 \]</span></p>
-<p><em>Proof sketch:</em> Expand (L) around (^<em>) using a first-order Taylor expansion and use the Lipschitz continuity of (^2 L) to control the remainder term. In a sufficiently small neighborhood of (^</em>), the Newton update can be written as <span class="math display">\[
+<p><em>Proof sketch:</em> Expand <span class="math inline">\(\nabla L\)</span> around <span class="math inline">\(\theta^*\)</span> using a first-order Taylor expansion and use the Lipschitz continuity of <span class="math inline">\(\nabla^2 L\)</span> to control the remainder term. In a sufficiently small neighborhood of <span class="math inline">\(\theta^*\)</span>, the Newton update can be written as <span class="math display">\[
 \theta_{k+1} - \theta^*
   = -H(\theta_k)^{-1}\bigl( \nabla L(\theta_k) - \nabla L(\theta^*) \bigr),
-\]</span> and a further expansion shows that this difference is approximately quadratic in (_k - ^*). Bounding (H(_k)^{-1}) uniformly using positive-definiteness of (H(^*)) and its continuity yields the stated inequality. Standard references in numerical optimization give a detailed proof. ()</p>
+\]</span> and a further expansion shows that this difference is approximately quadratic in <span class="math inline">\(\theta_k - \theta^*\)</span>. Bounding <span class="math inline">\(H(\theta_k)^{-1}\)</span> uniformly using positive-definiteness of <span class="math inline">\(H(\theta^*)\)</span> and its continuity yields the stated inequality. Standard references in numerical optimization give a detailed proof. <span class="math inline">\(\square\)</span></p>
 </div>
 </section>
 <section id="quasi-newton-methods" class="level3">
 <h3 class="anchored" data-anchor-id="quasi-newton-methods">3.2 Quasi-Newton Methods</h3>
-<p>Quasi-Newton methods (e.g., BFGS, L-BFGS) construct approximations (B_k H(_k)^{-1}) using gradient evaluations. They can be more efficient in high dimensions where computing or inverting the Hessian is infeasible.</p>
+<p>Quasi-Newton methods (e.g., BFGS, L-BFGS) construct approximations <span class="math inline">\(B_k \approx H(\theta_k)^{-1}\)</span> using gradient evaluations. They can be more efficient in high dimensions where computing or inverting the Hessian is infeasible.</p>
 </section>
 <section id="example-logistic-regression-posterior" class="level3">
 <h3 class="anchored" data-anchor-id="example-logistic-regression-posterior">3.3 Example: Logistic Regression Posterior</h3>
 <p>For the logistic regression posterior with Gaussian prior, the negative log-posterior is convex, and the Hessian is given by <span class="math display">\[
 H(\beta) = X^\top W(\beta) X + V_0^{-1},
-\]</span> where (W()) is the diagonal matrix of Bernoulli variances. Newton’s method converges rapidly to the MAP under mild conditions.</p>
+\]</span> where <span class="math inline">\(W(\beta)\)</span> is the diagonal matrix of Bernoulli variances. Newton’s method converges rapidly to the MAP under mild conditions.</p>
 </section>
 </section>
 <section id="convexity-non-convexity-and-multiple-modes" class="level2">
