@@ -11,20 +11,20 @@ This module focuses on tools for assessing the adequacy of Bayesian models: post
 
 ### 1.1 Posterior Predictive Distribution {#def-posterior-predictive}
 
-Given data \(x\), prior \(\Pi\), and likelihood \(p(x \mid \theta)\), the **posterior predictive distribution** for replicated data \(X_{\text{rep}}\) is
+Given data $x$, prior $\Pi$, and likelihood $p(x \mid \theta)$, the **posterior predictive distribution** for replicated data $X_{\text{rep}}$ is
 $$
  p(x_{\text{rep}} \mid x) = \int p(x_{\text{rep}} \mid \theta) \, \Pi(d\theta \mid x).
 $$
 
 ### 1.2 Test Statistics and Discrepancy Measures {#def-ppc}
 
-Choose a test statistic or discrepancy function \(T(x, \theta)\) capturing aspects of the data or model of interest (e.g., tail behavior, dispersion).
+Choose a test statistic or discrepancy function $T(x, \theta)$ capturing aspects of the data or model of interest (e.g., tail behavior, dispersion).
 
 The posterior predictive p-value is
 $$
  p_{\text{ppc}} = \mathbb{P}( T(X_{\text{rep}}, \theta) \ge T(x, \theta) \mid x ),
 $$
-where the probability is with respect to the joint posterior predictive distribution of \((X_{\text{rep}}, \theta)\).
+where the probability is with respect to the joint posterior predictive distribution of $(X_{\text{rep}}, \theta)$.
 
 ### 1.3 Interpretation
 
@@ -34,12 +34,12 @@ Posterior predictive p-values close to 0 or 1 indicate potential model misfit al
 
 ### 2.1 Local Sensitivity {#def-local-sensitivity}
 
-Consider posterior expectations \(\mathbb{E}_\Pi[g(\theta) \mid x]\) as functions of prior hyperparameters \(\eta\). Local sensitivity analysis studies derivatives
+Consider posterior expectations $\mathbb{E}_\Pi[g(\theta) \mid x]$ as functions of prior hyperparameters $\eta$. Local sensitivity analysis studies derivatives
 $$
  \frac{\partial}{\partial \eta} \mathbb{E}[g(\theta) \mid x; \eta].
 $$
 
-Writing the posterior under prior density \(\pi(\theta \mid \eta)\) as
+Writing the posterior under prior density $\pi(\theta \mid \eta)$ as
 $$
  \Pi(d\theta \mid x; \eta) = \frac{p(x \mid \theta) \pi(\theta \mid \eta)}{m(x; \eta)} \, d\theta,
 $$
@@ -48,16 +48,16 @@ $$
  \frac{\partial}{\partial \eta} \mathbb{E}[g(\theta) \mid x; \eta]
   = \operatorname{Cov}_\Pi\bigl(g(\theta), \partial_\eta \log \pi(\theta \mid \eta) \mid x; \eta\bigr),
 $$
-which expresses local sensitivity in terms of a posterior covariance between \(g(\theta)\) and the prior score function.
+which expresses local sensitivity in terms of a posterior covariance between $g(\theta)$ and the prior score function.
 
 ### 2.2 Global Sensitivity and Robust Priors {#def-eps-contamination}
 
-- **\(\varepsilon\)-contamination priors:**
+- **$\varepsilon$-contamination priors:**
   $$
    \Pi_\varepsilon = (1-\varepsilon) \Pi_0 + \varepsilon Q,
   $$
-  where \(Q\) represents a contaminating distribution.
-- Study the range of posterior summaries as \(\varepsilon\) varies, assessing robustness to prior perturbations.
+  where $Q$ represents a contaminating distribution.
+- Study the range of posterior summaries as $\varepsilon$ varies, assessing robustness to prior perturbations.
 
 ### 2.3 Robustness Criteria
 
@@ -79,11 +79,11 @@ Prior elicitation aims to translate substantive knowledge or beliefs into a prio
 
 ### 3.2 Elicitation in Conjugate Models
 
-In Beta–Binomial, interpret \((\alpha, \beta)\) as prior success and failure counts. In Normal–Normal models, interpret prior mean and variance as prior guess and uncertainty about the parameter.
+In Beta–Binomial, interpret $(\alpha, \beta)$ as prior success and failure counts. In Normal–Normal models, interpret prior mean and variance as prior guess and uncertainty about the parameter.
 
 ## 4. Example: Overdispersion in Poisson Models
 
-Consider \(X_i \mid \lambda \sim \operatorname{Poisson}(\lambda)\) with Gamma prior on \(\lambda\).
+Consider $X_i \mid \lambda \sim \operatorname{Poisson}(\lambda)$ with Gamma prior on $\lambda$.
 
 - Use posterior predictive checks to assess whether data are overdispersed relative to the Poisson assumption.
 - Compare observed variance to posterior predictive variance.
@@ -93,10 +93,10 @@ Consider \(X_i \mid \lambda \sim \operatorname{Poisson}(\lambda)\) with Gamma pr
 
 1. **Posterior Predictive Check for Poisson.** For a Poisson–Gamma model, derive the posterior predictive distribution (Definition @def-posterior-predictive) and construct a test statistic sensitive to overdispersion. Analyze how the posterior predictive p-value (Definition @def-ppc) behaves when data are generated from an overdispersed process.
 
-2. **Local Sensitivity Derivative.** Let the prior density be \(\pi(\theta \mid \eta)\). Derive an expression for \(\partial/\partial \eta\, \mathbb{E}[g(\theta) \mid x; \eta]\) in terms of posterior expectations and derivatives of \(\log \pi(\theta \mid \eta)\), making precise the covariance identity in Definition @def-local-sensitivity.
+2. **Local Sensitivity Derivative.** Let the prior density be $\pi(\theta \mid \eta)$. Derive an expression for $\partial/\partial \eta\, \mathbb{E}[g(\theta) \mid x; \eta]$ in terms of posterior expectations and derivatives of $\log \pi(\theta \mid \eta)$, making precise the covariance identity in Definition @def-local-sensitivity.
 
-3. **\(\varepsilon\)-Contamination Analysis.** Implement an \(\varepsilon\)-contamination analysis (Definition @def-eps-contamination) in a simple Normal model with unknown mean and known variance. Study how posterior means and credible intervals change as \(\varepsilon\) varies.
+3. **$\varepsilon$-Contamination Analysis.** Implement an $\varepsilon$-contamination analysis (Definition @def-eps-contamination) in a simple Normal model with unknown mean and known variance. Study how posterior means and credible intervals change as $\varepsilon$ varies.
 
 4. **Robust Prior Construction.** Propose a heavy-tailed prior for a location parameter (e.g., Cauchy) and analyze its robustness properties compared to a Normal prior, particularly in the presence of outliers.
 
-5. **Prior Elicitation Exercise.** In a Beta–Binomial context, suppose an expert believes the success probability lies between 0.3 and 0.7 with high probability and that 10 pseudo-observations are appropriate. Derive hyperparameters \((\alpha, \beta)\) consistent with these beliefs and discuss the resulting prior density.
+5. **Prior Elicitation Exercise.** In a Beta–Binomial context, suppose an expert believes the success probability lies between 0.3 and 0.7 with high probability and that 10 pseudo-observations are appropriate. Derive hyperparameters $(\alpha, \beta)$ consistent with these beliefs and discuss the resulting prior density.

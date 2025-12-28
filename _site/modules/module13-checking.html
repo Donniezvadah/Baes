@@ -382,16 +382,16 @@ window.Quarto = {
 <h2 class="anchored" data-anchor-id="posterior-predictive-checks">1. Posterior Predictive Checks</h2>
 <section id="def-posterior-predictive" class="level3">
 <h3 class="anchored" data-anchor-id="def-posterior-predictive">1.1 Posterior Predictive Distribution</h3>
-<p>Given data (x), prior (), and likelihood (p(x )), the <strong>posterior predictive distribution</strong> for replicated data (X_{}) is <span class="math display">\[
+<p>Given data <span class="math inline">\(x\)</span>, prior <span class="math inline">\(\Pi\)</span>, and likelihood <span class="math inline">\(p(x \mid \theta)\)</span>, the <strong>posterior predictive distribution</strong> for replicated data <span class="math inline">\(X_{\text{rep}}\)</span> is <span class="math display">\[
 p(x_{\text{rep}} \mid x) = \int p(x_{\text{rep}} \mid \theta) \, \Pi(d\theta \mid x).
 \]</span></p>
 </section>
 <section id="def-ppc" class="level3">
 <h3 class="anchored" data-anchor-id="def-ppc">1.2 Test Statistics and Discrepancy Measures</h3>
-<p>Choose a test statistic or discrepancy function (T(x, )) capturing aspects of the data or model of interest (e.g., tail behavior, dispersion).</p>
+<p>Choose a test statistic or discrepancy function <span class="math inline">\(T(x, \theta)\)</span> capturing aspects of the data or model of interest (e.g., tail behavior, dispersion).</p>
 <p>The posterior predictive p-value is <span class="math display">\[
 p_{\text{ppc}} = \mathbb{P}( T(X_{\text{rep}}, \theta) \ge T(x, \theta) \mid x ),
-\]</span> where the probability is with respect to the joint posterior predictive distribution of ((X_{}, )).</p>
+\]</span> where the probability is with respect to the joint posterior predictive distribution of <span class="math inline">\((X_{\text{rep}}, \theta)\)</span>.</p>
 </section>
 <section id="interpretation" class="level3">
 <h3 class="anchored" data-anchor-id="interpretation">1.3 Interpretation</h3>
@@ -402,23 +402,23 @@ p_{\text{ppc}} = \mathbb{P}( T(X_{\text{rep}}, \theta) \ge T(x, \theta) \mid x )
 <h2 class="anchored" data-anchor-id="sensitivity-to-priors-and-bayesian-robustness">2. Sensitivity to Priors and Bayesian Robustness</h2>
 <section id="def-local-sensitivity" class="level3">
 <h3 class="anchored" data-anchor-id="def-local-sensitivity">2.1 Local Sensitivity</h3>
-<p>Consider posterior expectations (_) as functions of prior hyperparameters (). Local sensitivity analysis studies derivatives <span class="math display">\[
+<p>Consider posterior expectations <span class="math inline">\(\mathbb{E}_\Pi[g(\theta) \mid x]\)</span> as functions of prior hyperparameters <span class="math inline">\(\eta\)</span>. Local sensitivity analysis studies derivatives <span class="math display">\[
 \frac{\partial}{\partial \eta} \mathbb{E}[g(\theta) \mid x; \eta].
 \]</span></p>
-<p>Writing the posterior under prior density (()) as <span class="math display">\[
+<p>Writing the posterior under prior density <span class="math inline">\(\pi(\theta \mid \eta)\)</span> as <span class="math display">\[
 \Pi(d\theta \mid x; \eta) = \frac{p(x \mid \theta) \pi(\theta \mid \eta)}{m(x; \eta)} \, d\theta,
 \]</span> one can differentiate under the integral sign (under suitable regularity conditions) to obtain the identity <span class="math display">\[
 \frac{\partial}{\partial \eta} \mathbb{E}[g(\theta) \mid x; \eta]
   = \operatorname{Cov}_\Pi\bigl(g(\theta), \partial_\eta \log \pi(\theta \mid \eta) \mid x; \eta\bigr),
-\]</span> which expresses local sensitivity in terms of a posterior covariance between (g()) and the prior score function.</p>
+\]</span> which expresses local sensitivity in terms of a posterior covariance between <span class="math inline">\(g(\theta)\)</span> and the prior score function.</p>
 </section>
 <section id="def-eps-contamination" class="level3">
 <h3 class="anchored" data-anchor-id="def-eps-contamination">2.2 Global Sensitivity and Robust Priors</h3>
 <ul>
-<li><strong>()-contamination priors:</strong> <span class="math display">\[
+<li><strong><span class="math inline">\(\varepsilon\)</span>-contamination priors:</strong> <span class="math display">\[
 \Pi_\varepsilon = (1-\varepsilon) \Pi_0 + \varepsilon Q,
-\]</span> where (Q) represents a contaminating distribution.</li>
-<li>Study the range of posterior summaries as () varies, assessing robustness to prior perturbations.</li>
+\]</span> where <span class="math inline">\(Q\)</span> represents a contaminating distribution.</li>
+<li>Study the range of posterior summaries as <span class="math inline">\(\varepsilon\)</span> varies, assessing robustness to prior perturbations.</li>
 </ul>
 </section>
 <section id="robustness-criteria" class="level3">
@@ -444,12 +444,12 @@ p_{\text{ppc}} = \mathbb{P}( T(X_{\text{rep}}, \theta) \ge T(x, \theta) \mid x )
 </section>
 <section id="elicitation-in-conjugate-models" class="level3">
 <h3 class="anchored" data-anchor-id="elicitation-in-conjugate-models">3.2 Elicitation in Conjugate Models</h3>
-<p>In Beta–Binomial, interpret ((, )) as prior success and failure counts. In Normal–Normal models, interpret prior mean and variance as prior guess and uncertainty about the parameter.</p>
+<p>In Beta–Binomial, interpret <span class="math inline">\((\alpha, \beta)\)</span> as prior success and failure counts. In Normal–Normal models, interpret prior mean and variance as prior guess and uncertainty about the parameter.</p>
 </section>
 </section>
 <section id="example-overdispersion-in-poisson-models" class="level2">
 <h2 class="anchored" data-anchor-id="example-overdispersion-in-poisson-models">4. Example: Overdispersion in Poisson Models</h2>
-<p>Consider (X_i ()) with Gamma prior on ().</p>
+<p>Consider <span class="math inline">\(X_i \mid \lambda \sim \operatorname{Poisson}(\lambda)\)</span> with Gamma prior on <span class="math inline">\(\lambda\)</span>.</p>
 <ul>
 <li>Use posterior predictive checks to assess whether data are overdispersed relative to the Poisson assumption.</li>
 <li>Compare observed variance to posterior predictive variance.</li>
@@ -460,10 +460,10 @@ p_{\text{ppc}} = \mathbb{P}( T(X_{\text{rep}}, \theta) \ge T(x, \theta) \mid x )
 <h2 class="anchored" data-anchor-id="problem-set-13-representative-problems">5. Problem Set 13 (Representative Problems)</h2>
 <ol type="1">
 <li><p><strong>Posterior Predictive Check for Poisson.</strong> For a Poisson–Gamma model, derive the posterior predictive distribution (Definition <strong>?@def-posterior-predictive</strong>) and construct a test statistic sensitive to overdispersion. Analyze how the posterior predictive p-value (Definition <strong>?@def-ppc</strong>) behaves when data are generated from an overdispersed process.</p></li>
-<li><p><strong>Local Sensitivity Derivative.</strong> Let the prior density be (()). Derive an expression for (/, [g() x; ]) in terms of posterior expectations and derivatives of (()), making precise the covariance identity in Definition <strong>?@def-local-sensitivity</strong>.</p></li>
-<li><p><strong>()-Contamination Analysis.</strong> Implement an ()-contamination analysis (Definition <strong>?@def-eps-contamination</strong>) in a simple Normal model with unknown mean and known variance. Study how posterior means and credible intervals change as () varies.</p></li>
+<li><p><strong>Local Sensitivity Derivative.</strong> Let the prior density be <span class="math inline">\(\pi(\theta \mid \eta)\)</span>. Derive an expression for <span class="math inline">\(\partial/\partial \eta\, \mathbb{E}[g(\theta) \mid x; \eta]\)</span> in terms of posterior expectations and derivatives of <span class="math inline">\(\log \pi(\theta \mid \eta)\)</span>, making precise the covariance identity in Definition <strong>?@def-local-sensitivity</strong>.</p></li>
+<li><p><strong><span class="math inline">\(\varepsilon\)</span>-Contamination Analysis.</strong> Implement an <span class="math inline">\(\varepsilon\)</span>-contamination analysis (Definition <strong>?@def-eps-contamination</strong>) in a simple Normal model with unknown mean and known variance. Study how posterior means and credible intervals change as <span class="math inline">\(\varepsilon\)</span> varies.</p></li>
 <li><p><strong>Robust Prior Construction.</strong> Propose a heavy-tailed prior for a location parameter (e.g., Cauchy) and analyze its robustness properties compared to a Normal prior, particularly in the presence of outliers.</p></li>
-<li><p><strong>Prior Elicitation Exercise.</strong> In a Beta–Binomial context, suppose an expert believes the success probability lies between 0.3 and 0.7 with high probability and that 10 pseudo-observations are appropriate. Derive hyperparameters ((, )) consistent with these beliefs and discuss the resulting prior density.</p></li>
+<li><p><strong>Prior Elicitation Exercise.</strong> In a Beta–Binomial context, suppose an expert believes the success probability lies between 0.3 and 0.7 with high probability and that 10 pseudo-observations are appropriate. Derive hyperparameters <span class="math inline">\((\alpha, \beta)\)</span> consistent with these beliefs and discuss the resulting prior density.</p></li>
 </ol>
 
 

@@ -388,7 +388,9 @@ window.Quarto = {
 <p>Let (X = (X_1, , X_d)) take values in a product space ( = _1 _d) with joint density ((x)) with respect to a product reference measure.</p>
 <section id="def-gibbs-full-conditional" class="level3">
 <h3 class="anchored" data-anchor-id="def-gibbs-full-conditional">Definition 7.1 (Full Conditional Distribution)</h3>
-<p>The <strong>full conditional distribution</strong> of component (X_j) given the others is 5574 (x_j x_{-j}) = , 5574 whenever the denominator is finite and nonzero.</p>
+<p>The <strong>full conditional distribution</strong> of component (X_j) given the others is <span class="math display">\[
+\pi(x_j \mid x_{-j}) = \frac{\pi(x_j, x_{-j})}{\int_{\mathsf{X}_j} \pi(x_j', x_{-j})\, dx_j'},
+\]</span> whenever the denominator is finite and nonzero.</p>
 </section>
 </section>
 <section id="gibbs-sampler-construction" class="level2">
@@ -464,7 +466,9 @@ q(y,x) = \pi(x_j \mid x_{-j}).
 <p>Data augmentation introduces latent variables to simplify the full conditional distributions.</p>
 <section id="ex-probit-da" class="level3">
 <h3 class="anchored" data-anchor-id="ex-probit-da">Example 7.3 (Probit Regression with Latent Gaussian Variables)</h3>
-<p>Consider the probit model 5574 Y_i = { Z_i &gt; 0 }, Z_i = x_i^+ _i, _i N(0,1), 5574 with prior (N_p(m_0, V_0)).</p>
+<p>Consider the probit model <span class="math display">\[
+Y_i = \mathbf{1}\{ Z_i &gt; 0 \}, \quad Z_i = x_i^\top \beta + \varepsilon_i, \quad \varepsilon_i \sim N(0,1),
+\]</span> with prior (N_p(m_0, V_0)).</p>
 <p>Introduce latent variables (Z_i). The full conditionals are:</p>
 <ul>
 <li>(Z_i Y_i, N(x_i^, 1)) truncated above or below 0 depending on (Y_i).</li>
