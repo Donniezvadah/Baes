@@ -1,0 +1,4 @@
+- source: project
+  quarto-pub:
+    - id: a3d71f72-17f1-414e-93cc-c78f5b3230b1
+      url: https://donnie98.quarto.pub/bayesian-statistics-and-inference
